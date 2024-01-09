@@ -1,0 +1,458 @@
+///@package io.alkapivo.core.service.track
+
+///@enum
+function _TrackStatus(): Enum() constructor {
+  PLAYING = "playing"
+  PAUSED = "paused"
+  STOPPED = "stopped"
+}
+global.__TrackStatus = new _TrackStatus()
+#macro TrackStatus global.__TrackStatus
+
+///@param {Struct} json
+///@param {?Struct} [config]
+function Track(json, config = null) constructor {
+
+  ///@type {String}
+  name = Assert.isType(Struct.get(json, "name"), String)
+
+  ///@type {Sound}
+  audio = Assert.isType(SoundUtil.fetch(Struct.get(json, "audio")), Sound)
+
+  ///@private
+  ///@param {Struct} channel
+  ///@param {Number} index
+  ///@return {TrackChannel}
+  parseTrackChannel = method(this, Assert.isType(Struct
+    .getDefault(config, "parseTrackChannel", function(channel, index) {
+      Logger.debug("Track", $"Parse channel '{channel.name}' at index {index}")
+      return new TrackChannel({ 
+        name: Assert.isType(Struct.get(channel, "name"), String),
+        events: Assert.isType(Struct.get(channel, "events"), GMArray),
+        index: index,
+      })
+    }), Callable))
+
+  ///@type {Map<String, TrackChannel>}
+  channels = new Map(String, TrackChannel)
+  GMArray.forEach(Struct.get(json, "channels"), function(channel, index, context) {
+    var trackChannel = context.parseTrackChannel(channel, index)
+    context.channels.add(trackChannel, trackChannel.name)
+  }, this)
+
+  ///@private
+  ///@param {String} name
+  ///@return {TrackChannel}
+  injectTrackChannel = method(this, Assert.isType(Struct
+    .getDefault(config, "injectTrackChannel", function(name) {
+      return this.channels.contains(name)
+        ? this.channels.get(name)
+        : this.channels.set(name, this.parseTrackChannel({ 
+            name: name, 
+            events: []
+          }, this.channels.size())).get(name)
+    }), Callable))
+
+  ///@param {String} name
+  ///@param {TrackEvent} event
+  ///@return {Track}
+  addEvent = method(this, Assert.isType(Struct
+    .getDefault(config, "add", function(name, event) {
+      this.injectTrackChannel(name).add(event)
+      return this
+    }), Callable))
+
+  ///@param {String} channelName
+  ///@param {TrackEvent} event
+  ///@return {Track}
+  removeEvent = method(this, Assert.isType(Struct
+    .getDefault(config, "remove", function(channelName, event) {
+      this.injectTrackChannel(channelName).remove(event)
+      return this
+    }), Callable))
+
+  ///@param {String} name
+  ///@return {Track}
+  addChannel = method(this, Assert.isType(Struct
+    .getDefault(config, "addChannel", function(name) {
+      if (this.channels.contains(name)) {
+        Logger.warn("Track", $"Cannot create channel '{name}', because channel already exists")
+        return this
+      }
+
+      this.injectTrackChannel(name)
+      return this
+    }), Callable))
+
+  ///@param {String} name
+  ///@return {Track}
+  removeChannel = method(this, Assert.isType(Struct
+    .getDefault(config, "removeChannel", function(name) {
+      if (!this.channels.contains(name)) {
+        Logger.warn("Track", $"Cannot remove channel '{name}', because channel does not exists")
+        return this
+      }
+
+      Logger.info("Track", $"Remove channel '{name}'")
+      this.channels.remove(name)
+      return this
+    }), Callable))
+  
+  ///@param {Number} timestamp
+  ///@return {Track}
+  rewind = method(this, Assert.isType(Struct
+    .getDefault(config, "rewind", function(timestamp) {
+      static rewindChannel = function(channel, name, timestamp) {
+        channel.rewind(timestamp)
+      }
+
+      this.channels.forEach(rewindChannel, timestamp)
+      return this
+    }), Callable))
+
+  ///@param {Number} timestamp
+  ///@return {Track}
+  update = method(this, Assert.isType(Struct
+    .getDefault(config, "update", function(timestamp) {
+      static updateChannel = function(channel, name, timestamp) {
+        channel.update(timestamp)
+      }
+
+      this.channels.forEach(updateChannel, timestamp)
+      return this
+    }), Callable))
+
+  ///@return {TrackStatus}
+  getStatus = method(this, Assert.isType(Struct
+    .getDefault(config, "getStatus", function() {
+      if (!Core.isType(this.audio, Sound)) {
+        return TrackStatus.STOPPED
+      }
+
+      if (this.audio.isPlaying()) {
+        return TrackStatus.PLAYING
+      }
+
+      if (this.audio.isPaused()) {
+        return TrackStatus.PAUSED
+      }
+
+      return TrackStatus.STOPPED     
+    }), Callable))
+
+  ///@return {String}
+  serialize = method(this, Assert.isType(Struct
+    .getDefault(config, "serialize", function() {
+      return JSON.stringify({
+        "model": "io.alkapivo.core.service.track.Track",
+        "data": {
+          "name": this.name,
+          "audio": this.audio.name,
+          "channels": this.channels
+            .toArray(function(channel) {
+              return channel  
+            }, null, any)
+            .sort(function(a, b) { 
+              return a.index < b.index
+            })
+            .map(function(channel) { 
+              return channel.serialize()
+            })
+            .getContainer(),
+        }
+      }, { pretty: true })
+    }), Callable))
+}
+
+///@param {Struct} json
+///@param {?Struct} [config]
+function TrackChannel(json, config = null) constructor {
+
+  ///@private
+  ///@param {Event}
+  ///@return {TrackEvent}
+  parseEvent = method(this, Assert.isType(Struct
+    .getDefault(config, "parseEvent", function(event) {
+      return new TrackEvent(event)
+    }), Callable))
+  
+  ///@private
+  ///@param {TrackEvent} a
+  ///@param {TrackEvent} b
+  ///@return {Boolean}
+  compareEvents = method(this, Assert.isType(Struct
+    .getDefault(config, "compareEvents", function(a, b) { 
+      return a.timestamp < b.timestamp
+    }), Callable))
+
+  ///@type {String}
+  name = Assert.isType(Struct.get(json, "name"), String)
+
+  ///@type {Number}
+  index = Assert.isType(Struct.get(json, "index"), Number)
+
+  ///@type {Array<TrackEvent>}
+  events = GMArray.toArray(Struct
+    .getDefault(json, "events", []), TrackEvent, parseEvent)
+    .sort(compareEvents)
+
+  ///@private
+  ///@type {Number}
+  time = 0.0
+
+  ///@private
+  ///@type {?Number}
+  pointer = null
+
+  ///@private
+  ///@type {Number}
+  MAX_EXECUTION_PER_FRAME = 10
+
+  ///@param {TrackEvent} event
+  ///@return {TrackChannel}
+  add = method(this, Assert.isType(Struct
+    .getDefault(config, "add", function(event) {
+      for (var index = 0; index < events.size(); index++) {
+        if (event.timestamp < events.get(index).timestamp) {
+          break
+        }
+      }
+      var lastExecutedEvent = this.pointer != null ? events.get(this.pointer) : null
+      events.add(event, index)
+      if (lastExecutedEvent == null) {
+        return this
+      }
+
+      for (var index = 0; index < events.size(); index++) {
+        if (events.get(index) == lastExecutedEvent) {
+          this.pointer = index
+          break
+        }
+      }
+      return this
+    }), Callable))
+
+  ///@param {TrackEvent} event
+  ///@return {TrackChannel}
+  remove = method(this, Assert.isType(Struct
+    .getDefault(config, "remove", function(event) {
+      if (this.events.size() == 0) {
+        return this
+      }
+
+      for (var index = 0; index < events.size(); index++) {
+        if (this.events.get(index) == event) {
+          break
+        }
+        if (index == this.events.size() - 1) {
+          return this
+        }
+      }
+      var lastExecutedEvent = this.pointer != null ? this.events.get(this.pointer) : null
+      var trackEvent = this.events.get(index)
+      this.events.remove(index)
+      Logger.debug("Track", $"TrackEvent removed: channel: '{this.name}', timestamp: {trackEvent.timestamp}, callable: '{trackEvent.callableName}'")
+      if (this.pointer == null) {
+        return this
+      }
+
+      if (lastExecutedEvent == event) {
+        this.pointer = this.pointer == 0 ? null : this.pointer - 1
+      } else {
+        for (var index = 0; index < this.events.size(); index++) {
+          if (this.events.get(index) == lastExecutedEvent) {
+            this.pointer = index
+            break
+          }
+        }
+      }
+      return this
+    }), Callable))
+
+  ///@param {Number} timestamp
+  ///@return {TrackChannel}
+  rewind = method(this, Assert.isType(Struct
+    .getDefault(config, "rewind", function(timestamp) {
+      this.pointer = null
+      this.time = timestamp
+      for (var index = 0; index < events.size(); index++) {
+        this.pointer = index
+        if (events.get(index).timestamp > timestamp) {
+          this.pointer = index == 0 ? null : index - 1
+          break
+        }
+      }
+      return this
+    }), Callable))
+
+  ///@param {Number} timestamp
+  ///@return {TrackChannel}
+  update = method(this, Assert.isType(Struct
+    .getDefault(config, "update", function(timestamp) {
+      if (this.time > timestamp) {
+        this.rewind(timestamp)
+      }
+      this.time = timestamp
+
+      if (events.size() == 0) {
+        return this
+      }
+
+      for (var index = 0; index < this.MAX_EXECUTION_PER_FRAME; index++) {
+        var pointer = this.pointer == null ? 0 : this.pointer + 1
+        if (pointer == events.size()) {
+          break
+        }
+
+        var event = events.get(pointer)
+        if (timestamp >= event.timestamp) {
+          this.pointer = pointer
+          event.callable(event.data)
+        } else {
+          break
+        }
+      }
+      return this
+    }), Callable))
+
+  ///@return {Struct[]}
+  serialize = method(this, Assert.isType(Struct
+    .getDefault(config, "toTemplate", function() {
+      return {
+        "name": this.name,
+        "events": this.events.map(function(event) {
+          return event.serialize()
+        }).getContainer(),
+      }
+    }), Callable))
+}
+
+///@param {Struct} json
+///@param {?Struct} [config]
+function TrackEvent(json, config = null): Event("TrackEvent") constructor {
+
+  ///@type {Number}
+  timestamp = Assert.isType(Struct.get(json, "timestamp"), Number)
+
+  ///@override
+  ///@type {Struct}
+  data = Assert.isType(Struct.getDefault(json, "data", {}), Struct)
+
+  ///@type {String}
+  callableName = Struct.getDefault(json, "callable", "dummy")
+
+  ///@type {Callable}
+  callable = Assert.isType(Struct.get(TRACK_EVENT_HANDLERS, this.callableName), Callable)
+
+  ///@todo refactor
+  ///@return {Struct}
+  serialize = method(this, Assert.isType(Struct
+    .getDefault(config, "toTemplate", function() {
+      var json = {
+        "timestamp": this.timestamp,
+        "callable": this.callableName,
+      }
+
+      if (Core.isType(this.data, Struct)) {
+        Struct.set(json, "data", Struct.map(this.data, function(value, key) {
+          var serialize = Struct.get(value, "serialize")
+          return Core.isType(serialize, Callable) ? value.serialize() : value
+        }))
+      }
+      
+      return json
+    }), Callable))
+}
+
+///@type {Struct}
+global.__TRACK_EVENT_HANDLERS = {
+  "brush_shader_spawn": function(data) {
+    var controller = Beans.get(BeanVisuController)
+    Logger.debug("Track", "brush_shader_spawn")
+    controller.shaderPipeline.send(new Event("spawn-shader", {
+      template: Struct.get(data, "shader-spawn_template"),
+      duration: Struct.get(data, "shader-spawn_duration"),
+    }))
+  },
+  "brush_shader_overlay": function(data) {
+    Core.print("brush_shader_overlay", "event")
+  },
+  "brush_shader_clear": function(data) {
+    Core.print("brush_shader_clear", "event")
+  },
+  "brush_shader_config": function(data) {
+    Core.print("brush_shader_config", "event")
+  },
+  "brush_shroom_spawn": function(data) {
+    Core.print("brush_shroom_spawn", "event", JSON.stringify(data, { pretty: true }))
+    var shroom = {
+      template: Struct.get(data, "shroom-spawn_template"),
+      spawnX: Struct.get(data, "shroom-spawn_spawn-x"),
+      spawnY: Struct.get(data, "shroom-spawn_spawn-y"),
+      angle: Struct.get(data, "shroom-spawn_angle"),
+      speed: Struct.get(data, "shroom-spawn_speed"),
+    }
+
+    Beans.get(BeanVisuController).shroomService
+      .send(new Event("spawn-shroom", shroom))
+    /*
+    var controller = Beans.get(BeanVisuController)
+    var template = JSON.stringify(data.template, { pretty: true })
+    Logger.debug(
+      String.formatTimestamp(controller.trackService.time), 
+      $"spawn-shroom: {template}"
+    )
+    
+    controller.shroomService.send(new Event("spawn-shroom", data))
+    */
+  },
+  "brush_shroom_clear": function(data) {
+    Core.print("brush_shroom_clear", "event")
+  },
+  "brush_shroom_config": function(data) {
+    Core.print("brush_shroom_config", "event")
+  },
+  "brush_view_wallpaper": function(data) {
+    var controller = Beans.get(BeanVisuController)
+    if (Struct.get(data, "view-wallpaper_use-texture") == true) {
+      controller.gridService.send(new Event("fade-sprite", {
+        sprite: SpriteUtil.parse(Struct.get(data, "view-wallpaper_texture")),
+        collection: controller.gridRenderer.overlayRenderer.backgrounds,
+        executor: controller.gridService.executor,
+      }))
+    }
+  },
+  "brush_view_camera": function(data) {
+    Core.print("brush_view_camera", "event")
+  },
+  "brush_view_config": function(data) {
+    Core.print("brush_view_config", "event")
+  },
+  "brush_grid_channel": function(data) {
+    Core.print("brush_grid_channel", "event")
+  },
+  "brush_grid_config": function(data) {
+    Core.print("brush_grid_config", "event")
+  },
+  "brush_grid_separator": function(data) {
+    Core.print("brush_grid_separator", "event")
+  },
+  "dummy": function(data) {
+    Core.print("dummy")
+  },
+  "set-foreground": function(data) {
+    /*
+    var controller = Beans.get(BeanVisuController)
+    Logger.debug(String.formatTimestamp(controller.trackService.time),
+      $"set-foreground: {JSON.stringify(data, { pretty: true })}")
+    
+    controller.gridService.send(new Event("fade-sprite", {
+      sprite: SpriteUtil.parse(data),
+      collection: controller.gridRenderer.overlayRenderer.foregrounds,
+      executor: controller.gridService.executor,
+    }))
+    */
+  },
+  "set-video-rendering": function(data) { },
+}
+#macro TRACK_EVENT_HANDLERS global.__TRACK_EVENT_HANDLERS
