@@ -1,4 +1,4 @@
-///@package io.alkapivo.core.service.shader
+///@package io.alkapivo.core.renderer.shader
 
 ///@param {String} _name
 ///@param {Struct} json

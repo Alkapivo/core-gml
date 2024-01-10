@@ -1,14 +1,14 @@
 ///@package io.alkapivo.core.service.ui
 
 ///@interface
-///@param {UIContainer} _context
+///@param {UI} _context
 ///@param {?Struct} [config]
 function UIItem(_name, config = {}) constructor {
 
   ///@type {String}
   name = Assert.isType(_name, String)
 
-  ///@type {?UIContainer}
+  ///@type {?UI}
   context = null
 
   ///@type {any}
@@ -113,9 +113,17 @@ function UIItem(_name, config = {}) constructor {
       this.store.unsubscribe()
     }
   }), Callable))
+
+  ///@type {?Callable}
+  preRender = Struct.contains(config, "preRender")
+    ? method(this, Assert.isType(config.preRender, Callable))
+    : null
   
   ///@return {UIItem}
   render = method(this, Assert.isType(Struct.getDefault(config, "render", function() {
+    if (Optional.is(this.preRender)) {
+      this.preRender()
+    }
     return this
   }), Callable))
 

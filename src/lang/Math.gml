@@ -1,102 +1,4 @@
-///@package io.alkapivo.core.util
-
-///@static
-function _Math() constructor {
-
-  ///@param {Number} fromX
-  ///@param {Number} fromY
-  ///@param {Number} toX
-  ///@param {Number} toY
-  ///@return {Number}
-  fetchAngle = function(fromX, fromY, toX, toY) {
-    return point_direction(fromX, fromY, toX, toY)
-  }
-
-  ///@param {Number} fromX
-  ///@param {Number} fromY
-  ///@param {Number} toX
-  ///@param {Number} toY
-  ///@return {Number}
-  fetchLength = function(fromX, fromY, toX, toY) {
-    return point_distance(fromX, fromY, toX, toY)
-  }
-
-  ///@param {Number} sx1
-  ///@param {Number} sy1
-  ///@param {Number} sx2
-  ///@param {Number} sy2
-  ///@param {Number} dx1
-  ///@param {Number} dy1
-  ///@param {Number} dx2
-  ///@param {Number} dy2
-  ///@return {Boolean}
-  rectangleOverlaps = function(sx1, sy1, sx2, sy2, dx1, dy1, dx2, dy2) {
-    return rectangle_in_rectangle(sx1, sy1, sx2, sy2, dx1, dy1, dx2, dy2) > 0
-  }
-
-  ///@param {Number} length
-  ///@param {Number} angle
-  ///@return {Number}
-  fetchCircleX = function(length, angle) {
-    return lengthdir_x(length, angle)
-  }
-
-  ///@param {Number} length
-  ///@param {Number} angle
-  ///@return {Number}
-  fetchCircleY = function(length, angle) {
-    return lengthdir_y(length, angle)
-  }
-
-  ///@param {Number} source
-  ///@param {Number} target
-  ///@param {Number} [factor]
-  ///@return {Number}
-  transformNumber = function(source, target, factor = 1.0) {
-    var dir = source < target ? 1 : -1
-    var value = source + DeltaTime.apply(factor * dir)
-    return dir > 0
-      ? clamp(value, source, target)
-      : clamp(value, target, source)
-  }
-
-  ///@param {Number} number
-  ///@return {Number}
-  randomNumber = function(number) {
-    return random(number)
-  }
-
-  ///@param {Number} from
-  ///@param {Number} to
-  ///@return {Number}
-  randomNumberFromRange = function(from, to) {
-    return random_range(from, to)
-  }
-
-  ///@param {Number} from
-  ///@param {Number} to
-  ///@return {Number}
-  randomInteger = function(number) {
-    return irandom(number)
-  }
-
-  ///@param {Number} from
-  ///@param {Number} to
-  ///@return {Number}
-  randomIntegerFromRange = function(from, to) {
-    return irandom_range(from, to)
-  }
-
-  ///@type {Number} a
-  ///@type {Number} b
-  ///@type {Number} [epsilon]
-  areNumbersEqual = function(a, b, epsilon = 0.0) {
-    return a >= b - epsilon && a <= b + epsilon
-  }
-}
-global.__Math = new _Math()
-#macro Math global.__Math
-
+///@package io.alkapivo.core.lang
 
 ///@static
 function _Vector() constructor {
@@ -299,29 +201,99 @@ function Ellipse(_width, _height) constructor {
 }
 
 
-///@param {Struct} [json]
-function NumberIntent(json = {}) constructor {
+///@static
+function _Math() constructor {
 
-  ///@type {?Number}
-  target = Struct.getDefault(json, "target", null)
-  if (this.target != null) {
-    Assert.isType(this.target, Number, "target")
+  ///@param {Number} fromX
+  ///@param {Number} fromY
+  ///@param {Number} toX
+  ///@param {Number} toY
+  ///@return {Number}
+  fetchAngle = function(fromX, fromY, toX, toY) {
+    return point_direction(fromX, fromY, toX, toY)
   }
 
-  ///@type {Number}
-  factor = Struct.getDefault(json, "factor", 1)
-  Assert.isType(this.factor, Number, "factor")
-
-  ///@type {Number}
-  increment = Struct.getDefault(json, "increment", 0)
-  Assert.isType(this.increment, Number, "increment")
-
-  ////@param {Number} source
+  ///@param {Number} fromX
+  ///@param {Number} fromY
+  ///@param {Number} toX
+  ///@param {Number} toY
   ///@return {Number}
-  static transform = function(source) {
-    this.factor += DeltaTime.apply(this.increment)
-    return this.target != null
-      ? Math.transformNumber(source, this.target, this.factor)
-      : source + DeltaTime.apply(this.factor)
+  fetchLength = function(fromX, fromY, toX, toY) {
+    return point_distance(fromX, fromY, toX, toY)
+  }
+
+  ///@param {Number} sx1
+  ///@param {Number} sy1
+  ///@param {Number} sx2
+  ///@param {Number} sy2
+  ///@param {Number} dx1
+  ///@param {Number} dy1
+  ///@param {Number} dx2
+  ///@param {Number} dy2
+  ///@return {Boolean}
+  rectangleOverlaps = function(sx1, sy1, sx2, sy2, dx1, dy1, dx2, dy2) {
+    return rectangle_in_rectangle(sx1, sy1, sx2, sy2, dx1, dy1, dx2, dy2) > 0
+  }
+
+  ///@param {Number} length
+  ///@param {Number} angle
+  ///@return {Number}
+  fetchCircleX = function(length, angle) {
+    return lengthdir_x(length, angle)
+  }
+
+  ///@param {Number} length
+  ///@param {Number} angle
+  ///@return {Number}
+  fetchCircleY = function(length, angle) {
+    return lengthdir_y(length, angle)
+  }
+
+  ///@param {Number} source
+  ///@param {Number} target
+  ///@param {Number} [factor]
+  ///@return {Number}
+  transformNumber = function(source, target, factor = 1.0) {
+    var dir = source < target ? 1 : -1
+    var value = source + DeltaTime.apply(factor * dir)
+    return dir > 0
+      ? clamp(value, source, target)
+      : clamp(value, target, source)
+  }
+
+  ///@param {Number} number
+  ///@return {Number}
+  randomNumber = function(number) {
+    return random(number)
+  }
+
+  ///@param {Number} from
+  ///@param {Number} to
+  ///@return {Number}
+  randomNumberFromRange = function(from, to) {
+    return random_range(from, to)
+  }
+
+  ///@param {Number} from
+  ///@param {Number} to
+  ///@return {Number}
+  randomInteger = function(number) {
+    return irandom(number)
+  }
+
+  ///@param {Number} from
+  ///@param {Number} to
+  ///@return {Number}
+  randomIntegerFromRange = function(from, to) {
+    return irandom_range(from, to)
+  }
+
+  ///@type {Number} a
+  ///@type {Number} b
+  ///@type {Number} [epsilon]
+  areNumbersEqual = function(a, b, epsilon = 0.0) {
+    return a >= b - epsilon && a <= b + epsilon
   }
 }
+global.__Math = new _Math()
+#macro Math global.__Math

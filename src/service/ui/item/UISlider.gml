@@ -75,6 +75,10 @@ function UISliderHorizontal(name, json = null) {
         this.updateCustom()
       }
 
+      if (this.isHoverOver) {
+        this.updateHover()
+      }
+
       if (Optional.is(this.store)) {
         this.store.subscribe()
       }
@@ -102,6 +106,9 @@ function UISliderHorizontal(name, json = null) {
 
     ///@return {UIItem}
     render: Struct.getDefault(json, "render", function() {
+      if (Optional.is(this.preRender)) {
+        this.preRender()
+      }
       this.renderBackgroundColor()
       
       var fromX = this.context.area.getX() + this.area.getX()

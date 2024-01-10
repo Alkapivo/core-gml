@@ -17,7 +17,7 @@ function StoreItem(_name, json) constructor {
   data = Struct.get(json, "data")
 
   ///@NonSerializable
-  subscribers = new Array(StoreSubscriber)
+  subscribers = new Array(StoreItemSubscriber)
 
   ///@return {any}
   get = method(this, Assert.isType(Struct.getDefault(json, "get", function() {
@@ -80,7 +80,7 @@ function StoreItem(_name, json) constructor {
   this.set(Struct.contains(json, "value") ? json.value : this.factoryDefault())
 
   ///@private
-  ///@param {StoreSubscriber} subscriber
+  ///@param {StoreItemSubscriber} subscriber
   ///@param {Number} index
   ///@param {String} name
   ///@return {Boolean}
@@ -92,7 +92,7 @@ function StoreItem(_name, json) constructor {
   ///@return {StoreItem}
   ///@throws {Exception}
   addSubscriber = function(config) {
-    var subscriber = new StoreSubscriber(config)
+    var subscriber = new StoreItemSubscriber(config)
     if (this.containsSubscriber(subscriber.name)) {
       throw new Exception($"Subscriber already exists: '{name}'")
     }
@@ -104,13 +104,13 @@ function StoreItem(_name, json) constructor {
   }
 
   ///@param {String} name
-  ///@return {?StoreSubscriber}
+  ///@return {?StoreItemSubscriber}
   getSubscriber = function(name) {
     return this.subscribers.find(this.findSubscriberByName, name)
   }
 
   ///@param {String} name
-  ///@return {?StoreSubscriber}
+  ///@return {?StoreItemSubscriber}
   removeSubscriber = function(name) {
     var index = this.subscribers.findIndex(this.findSubscriberByName, name)
     if (Core.isType(index, Number)) {
@@ -124,6 +124,6 @@ function StoreItem(_name, json) constructor {
   ///@return {Boolean}
   containsSubscriber = function(name) {
     return Core.isType(this.subscribers
-      .find(this.findSubscriberByName, name), StoreSubscriber)
+      .find(this.findSubscriberByName, name), StoreItemSubscriber)
   }
 }

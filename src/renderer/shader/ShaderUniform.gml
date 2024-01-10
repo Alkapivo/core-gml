@@ -1,7 +1,6 @@
-///@package io.alkapivo.core.service.shader
+///@package io.alkapivo.core.renderer.shader
 
 #macro GMShaderUniform "GMShaderUniform"
-
 
 ///@enum
 function _ShaderUniformType(): Enum() constructor {

@@ -1,35 +1,19 @@
 ///@package io.alkapivo.core.collection
 
 ///@param {Type} [_type]
-///@param {any[]} [_container]
+///@param {GMArray} [_container]
 ///@param {?Struct} [config]
-function Array(_type = any, _container = null, config = { validate: false }) constructor {
-
-  ///@private
-  ///@param {Struct.Array} array
-  ///@throws {AssertException}
-  static validateContainer = function(array) {
-    static validateEntry = function(value, index, array) {
-      Assert.isType(value, array.type, $"Value '{value}' at index '{index}' must be type of '{array.type}'")
-    }
-
-    if (array.type != any) {
-      Struct.forEach(array.container, validateEntry, array)
-    }
-  }
+function Array(_type = any, _container = null) constructor {
 
   ///@type {Type}
   type = _type
   
   ///@private
-  ///@type {any[]}
+  ///@type {GMArray}
   container = _container != null ? _container : []
   ///@description Cannot use Assert.isType due to initialization order
   if (typeof(this.container) != "array") {
     throw new InvalidAssertException($"Invalid 'Array.container' type: '{typeof(this.container)}'")
-  }
-  if (Struct.get(config, "validate") == true) {
-    this.validateContainer(this)
   }
 
   ///@private
@@ -219,21 +203,39 @@ function Array(_type = any, _container = null, config = { validate: false }) con
     return buffer
   }
 
-  ///@return {any[]}
-  static getContainer = function() {
-    return this.container
+  ///@return {any}
+  static getFirst = function() {
+    return this.size() > 0 ? this.get(0) : null
   }
 
-  ///@param {any[]} container
+  ///@return {any}
+  static getLast = function() {
+    var size = this.size()
+    return size > 0 ? this.get(size - 1) : null
+  }
+
+  ///@param {Collection} keys
   ///@return {Array}
-  static setContainer = function(container) {
-    this.container = container
+  static removeMany = function(keys) {
+    static setToNull = function(index, gcIndex, array) {
+      array.set(index, null)
+    }
+
+    var size = this.size()
+    if (size == 0) {
+      return this
+    }
+
+    var type = this.type
+    this.type = any
+    keys.forEach(setToNull, this)
+    for (var index = size - 1; index >= 0; index--) {
+      if (this.get(index) == null) {
+        this.remove(index)
+      }
+    }
+    this.type = type
     return this
-  }
-
-  ///@return {Array}
-  static clone = function() {
-    return new Array(this.type, Arrays.clone(this.container))
   }
 
   ///@param {Callable} [comparator]
@@ -267,14 +269,40 @@ function Array(_type = any, _container = null, config = { validate: false }) con
     if (this.size() <= 1) {
       return this
     }
-    this.container = quickSort(this.container, 0, this.size() - 1, comparator, quickSort)
+    this.setContainer(quickSort(this.container, 0, this.size() - 1, comparator, quickSort))
     return this
   }
 
-  static toMap = function(keyType = any, valueType = any, valueCallback = null, acc = null, keyCallback = null) {
-    return GMArray.toMap(this.container, keyType, valueType, valueCallback, acc, keyCallback)
+  ///@return {GMArray}
+  static getContainer = function() {
+    return this.container
   }
 
+  ///@param {GMArray} container
+  ///@return {Array}
+  static setContainer = function(container) {
+    Assert.isTrue((typeof(this.container) == "array"))
+    this.container = container
+    return this
+  }
+
+  ///@param {any} [keyType]
+  ///@param {any} [valueType]
+  ///@param {?Callable} [valueCallback]
+  ///@param {any} [acc]
+  ///@param {?Callable} [keyCallback]
+  ///@return {Map}
+  static toMap = function(keyType = any, valueType = any, valueCallback = null, 
+    acc = null, keyCallback = null) {
+
+    return GMArray.toMap(this.container, keyType, valueType, valueCallback, 
+      acc, keyCallback)
+  }
+
+  ///@param {?Callable} [valueCallback]
+  ///@param {any} [acc]
+  ///@param {?Callable} [keyCallback]
+  ///@return {Struct}
   static toStruct = function(valueCallback = null, acc = null, keyCallback = null) {
     return GMArray.toStruct(this.container, keyCallback, acc, valueCallback)
   }
@@ -311,38 +339,21 @@ function Array(_type = any, _container = null, config = { validate: false }) con
     return this
   }
 
-  ///@return {any}
-  static getFirst = function() {
-    return this.size() > 0 ? this.get(0) : null
-  }
-
-  ///@return {any}
-  static getLast = function() {
-    var size = this.size()
-    return size > 0 ? this.get(size - 1) : null
-  }
-
-  ///@param {Collection} keys
+  ///@param {?Type} [type]
+  ///@throws {AssertException}
   ///@return {Array}
-  static removeMany = function(keys) {
-    static setToNull = function(index, gcIndex, array) {
-      array.set(index, null)
+  static validate = function(/*type = null*/) {
+    static validateEntry = function(value, index, array) {
+      Assert.isType(value, array.type, $"Value '{value}' at index '{index}' is not type of '{array.type}'")
     }
 
-    var size = this.size()
-    if (size == 0) {
-      return this
+    if (this.type != any) {
+      var type = this.type
+      this.type = argument_count > 0 ? argument[0] : type
+      Struct.forEach(array.container, validateEntry, this)
+      this.type = type
     }
 
-    var type = this.type
-    this.type = any
-    keys.forEach(setToNull, this)
-    for (var index = size - 1; index >= 0; index--) {
-      if (this.get(index) == null) {
-        this.remove(index)
-      }
-    }
-    this.type = type
     return this
   }
 }
@@ -351,7 +362,7 @@ function Array(_type = any, _container = null, config = { validate: false }) con
 function _GMArray() constructor {
 
   
-  ///@param {any[]} arr
+  ///@param {GMArray} arr
   ///@return {Number}
   static size = function(arr) {
     return array_length(arr)
@@ -372,10 +383,10 @@ function _GMArray() constructor {
     return array_create(size, value)
   }
 
-  ///@param {any[]} arr
+  ///@param {GMArray} arr
   ///@param {any} item
   ///@param {Number} [index]
-  ///@return {any[]}
+  ///@return {GMArray}
   static add = function(arr, item, index = null) {
     var size = this.size(arr)
     if (size < 32000) { ///@description GML array limitation
@@ -387,18 +398,18 @@ function _GMArray() constructor {
     return arr
   }
 
-  ///@param {any[]} arr
+  ///@param {GMArray} arr
   ///@param {Number} index
-  ///@return {any[]}
+  ///@return {GMArray}
   static remove = function(arr, index) {
     array_delete(arr, index, 1)
     return arr
   }
 
-  ///@param {any[]} arr
+  ///@param {GMArray} arr
   ///@param {Callable} callback
   ///@param {any} [acc]
-  ///@return {any[]}
+  ///@return {GMArray}
   static forEach = function(arr, callback, acc = null) {
     var size = this.size(arr)
     for (var index = 0; index < size; index++) {
@@ -414,7 +425,7 @@ function _GMArray() constructor {
   ///@override
   ///@param {Callable} callback
   ///@param {any} [acc]
-  ///@return {any[]}
+  ///@return {GMArray}
   static filter = function(arr, callback, acc = null) {
     var filtered = []
     var size = this.size(arr)
@@ -445,7 +456,7 @@ function _GMArray() constructor {
     return mapped
   }
 
-  ///@param {any[]} arr
+  ///@param {GMArray} arr
   ///@param {Type} [type]
   ///@param {Calllable} [callback]
   ///@param {any} [acc]
@@ -460,7 +471,7 @@ function _GMArray() constructor {
       : passthroughCallback, acc))
   }
 
-  ///@param {any[]} arr
+  ///@param {GMArray} arr
   ///@param {Type} [keyType]
   ///@param {Type} [valueType]
   ///@param {?Calllable} [valueCallback]
@@ -498,7 +509,7 @@ function _GMArray() constructor {
     return map
   }
 
-  ///@param {any[]} arr
+  ///@param {GMArray} arr
   ///@param {Calllable} [keyCallback]
   ///@param {any} [acc]
   ///@param {Calllable} [valueCallback]
@@ -534,9 +545,9 @@ function _GMArray() constructor {
     return struct
   }
 
-  ///@param {any[]} arr
+  ///@param {GMArray} arr
   ///@param {Callable|Boolean} [callback]
-  ///@return {any[]}
+  ///@return {GMArray}
   static sort = function(arr, callback = true) {
     array_sort(arr, callback)
     return arr

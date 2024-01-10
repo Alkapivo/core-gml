@@ -5,7 +5,7 @@
 function DisplayService(_controller, config = {}): Service() constructor {
 
   ///@type {Controller}
-  controller = Assert.isType(_controller, Controller)
+  controller = Assert.isType(_controller, Struct)
 
   ///@private
 	///@type {Number}

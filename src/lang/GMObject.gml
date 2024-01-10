@@ -1,11 +1,7 @@
-///@package io.alkapivo.core.asset
+///@package io.alkapivo.core.lang
 
+///@type
 #macro GMObject "GMObject"
-
-function super() {
-  event_inherited()
-}
-
 
 ///@static
 function _GMObjectUtil() constructor {
@@ -73,12 +69,22 @@ function _GMObjectUtil() constructor {
 
   ///@param {GMObject} gmObject
   ///@param {String} key
+  ///@return {Boolean}
+  static contains = function(gmObject, key) {
+    return Core.isType(gmObject, GMObject)
+      ? variable_instance_exists(gmObject, key)
+      : false
+  }
+
+  ///@param {GMObject} gmObject
+  ///@param {String} key
   ///@param {any} [defaultValue]
   ///@return {any}
-  get = function(gmObject, key, defaultValue = null) {
+  static get = function(gmObject, key, defaultValue = null) {
     if (!Core.isType(gmObject, GMObject)) {
       return null
     }
+
     return GMObjectUtil.contains(gmObject, key)
       ? variable_instance_get(gmObject, key)
       : defaultValue
@@ -88,38 +94,29 @@ function _GMObjectUtil() constructor {
   ///@param {String} key
   ///@param {any} value
   ///@return {GMObjectUtil}
-  set = function(gmObject, key, value) {
+  static set = function(gmObject, key, value) {
     if (!Core.isType(gmObject, GMObject)) {
       return
     }
+
     variable_instance_set(gmObject, key, value)
-    return this
+    return GMObjectUtil
   }
 
   ///@param {GMObject} gmObject
   ///@param {String} key
   ///@param {any} defaultValue
   ///@return {any}
-  inject = function(gmObject, key, defaultValue) {
+  static inject = function(gmObject, key, defaultValue) {
     if (!Core.isType(gmObject, GMObject)) {
       return defaultValue
     }
 
-    if (GMObjectUtil.contains(gmObject, key)) {
-      return GMObjectUtil.get(gmObject, key)
+    if (!GMObjectUtil.contains(gmObject, key)) {
+      GMObjectUtil.set(gmObject, key, defaultValue)
     }
 
-    GMObjectUtil.set(gmObject, key, defaultValue)
-    return defaultValue
-  }
-
-  ///@param {GMObject} gmObject
-  ///@param {String} key
-  ///@return {Boolean}
-  contains = function(gmObject, key) {
-    return Core.isType(gmObject, GMObject)
-      ? variable_instance_exists(gmObject, key)
-      : false
+    return GMObjectUtil.get(gmObject, key)
   }
 
   ///@param {AssetClass} type
@@ -128,8 +125,8 @@ function _GMObjectUtil() constructor {
   ///@param {Number} [y]
   ///@param {Struct} [context]
   ///@return {GMObject} gmObject
-  factoryGMObject = function(type, layerId, x = 0.0, y = 0.0, context = null) {
-    gmObject = instance_create_layer(x, y, layerId, type);
+  static factoryGMObject = function(type, layerId, x = 0.0, y = 0.0, context = null) {
+    var gmObject = instance_create_layer(x, y, layerId, type)
     if (Core.isType(context, Struct)) {
       GMObjectUtil.bind(gmObject, context)
     }
@@ -138,7 +135,8 @@ function _GMObjectUtil() constructor {
   }
 
   ///@param {GMObject} gmObject
-  free = function(gmObject) {
+  ///@return {GMObjectUtil}
+  static free = function(gmObject) {
     if (!Core.isType(gmObject, GMObject)) {
       return
     }
@@ -149,6 +147,7 @@ function _GMObjectUtil() constructor {
   ///@param {GMObject} gmObject
   ///@param {Struct} context
   ///@throws {AlreadyBindedException}
+  ///@return {GMObjectUtil}
   static bind = function(gmObject, context) {
     static bindWrapper = function(binding, key, acc) {
       if (GMObjectUtil.contains(acc.gmObject, binding.gmObject) 
@@ -172,9 +171,12 @@ function _GMObjectUtil() constructor {
       context: context, 
       gmObject: gmObject 
     })
+
+    return GMObjectUtil
   }
 
   ///@param {GMObject} gmObject
+  ///@return {GMObjectUtil}
   static unbind = function(gmObject) {
     static unbindWrapper = function(binding, key, acc) {
       if (GMObjectUtil.contains(acc.gmObject, binding.gmObject)) {
@@ -185,6 +187,8 @@ function _GMObjectUtil() constructor {
     Struct.set(GMObjectUtil.get(gmObject, "__context"), "__gmObject", null)
     GMObjectUtil.set(gmObject, "__context", null)
     GMObjectUtil.bindings.forEach(unbindWrapper, { gmObject: gmObject })
+
+    return GMObjectUtil
   }
 }
 global.__GMObjectUtil = new _GMObjectUtil()

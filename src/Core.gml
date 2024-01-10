@@ -8,6 +8,7 @@
 #macro ERROR_VALUE -1
 #macro GuiWidth display_get_gui_width
 #macro GuiHeight display_get_gui_height
+#macro super event_inherited
 #macro BREAK_LOOP "__BREAK_LOOP__"
 #macro Prototype "Prototype"
 #macro Matrix "Matrix"

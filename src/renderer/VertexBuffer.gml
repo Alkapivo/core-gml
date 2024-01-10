@@ -1,4 +1,4 @@
-///@package io.alkapivo.core.gpu
+///@package io.alkapivo.core.renderer
 
 #macro GMVertexBuffer "GMVertexBuffer"
 #macro GMVertexFormat "GMVertexFormat"

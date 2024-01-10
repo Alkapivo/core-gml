@@ -1,4 +1,4 @@
-///@package io.alkapivo.core.service.shader
+///@package io.alkapivo.core.renderer.shader
 
 ///@enum
 function _ShaderPipelineTaskTransformerType(): Enum() constructor {
@@ -182,16 +182,16 @@ function ShaderPipeline(config = {}): Service() constructor {
   executor = new TaskExecutor(this)
 
   ///@return {ShaderPipeline}
-  update = method(this, function() {
+  update = function() {
     this.dispatcher.update()
     this.executor.update()
     return this
-  })
+  }
 
   ///@param {Callable} handler
   ///@param {any} data
   ///@return {ShaderPipeline}
-  render = method(this, function(handler, data) {
+  render = function(handler, data) {
     static setShaderProperty = function (property) {
       var value = property.transformer.get()
       property.uniform.set(value)
@@ -212,5 +212,5 @@ function ShaderPipeline(config = {}): Service() constructor {
       GPU.reset.shader()
     }
     return this
-  })
+  }
 }

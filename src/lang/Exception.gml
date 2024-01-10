@@ -1,4 +1,4 @@
-///@package io.alkapivo.core.lang.Exception
+///@package io.alkapivo.core.lang
 
 ///@param {String} _message
 function Exception(_message) constructor {

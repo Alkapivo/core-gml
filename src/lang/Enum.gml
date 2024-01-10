@@ -1,4 +1,4 @@
-///@package io.alkapivo.core.lang.type
+///@package io.alkapivo.core.lang
 
 function Enum() constructor {
 

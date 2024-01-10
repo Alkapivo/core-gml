@@ -5,7 +5,7 @@
 function VideoService(_controller, config = {}): Service() constructor {
 
   ///@type {Controller}
-  controller = Assert.isType(_controller, Controller)
+  controller = Assert.isType(_controller, Struct)
 
   ///@private
   ///@type {?Video}
@@ -26,7 +26,7 @@ function VideoService(_controller, config = {}): Service() constructor {
 
       var status = this.state.get("video").getStatus()
       if (status == VideoStatus.CLOSED) {
-        gcVideo()
+        VideoUtil.runGC()
         throw new VideoOpenException($"Invalid video status: {status}")
       }
     }
@@ -52,7 +52,7 @@ function VideoService(_controller, config = {}): Service() constructor {
           })
           .whenFailure(function(data) {
             Logger.error("VideoService", $"Failed to load video: {data}")
-            gcVideo()
+            VideoUtil.runGC()
             return null
           }))
         .setState(new Map(String, any, {
@@ -281,6 +281,6 @@ function VideoService(_controller, config = {}): Service() constructor {
 
   ///@override
   free = function() {
-    gcVideo()
+    VideoUtil.runGC()
   }
 }

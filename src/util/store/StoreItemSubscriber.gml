@@ -1,7 +1,7 @@
 ///@package io.alkapivo.core.util.store
 
 ///@param {Struct} json
-function StoreSubscriber(json) constructor {
+function StoreItemSubscriber(json) constructor {
 
   ///@type {String}
   name = Assert.isType(Struct.get(json, "name"), String)

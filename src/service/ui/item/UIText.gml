@@ -30,6 +30,9 @@ function UIText(name, json = null) {
     ///@override
     ///@return {UIItem}
     render: Struct.getDefault(json, "render", function() {
+      if (Optional.is(this.preRender)) {
+        this.preRender()
+      }
       this.renderBackgroundColor()
 
       if (Core.isType(this.enable, Struct)) {

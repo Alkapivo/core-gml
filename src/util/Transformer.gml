@@ -1,35 +1,35 @@
-///@packager com.alkapivo.core.util.Transformer
+///@package io.alkapivo.core.util
 
 ///@interface
 ///@param {Struct} [json]
-function Transformer(json = {}) constructor {
+function Transformer(json = null) constructor {
 
   ///@type {any}
   value = Struct.get(json, "value")
 
   ///@type {any}
-  startValue = Struct.get(json, "value")
+  startValue = this.value
 
   ///@type {Boolean}
   finished = false
 
   ///@return {any}
-  static get = function() {
+  get = function() {
     return this.value
   }
 
   ///@param {any} value
   ///@return {Transformer}
-  static set = function(value) {
+  set = function(value) {
     this.value = value 
     return this
   }
 
   ///@return {Transformer}
-  static update = function() { return this }
+  update = function() { return this }
 
   ///@return {Transformer}
-  static reset = function() {
+  reset = function() {
     this.finished = false 
     this.value = this.startValue
     return this
@@ -43,24 +43,20 @@ function ColorTransformer(json = { value: "#ffffff" }): Transformer(json) constr
   ///@override
   ///@type {Color}
   this.value = ColorUtil.fromHex(Struct.get(json, "value"))
-  Assert.isType(this.value, Color, "value")
 
   ///@override
   ///@type {Color}
   this.startValue = ColorUtil.fromHex(Struct.get(json, "value"))
-  Assert.isType(this.startValue, Color, "startValue")
 
   ///@type {Color}
   target = ColorUtil.fromHex(Struct.get(json, "target"))
-  Assert.isType(this.target, Color, "target")
 
   ///@type {Number}
   factor = Struct.getDefault(json, "factor", 1)
-  Assert.isType(this.factor, Number, "factor")
 
   ///@override
   ///@return {ColorTransformer}
-  static update = function() {
+  update = function() {
     if (this.finished) {
       return this
     }
@@ -93,7 +89,7 @@ function NumberTransformer(json = { value: 0 }): Transformer(json) constructor {
 
   ///@override
   ///@return {NumberTransformer}
-  static update = function() {
+  update = function() {
     if (this.finished) {
       return this
     }
@@ -114,20 +110,21 @@ function Vector2Transformer(json = {}): Transformer(json) constructor {
 
   ///@type {NumberTransformer}
   x = new NumberTransformer(Struct.get(json, "x"))
-  Assert.isType(this.x, NumberTransformer, "x")
 
   ///@type {NumberTransformer}
   y = new NumberTransformer(Struct.get(json, "y"))
-  Assert.isType(this.y, NumberTransformer, "y")
 
   ///@override
   ///@type {Vector2}
-  value = new Vector2(x.value, y.value)
-  Assert.isType(this.value, Vector2, "value")
+  value = new Vector2(this.x.value, this.y.value)
+
+  ///@override
+  ///@type {Vector2}
+  this.startValue = new Vector2(this.x.value, this.y.value)
 
   ///@override
   ///@return {Vector2Transformer}
-  static update = function() {
+  update = function() {
     if (this.finished) {
       return this
     }
@@ -148,7 +145,7 @@ function Vector2Transformer(json = {}): Transformer(json) constructor {
 
   ///@override
   ///@return {Vector2Transformer}
-  static reset = function() {
+  reset = function() {
     this.finished = false 
     this.x.reset()
     this.y.reset()
@@ -162,24 +159,20 @@ function Vector3Transformer(json = {}): Transformer(json) constructor {
 
   ///@type {NumberTransformer}
   x = new NumberTransformer(Struct.get(json, "x"))
-  Assert.isType(this.x, NumberTransformer, "x")
 
   ///@type {NumberTransformer}
   y = new NumberTransformer(Struct.get(json, "y"))
-  Assert.isType(this.y, NumberTransformer, "y")
 
   ///@type {NumberTransformer}
   z = new NumberTransformer(Struct.get(json, "z"))
-  Assert.isType(this.z, NumberTransformer, "z")
 
   ///@override
   ///@type {Vector3}
-  value = new Vector3(x.value, y.value, z.value)
-  Assert.isType(this.value, Vector3, "value")
+  value = new Vector3(this.x.value, this.y.value, this.z.value)
 
   ///@override
   ///@return {Vector3Transformer}
-  static update = function() {
+  update = function() {
     if (this.finished) {
       return this
     }
@@ -207,7 +200,7 @@ function Vector3Transformer(json = {}): Transformer(json) constructor {
 
   ///@override
   ///@return {Vector3Transformer}
-  static reset = function() {
+  reset = function() {
     this.finished = false 
     this.x.reset()
     this.y.reset()
@@ -222,28 +215,23 @@ function Vector4Transformer(json = {}): Transformer(json) constructor {
 
   ///@type {NumberTransformer}
   x = new NumberTransformer(Struct.get(json, "x"))
-  Assert.isType(this.x, NumberTransformer, "x")
 
   ///@type {NumberTransformer}
   y = new NumberTransformer(Struct.get(json, "y"))
-  Assert.isType(this.y, NumberTransformer, "y")
 
   ///@type {NumberTransformer}
   z = new NumberTransformer(Struct.get(json, "z"))
-  Assert.isType(this.z, NumberTransformer, "z")
 
   ///@type {NumberTransformer}
   a = new NumberTransformer(Struct.get(json, "a"))
-  Assert.isType(this.z, NumberTransformer, "a")
 
   ///@override
   ///@type {Vector4}
-  value = new Vector4(x.value, y.value, z.value, a.value)
-  Assert.isType(this.value, Vector4, "value")
+  value = new Vector4(this.x.value, this.y.value, this.z.value, this.a.value)
 
   ///@override
   ///@return {Vector4Transformer}
-  static update = function() {
+  update = function() {
     if (this.finished) {
       return this
     }
@@ -276,7 +264,7 @@ function Vector4Transformer(json = {}): Transformer(json) constructor {
 
   ///@override
   ///@return {Vector4Transformer}
-  static reset = function() {
+  reset = function() {
     this.finished = false 
     this.x.reset()
     this.y.reset()
@@ -292,16 +280,14 @@ function ResolutionTransformer(json = {}): Transformer(json) constructor {
 
   ///@type {NumberTransformer}
   scale = new NumberTransformer(Struct.getDefault(json, "scale", { value: 1 }))
-  Assert.isType(this.scale, NumberTransformer, "scale")
 
   ///@override
   ///@type {Vector2}
   value = new Vector2(GuiWidth() / this.scale.value, GuiHeight() / this.scale.value)
-  Assert.isType(this.value, Vector2, "value")
 
   ///@override
   ///@return {Vector2}
-  static update = function() {
+  update = function() {
     this.scale.factor = (this.scale.value < this.scale.target ? 1 : -1) 
       * this.scale.factor + DeltaTime.apply(this.scale.increase)
     this.scale.value = this.scale.update().get()

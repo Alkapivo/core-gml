@@ -41,6 +41,9 @@ function UIButton(name, json = null) {
     ///@override
     ///@return {UIItem}
     render: Struct.getDefault(json, "render", function() {
+      if (Optional.is(this.preRender)) {
+        this.preRender()
+      }
       this.renderBackgroundColor()
 
       if (this.sprite != null) {

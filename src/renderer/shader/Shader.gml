@@ -1,7 +1,6 @@
-///@package io.alkapivo.core.service.shader
+///@package io.alkapivo.core.renderer.shader
 
 #macro GMShader "GMShader"
-
 
 ///@todo load from file
 ///@static
@@ -131,7 +130,6 @@ global.__shaders = new Map(String, Struct, {
   }
 })
 #macro SHADERS global.__shaders
-
 
 ///@enum
 function _ShaderType(): Enum() constructor {

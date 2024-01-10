@@ -14,15 +14,6 @@ global.__VideoStatus = new _VideoStatus()
 #macro VideoStatus global.__VideoStatus
 
 
-///@static
-///@type {Map<VideoStatus, String>}
-global.__VideoStatusNames = new Map()
-#macro VideoStatusNames global.__VideoStatusNames
-VideoStatusNames.set(VideoStatus.CLOSED, "CLOSED")
-VideoStatusNames.set(VideoStatus.PREPARING, "PREPARING")
-VideoStatusNames.set(VideoStatus.PLAYING, "PLAYING")
-VideoStatusNames.set(VideoStatus.PAUSED, "PAUSED")
-
 ///@enum
 function _VideoFormat(): Enum() constructor {
   RGBA = video_format_rgba
@@ -32,10 +23,14 @@ global.__VideoFormat = new _VideoFormat()
 #macro VideoFormat global.__VideoFormat
 
 
-function gcVideo() {
-  Logger.debug("Video", $"gcVideo, video status: {video_get_status()}")
-  video_close()
-}
+///@static
+///@type {Map<VideoStatus, String>}
+global.__VideoStatusNames = new Map()
+#macro VideoStatusNames global.__VideoStatusNames
+VideoStatusNames.set(VideoStatus.CLOSED, "CLOSED")
+VideoStatusNames.set(VideoStatus.PREPARING, "PREPARING")
+VideoStatusNames.set(VideoStatus.PLAYING, "PLAYING")
+VideoStatusNames.set(VideoStatus.PAUSED, "PAUSED")
 
 
 ///@param {?Struct} [config]
@@ -218,3 +213,17 @@ function Video(json) constructor {
     return this
   }
 }
+
+
+///@static
+function _VideoUtil() constructor {
+
+  ///@return {VideoUtil}
+  runGC = function() {
+    Logger.debug("Video", $"gcVideo, video status: {video_get_status()}")
+    video_close()
+    return this
+  }
+}
+global.__VideoUtil = new _VideoUtil()
+#macro VideoUtil global.__VideoUtil

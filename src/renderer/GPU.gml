@@ -1,4 +1,4 @@
-///@package io.alkapivo.core.gpu.GPU
+///@package io.alkapivo.core.renderer.GPU
 
 ///@type {Texture}
 global.__GPU_DEFAULT_LINE_TEXTURE = new Texture(texture_grid_line_default)

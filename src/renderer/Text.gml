@@ -1,4 +1,4 @@
-///@package io.alkapivo.core.gpu
+///@package io.alkapivo.core.renderer
 
 #macro TEXT_SEP_DEFAULT 12
 #macro TEXT_W_DEFAULT 200

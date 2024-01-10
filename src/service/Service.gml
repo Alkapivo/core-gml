@@ -1,11 +1,17 @@
 ///@package io.alkapivo.core.service
 
 ///@interface
-function Service() constructor {
+///param {?Struct} [config]
+function Service(config = null) constructor {
 
   ///@return {Service}
-  update = method(this, function() { return this })
+  update = Struct.contains(config, "update")
+    ? method(this, Assert.isType(config.update, Callable))
+    : function() { return this }
 
-  free = method(this, function() { })
+  ///@return {Service}
+  free = Struct.contains(config, "free")
+    ? method(this, Assert.isType(config.free, Callable))
+    : function() { return this }
 }
 

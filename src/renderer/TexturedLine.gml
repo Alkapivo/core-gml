@@ -1,4 +1,4 @@
-///@package io.alkapivo.core.gpu
+///@package io.alkapivo.core.renderer
 
 ///@param {?Struct} [json]
 function TexturedLine(json = null) constructor {

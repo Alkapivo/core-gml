@@ -28,7 +28,7 @@ global.__UILayoutType = new _UILayoutType()
 
 
 ///@param {?Struct} [config]
-function CollectionIndex(config = null) constructor {
+function UILayoutIterator(config = null) constructor {
   
   ///@type {Number}
   index = Assert.isType(Struct.getDefault(config, "index", 0), Number)
@@ -47,14 +47,14 @@ function CollectionIndex(config = null) constructor {
   }
   
   ///@param {Number} index
-  ///@return {CollectionIndex}
+  ///@return {UILayoutIterator}
   setIndex = function(index) { 
     this.index = index
     return this
   }
 
   ///@param {Number} size
-  ///@return {CollectionIndex}
+  ///@return {UILayoutIterator}
   setSize = function(size) { 
     this.size = size
     return this
@@ -166,10 +166,10 @@ function UILayout(config, _context = null) constructor {
   }), Callable))
 
   ///@type {?Struct}
-  collection = Core.isType(Struct.get(context, "collection"), CollectionIndex)
+  collection = Core.isType(Struct.get(context, "collection"), UILayoutIterator)
     ? context.collection
     : (Struct.contains(config, "collection") 
-      ? new CollectionIndex(config.collection)
+      ? new UILayoutIterator(config.collection)
       : null)
   
   ///@type {Struct}

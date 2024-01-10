@@ -1,6 +1,14 @@
-///@package io.alkapivo.core.gpu
+///@package io.alkapivo.core.renderer
 
 #macro GMSurface "GMSurface"
+
+///@type {Number}
+global.__SURFACE_MAX_WIDTH = 8192
+#macro SURFACE_MAX_WIDTH global.__SURFACE_MAX_WIDTH
+
+///@type {Number}
+global.__SURFACE_MAX_HEIGHT = 8192
+#macro SURFACE_MAX_HEIGHT global.__SURFACE_MAX_HEIGHT
 
 ///@enum
 function _SurfaceFormat(): Enum() constructor {
@@ -20,11 +28,11 @@ function Surface(config = null) constructor {
 
   ///@type {Number}
   width = Assert.isType(clamp(Struct
-    .getDefault(config, "width", 2), 2, 8192), Number)
+    .getDefault(config, "width", 1), 1, SURFACE_MAX_WIDTH), Number)
 
   ///@type {Number}
   height = Assert.isType(clamp(Struct
-    .getDefault(config, "height", 2), 2, 8192), Number)
+    .getDefault(config, "height", 1), 1, SURFACE_MAX_HEIGHT), Number)
 
   ///@type {SurfaceFormat}
   format = Assert.isEnum(Struct
@@ -38,7 +46,7 @@ function Surface(config = null) constructor {
   ///@param {?Number} [width]
   ///@param {?Number} [height]
   ///@return {Surface}
-  update = function(width = null, height = null) {
+  static update = function(width = null, height = null) {
     if (Core.isType(width, Number) && width > 2) {
       this.width = width
     }
@@ -64,7 +72,7 @@ function Surface(config = null) constructor {
   }
 
   ///@return {Surface}
-  renderOn = function(callback, data) {
+  static renderOn = function(callback, data) {
     if (!Core.isType(this.asset, GMSurface)) {
       Logger.error("Surface", "renderOn fatal error")
       return
@@ -77,7 +85,7 @@ function Surface(config = null) constructor {
   }
 
   ///@return {Surface}
-  render = function(x = 0, y = 0, alpha = 1.0) {
+  static render = function(x = 0, y = 0, alpha = 1.0) {
     if (!Core.isType(this.asset, GMSurface)) {
       Logger.error("Surface", "render fatal error")
       return
@@ -90,7 +98,7 @@ function Surface(config = null) constructor {
   ///@param {Number} width
   ///@param {Number} height
   ///@return {Surface}
-  scaleToFill = function(width, height) {
+  static scaleToFill = function(width, height) {
     if (width < 2 || height < 2) {
       return this
     }
@@ -109,7 +117,7 @@ function Surface(config = null) constructor {
     return this
   }
 
-  free = function() {
+  static free = function() {
     if (Core.isType(this.asset, GMSurface)) {
       surface_free(this.asset)
     }

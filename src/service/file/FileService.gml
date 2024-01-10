@@ -1,11 +1,11 @@
-///@package io.alkapivo.core.service.FileService
+///@package io.alkapivo.core.service.file
 
-///@param {Controller} _controller
+///@param {Struct} _controller
 ///@param {Struct} [config]
 function FileService(_controller, config = {}): Service() constructor {
 
   ///@type {Controller}
-  controller = Assert.isType(_controller, Controller)
+  controller = Assert.isType(_controller, Struct)
 
   ///@type {EventDispatcher}
   dispatcher = new EventDispatcher(this, new Map(String, Callable, {

@@ -1,4 +1,4 @@
-///@package io.alkapivo.core.gpu.Color
+///@package io.alkapivo.core.renderer.Color
 
 #macro GMColor "GMColor"
 #macro COLOR_HEX_SYMBOLS "0123456789ABCDEF"
@@ -30,14 +30,15 @@ function Color(_red = 0.0, _green = 0.0, _blue = 0.0, _alpha = 1.0) constructor 
 		return ColorUtil.toGMColor(this)
 	}
 
+	///@param {Boolean} [useAlpha]
 	///@return {String}
-	toHex = function() {
-		return ColorUtil.toHex(this)
+	toHex = function(useAlpha = false) {
+		return ColorUtil.toHex(this, useAlpha)
 	}
 
 	///@return {String}
 	serialize = function() {
-		return this.toHex()
+		return this.toHex(this.alpha != 1.0 ? true : false)
 	}
 }
 
@@ -63,6 +64,8 @@ function _ColorUtil() constructor {
 			var hexLength = String.size(hex)
 			var hasAlpha = hexLength == 9
 			var size = hasAlpha ? 8 : 6
+
+			
 			var color = GMArray.create(Number, size, ASCII_DIGIT_OFFSET)
 				.map(function(value, index, hex) {
 					var result = ord(String.toUpperCase(String.getChar(hex, index + 2)))

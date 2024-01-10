@@ -1,4 +1,4 @@
-///@package io.alkapivo.core.lang.Promise
+///@package io.alkapivo.core.util
 
 ///@enum
 function _PromiseStatus(): Enum() constructor {

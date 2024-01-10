@@ -3,8 +3,9 @@
 ///@param {String} _message
 function BeanAlreadyExistsException(_message): Exception(_message) constructor { }
 
-///@param {Prototype} _prototype
-///@param {GMObject<GMInstance>} gmInstance
+
+///@param {Type} _prototype
+///@param {GMObject} gmInstance
 function Bean(_prototype, gmInstance) constructor {
 
   ///@type {Prototype}
@@ -28,45 +29,20 @@ function Bean(_prototype, gmInstance) constructor {
 ///@static
 function _Beans() constructor {
 
+  ///@private
   ///@type {Map<String, Bean>} 
   beans = new Map(String, Bean)
 
+  ///@private
   ///@type {Stack<String>}
   gc = new Stack(String)
-
-  ///@return {Beans}
-  static healthcheck = function() {
-    static checkBeanHealth = function(bean, name, gc) {
-      if (!Core.isType(bean, Bean) || !Core.isType(bean.asset, bean.prototype)) {
-        gc.push(name)
-      }
-    }
-
-    static gcBean = function(name, index, beans) {
-      Logger.info("Beans", $"delete `{name}`")
-      beans.remove(name)
-    }
-
-    this.beans.forEach(checkBeanHealth, this.gc)
-    if (this.gc.size() > 0) {
-      Logger.info("Beans", $"Healthcheck detected corrupted beans: {this.gc.size()}")
-      this.gc.forEach(gcBean, this.beans)
-    }
-
-    return this
-  }
   
+  ///@private
   ///@type {Timer}
-  timer = new Timer(0.3, { 
+  timer = new Timer(FRAME_MS, { 
     loop: Infinity,
     callback: this.healthcheck
   })
-
-  ///@return {Beans}
-  static update = function() {
-    this.timer.update()
-    return this
-  }
 
   ///@param {String} name
   ///@return {Boolean}
@@ -124,9 +100,35 @@ function _Beans() constructor {
     Core.dereference(bean, $"Bean `{name}` dereferenced successfully")
     this.beans.remove(name)
   }
-}
 
+  ///@private
+  ///@return {Beans}
+  static healthcheck = function() {
+    static checkBeanHealth = function(bean, name, gc) {
+      if (!Core.isType(bean, Bean) || !Core.isType(bean.asset, bean.prototype)) {
+        gc.push(name)
+      }
+    }
+
+    static gcBean = function(name, index, beans) {
+      Logger.info("Beans", $"delete `{name}`")
+      beans.remove(name)
+    }
+
+    this.beans.forEach(checkBeanHealth, this.gc)
+    if (this.gc.size() > 0) {
+      Logger.info("Beans", $"Healthcheck detected corrupted beans: {this.gc.size()}")
+      this.gc.forEach(gcBean, this.beans)
+    }
+
+    return this
+  }
+
+  ///@return {Beans}
+  static update = function() {
+    this.timer.update()
+    return this
+  }
+}
 global.__Beans = new _Beans()
 #macro Beans global.__Beans
-
-

@@ -101,7 +101,7 @@ function FSM(_context, config) constructor {
   ///@param {String} name
   ///@param {any} [data]
   ///@return {FSM}
-  transition = method(this, function(name, data = null) {
+  transition = function(name, data = null) {
     var targetState = new FSMState(name, this.states.get(name))
     if (Core.isType(this.currentState, FSMState)) {
       if (!this.currentState.transitions.contains(name)) {
@@ -124,7 +124,7 @@ function FSM(_context, config) constructor {
     }
     Logger.debug("FSM", $"Transition to state: \"{name}\"")
     return this
-  })
+  }
 
   ///@return {?String}
   getStateName = function() {

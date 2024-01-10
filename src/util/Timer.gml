@@ -1,4 +1,4 @@
-///@package io.alkapivo.core.util
+///@package io.alkapivo.core.uti
 
 ///@param {Number} _duration
 ///@param {Struct} [config]

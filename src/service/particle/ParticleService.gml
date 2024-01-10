@@ -71,7 +71,7 @@ function ParticleSystem(layerName) constructor {
 function ParticleService(_controller, config = {}): Service() constructor {
 
   ///@type {Controller}
-  controller = Assert.isType(_controller, Controller, "controller")
+  controller = Assert.isType(_controller, Struct)
 
   ///@type {Map<String, ParticleTemplate>}
   templates = new Map(String, ParticleTemplate)

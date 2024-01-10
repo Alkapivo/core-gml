@@ -315,7 +315,7 @@ function TrackChannel(json, config = null) constructor {
       return this
     }), Callable))
 
-  ///@return {Struct[]}
+  ///@return {Struct}
   serialize = method(this, Assert.isType(Struct
     .getDefault(config, "toTemplate", function() {
       return {
@@ -375,7 +375,72 @@ global.__TRACK_EVENT_HANDLERS = {
     }))
   },
   "brush_shader_overlay": function(data) {
-    Core.print("brush_shader_overlay", "event")
+    var controller = Beans.get(BeanVisuController)
+    if (Struct.get(data, "shader-overlay_use-render-support-grid") == true) {
+      controller.gridService.properties.renderOverlay = Struct.get(data, "shader-overlay_render-support-grid")
+    }
+
+    if (Struct.get(data, "shader-overlay_use-transform-support-grid-treshold") == true) {
+      var transformer = Struct.get(data, "shader-overlay_transform-support-grid-treshold")
+      controller.gridService.send(new Event("transform-property", {
+        key: "renderOverlayTreshold",
+        container: controller.gridService.properties,
+        executor: controller.gridService.executor,
+        transformer: new NumberTransformer({
+          value: controller.gridService.properties.renderOverlayTreshold,
+          target: transformer.target,
+          factor: transformer.factor,
+          increase: transformer.increase,
+        })
+      }))
+    }
+
+    if (Struct.get(data, "shader-overlay_use-transform-support-grid-alpha") == true) {
+      var transformer = Struct.get(data, "shader-overlay_transform-support-grid-alpha")
+      controller.gridService.send(new Event("transform-property", {
+        key: "renderOverlayAlpha",
+        container: controller.gridService.properties,
+        executor: controller.gridService.executor,
+        transformer: new NumberTransformer({
+          value: controller.gridService.properties.renderOverlayAlpha,
+          target: transformer.target,
+          factor: transformer.factor,
+          increase: transformer.increase,
+        })
+      }))
+    }
+
+    if (Struct.get(data, "shader-overlay_use-clear-frame") == true) {
+      controller.gridService.properties.shaderClearFrame = Struct.get(data, "shader-overlay_clear-frame")
+    }
+
+    if (Struct.get(data, "shader-overlay_use-clear-color") == true) {
+      controller.gridService.send(new Event("transform-property", {
+        key: "shaderClearColor",
+        container: controller.gridService.properties,
+        executor: controller.gridService.executor,
+        transformer: new ColorTransformer({
+          value: controller.gridService.properties.shaderClearColor.toHex(true),
+          target: Struct.get(data, "shader-overlay_clear-color"),
+          factor: 0.01,
+        })
+      }))
+    }
+
+    if (Struct.get(data, "shader-overlay_use-transform-clear-frame-alpha") == true) {
+      var transformer = Struct.get(data, "shader-overlay_transform-clear-frame-alpha")
+      controller.gridService.send(new Event("transform-property", {
+        key: "shaderClearFrameAlpha",
+        container: controller.gridService.properties,
+        executor: controller.gridService.executor,
+        transformer: new NumberTransformer({
+          value: controller.gridService.properties.shaderClearFrameAlpha,
+          target: transformer.target,
+          factor: transformer.factor,
+          increase: transformer.increase,
+        })
+      }))
+    }
   },
   "brush_shader_clear": function(data) {
     Core.print("brush_shader_clear", "event")
@@ -385,6 +450,22 @@ global.__TRACK_EVENT_HANDLERS = {
   },
   "brush_shroom_spawn": function(data) {
     Core.print("brush_shroom_spawn", "event", JSON.stringify(data, { pretty: true }))
+    
+    var controller = Beans.get(BeanVisuController)
+    controller.gridSystem.add(new GridEntity({
+      type: GridEntityType.ENEMY,
+      position: { 
+        x: controller.gridService.view.x + Struct.get(data, "shroom-spawn_spawn-x"), 
+        y: controller.gridService.view.y + Struct.get(data, "shroom-spawn_spawn-y"),
+      },
+      velocity: { 
+        speed: Struct.get(data, "shroom-spawn_speed") / 1000, 
+        angle: Struct.get(data, "shroom-spawn_angle"),
+      },
+      renderSprite: { name: "texture_baron" },
+    }))
+
+    /*
     var shroom = {
       template: Struct.get(data, "shroom-spawn_template"),
       spawnX: Struct.get(data, "shroom-spawn_spawn-x"),
@@ -392,9 +473,9 @@ global.__TRACK_EVENT_HANDLERS = {
       angle: Struct.get(data, "shroom-spawn_angle"),
       speed: Struct.get(data, "shroom-spawn_speed"),
     }
-
     Beans.get(BeanVisuController).shroomService
       .send(new Event("spawn-shroom", shroom))
+    */
     /*
     var controller = Beans.get(BeanVisuController)
     var template = JSON.stringify(data.template, { pretty: true })
@@ -414,28 +495,269 @@ global.__TRACK_EVENT_HANDLERS = {
   },
   "brush_view_wallpaper": function(data) {
     var controller = Beans.get(BeanVisuController)
-    if (Struct.get(data, "view-wallpaper_use-texture") == true) {
-      controller.gridService.send(new Event("fade-sprite", {
-        sprite: SpriteUtil.parse(Struct.get(data, "view-wallpaper_texture")),
-        collection: controller.gridRenderer.overlayRenderer.backgrounds,
+    if (Struct.get(data, "view-wallpaper_use-color") == true) {
+      controller.gridService.send(new Event("fade-color", {
+        color: ColorUtil.fromHex(Struct.get(data, "view-wallpaper_color")),
+        collection: Struct.get(data, "view-wallpaper_type") == "Background" 
+          ? controller.gridRenderer.overlayRenderer.backgroundColors
+          : controller.gridRenderer.overlayRenderer.foregroundColors,
+        type: Struct.get(data, "view-wallpaper_type"),
+        fadeInSpeed: Struct.get(data, "view-wallpaper_fade-in-speed"),
+        fadeOutSpeed: Struct.get(data, "view-wallpaper_fade-out-speed"),
         executor: controller.gridService.executor,
       }))
+    }
+
+    if (Struct.get(data, "view-wallpaper_clear-color") == true) {
+      controller.gridService.executor.tasks.forEach(function(task, iterator, type) {
+        if (task.name == "fade-color" && task.state.get("type") == type) {
+          task.state.set("stage", "fade-out")
+        }
+      }, Struct.get(data, "view-wallpaper_type"))
+    }
+
+    if (Struct.get(data, "view-wallpaper_use-texture") == true) {
+      var sprite = Struct.get(data, "view-wallpaper_texture")
+      var animate = Struct.get(data, "view-wallpaper_use-texture-speed")
+      if (animate) {
+        Struct.set(sprite, "animate", animate)
+        Struct.set(sprite, "speed", Struct.get(data, "view-wallpaper_texture-speed"))
+      }
+      
+      controller.gridService.send(new Event("fade-sprite", {
+        sprite: SpriteUtil.parse(sprite),
+        collection: Struct.get(data, "view-wallpaper_type") == "Background" 
+          ? controller.gridRenderer.overlayRenderer.backgrounds
+          : controller.gridRenderer.overlayRenderer.foregrounds,
+        type: Struct.get(data, "view-wallpaper_type"),
+        fadeInSpeed: Struct.get(data, "view-wallpaper_fade-in-speed"),
+        fadeOutSpeed: Struct.get(data, "view-wallpaper_fade-out-speed"),
+        executor: controller.gridService.executor,
+      }))
+    }
+
+    if (Struct.get(data, "view-wallpaper_clear-texture") == true) {
+      controller.gridService.executor.tasks.forEach(function(task, iterator, type) {
+        if (task.name == "fade-sprite" && task.state.get("type") == type) {
+          task.state.set("stage", "fade-out")
+        }
+      }, Struct.get(data, "view-wallpaper_type"))
     }
   },
   "brush_view_camera": function(data) {
     Core.print("brush_view_camera", "event")
+    var controller = Beans.get(BeanVisuController)
+    if (Struct.get(data, "view-config_use-transform-x") == true) {
+      var transformer = Struct.get(data, "view-config_transform-x")
+      controller.gridService.send(new Event("transform-property", {
+        key: "x",
+        container: controller.gridRenderer.camera,
+        executor: controller.gridRenderer.camera.executor,
+        transformer: new NumberTransformer({
+          value: controller.gridRenderer.camera.x,
+          target: transformer.target,
+          factor: transformer.factor,
+          increase: transformer.increase,
+        })
+      }))
+    }
+    
+    if (Struct.get(data, "view-config_use-transform-y") == true) {
+      var transformer = Struct.get(data, "view-config_transform-y")
+      controller.gridService.send(new Event("transform-property", {
+        key: "y",
+        container: controller.gridRenderer.camera,
+        executor: controller.gridRenderer.camera.executor,
+        transformer: new NumberTransformer({
+          value: controller.gridRenderer.camera.y,
+          target: transformer.target,
+          factor: transformer.factor,
+          increase: transformer.increase,
+        })
+      }))
+    }
+    
+    if (Struct.get(data, "view-config_use-transform-z") == true) {
+      var transformer = Struct.get(data, "view-config_transform-z")
+      controller.gridService.send(new Event("transform-property", {
+        key: "z",
+        container: controller.gridRenderer.camera,
+        executor: controller.gridRenderer.camera.executor,
+        transformer: new NumberTransformer({
+          value: controller.gridRenderer.camera.z,
+          target: transformer.target,
+          factor: transformer.factor,
+          increase: transformer.increase,
+        })
+      }))
+    }
+    
+    if (Struct.get(data, "view-config_use-transform-zoom") == true) {
+      var transformer = Struct.get(data, "view-config_transform-zoom")
+      controller.gridService.send(new Event("transform-property", {
+        key: "zoom",
+        container: controller.gridRenderer.camera,
+        executor: controller.gridRenderer.camera.executor,
+        transformer: new NumberTransformer({
+          value: controller.gridRenderer.camera.zoom,
+          target: transformer.target,
+          factor: transformer.factor,
+          increase: transformer.increase,
+        })
+      }))
+    }
+    
+    if (Struct.get(data, "view-config_use-transform-angle") == true) {
+      var transformer = Struct.get(data, "view-config_transform-angle")
+      controller.gridService.send(new Event("transform-property", {
+        key: "angle",
+        container: controller.gridRenderer.camera,
+        executor: controller.gridRenderer.camera.executor,
+        transformer: new NumberTransformer({
+          value: controller.gridRenderer.camera.angle,
+          target: transformer.target,
+          factor: transformer.factor,
+          increase: transformer.increase,
+        })
+      }))
+    }
+
+    
+    if (Struct.get(data, "view-config_use-transform-pitch") == true) {
+      var transformer = Struct.get(data, "view-config_transform-pitch")
+      controller.gridService.send(new Event("transform-property", {
+        key: "pitch",
+        container: controller.gridRenderer.camera,
+        executor: controller.gridRenderer.camera.executor,
+        transformer: new NumberTransformer({
+          value: controller.gridRenderer.camera.pitch,
+          target: transformer.target,
+          factor: transformer.factor,
+          increase: transformer.increase,
+        })
+      }))
+    }
   },
   "brush_view_config": function(data) {
     Core.print("brush_view_config", "event")
   },
   "brush_grid_channel": function(data) {
-    Core.print("brush_grid_channel", "event")
+    var controller = Beans.get(BeanVisuController)
+    if (Struct.get(data, "grid-channel_use-transform-amount") == true) {
+      var transformer = Struct.get(data, "grid-channel_transform-amount")
+      controller.gridService.send(new Event("transform-property", {
+        key: "channels",
+        container: controller.gridService.properties,
+        executor: controller.gridService.executor,
+        transformer: new NumberTransformer({
+          value: controller.gridService.properties.channels,
+          target: transformer.target,
+          factor: transformer.factor,
+          increase: transformer.increase,
+        })
+      }))
+    }
+
+    if (Struct.get(data, "grid-channel_use-transform-z") == true) {
+      var transformer = Struct.get(data, "grid-channel_transform-z")
+      controller.gridService.send(new Event("transform-property", {
+        key: "channelZ",
+        container: controller.gridService.properties.depths,
+        executor: controller.gridService.executor,
+        transformer: new NumberTransformer({
+          value: controller.gridService.properties.depths.channelZ,
+          target: transformer.target,
+          factor: transformer.factor,
+          increase: transformer.increase,
+        })
+      }))
+    }
+    
   },
   "brush_grid_config": function(data) {
-    Core.print("brush_grid_config", "event")
+    var controller = Beans.get(BeanVisuController)
+    if (Struct.get(data, "grid-config_use-render-grid") == true) {
+      controller.gridService.properties.renderMesh = Struct.get(data, "grid-config_render-grid")
+    }
+    
+    if (Struct.get(data, "grid-config_use-transform-speed") == true) {
+      var transformer = Struct.get(data, "grid-config_transform-speed")
+      controller.gridService.send(new Event("transform-property", {
+        key: "speed",
+        container: controller.gridService.properties,
+        executor: controller.gridService.executor,
+        transformer: new NumberTransformer({
+          value: controller.gridService.properties.speed,
+          target: transformer.target,
+          factor: transformer.factor,
+          increase: transformer.increase,
+        })
+      }))
+    }
+    
+    if (Struct.get(data, "grid-config_use-clear-frame") == true) {
+      controller.gridService.properties.gridClearFrame = Struct.get(data, "grid-config_clear-frame")
+    }
+
+    if (Struct.get(data, "grid-config_use-clear-color") == true) {
+      controller.gridService.send(new Event("transform-property", {
+        key: "gridClearColor",
+        container: controller.gridService.properties,
+        executor: controller.gridService.executor,
+        transformer: new ColorTransformer({
+          value: controller.gridService.properties.gridClearColor.toHex(true),
+          target: Struct.get(data, "grid-config_clear-color"),
+          factor: 0.01,
+        })
+      }))
+    }
+    
+    if (Struct.get(data, "grid-config_use-transform-clear-frame-alpha") == true) {
+      var transformer = Struct.get(data, "grid-config_transform-clear-frame-alpha")
+      controller.gridService.send(new Event("transform-property", {
+        key: "gridClearFrameAlpha",
+        container: controller.gridService.properties,
+        executor: controller.gridService.executor,
+        transformer: new NumberTransformer({
+          value: controller.gridService.properties.gridClearFrameAlpha,
+          target: transformer.target,
+          factor: transformer.factor,
+          increase: transformer.increase,
+        })
+      }))
+    }
   },
   "brush_grid_separator": function(data) {
-    Core.print("brush_grid_separator", "event")
+    var controller = Beans.get(BeanVisuController)
+    if (Struct.get(data, "grid-separator_use-transform-amount") == true) {
+      var transformer = Struct.get(data, "grid-separator_transform-amount")
+      controller.gridService.send(new Event("transform-property", {
+        key: "separators",
+        container: controller.gridService.properties,
+        executor: controller.gridService.executor,
+        transformer: new NumberTransformer({
+          value: controller.gridService.properties.separators,
+          target: transformer.target,
+          factor: transformer.factor,
+          increase: transformer.increase,
+        })
+      }))
+    }
+
+    if (Struct.get(data, "grid-separator_use-transform-z") == true) {
+      var transformer = Struct.get(data, "grid-separator_transform-z")
+      controller.gridService.send(new Event("transform-property", {
+        key: "separatorZ",
+        container: controller.gridService.properties.depths,
+        executor: controller.gridService.executor,
+        transformer: new NumberTransformer({
+          value: controller.gridService.properties.depths.channelZ,
+          target: transformer.target,
+          factor: transformer.factor,
+          increase: transformer.increase,
+        })
+      }))
+    }
   },
   "dummy": function(data) {
     Core.print("dummy")
