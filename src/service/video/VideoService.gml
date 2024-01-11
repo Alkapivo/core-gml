@@ -4,7 +4,8 @@
 ///@param {Struct} [config]
 function VideoService(_controller, config = {}): Service() constructor {
 
-  ///@type {Controller}
+  ///@deprecated
+  ///@type {Struct}
   controller = Assert.isType(_controller, Struct)
 
   ///@private
@@ -88,7 +89,7 @@ function VideoService(_controller, config = {}): Service() constructor {
             }
           }
         }))
-        .setTimeout(5.0)
+        .setTimeout(2.0)
         .whenUpdate(this.factoryTaskUpdate())
       
       this.executor.add(task)
@@ -113,7 +114,7 @@ function VideoService(_controller, config = {}): Service() constructor {
           stage: "prepare",
           video: video,
           before: 0,
-          timer: new Timer(0.2),
+          timer: new Timer(0.1),
           stages: {
             prepare: function(task) {
               var video = task.state.get("video")
@@ -156,7 +157,7 @@ function VideoService(_controller, config = {}): Service() constructor {
             }
           }
         }))
-        .setTimeout(3.0)
+        .setTimeout(2.0)
         .whenUpdate(this.factoryTaskUpdate())
       
       //this.executor.tasks.forEach(this.rejectExistingTask)
@@ -172,9 +173,9 @@ function VideoService(_controller, config = {}): Service() constructor {
 
       var task = new Task("resume-video")
         .setState(new Map(String, any, {
-          timer: new Timer(0.16),
+          timer: new Timer(0.05),
         }))
-        .setTimeout(1.5)
+        .setTimeout(2.0)
         .setPromise(event.promise) // pass promise to TaskExecutor
         .whenUpdate(function(executor) {
           var video = executor.context.getVideo()
@@ -212,9 +213,9 @@ function VideoService(_controller, config = {}): Service() constructor {
 
       var task = new Task("pause-video")
         .setState(new Map(String, any, {
-          timer: new Timer(0.16),
+          timer: new Timer(0.05),
         }))
-        .setTimeout(1.5)
+        .setTimeout(2.0)
         .setPromise(event.promise) // pass promise to TaskExecutor
         .whenUpdate(function(executor) {
           var video = executor.context.getVideo()

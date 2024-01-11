@@ -449,8 +449,6 @@ global.__TRACK_EVENT_HANDLERS = {
     Core.print("brush_shader_config", "event")
   },
   "brush_shroom_spawn": function(data) {
-    Core.print("brush_shroom_spawn", "event", JSON.stringify(data, { pretty: true }))
-    
     var controller = Beans.get(BeanVisuController)
     controller.gridSystem.add(new GridEntity({
       type: GridEntityType.ENEMY,
@@ -545,7 +543,6 @@ global.__TRACK_EVENT_HANDLERS = {
     }
   },
   "brush_view_camera": function(data) {
-    Core.print("brush_view_camera", "event")
     var controller = Beans.get(BeanVisuController)
     if (Struct.get(data, "view-config_use-transform-x") == true) {
       var transformer = Struct.get(data, "view-config_transform-x")
