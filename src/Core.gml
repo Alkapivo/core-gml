@@ -65,6 +65,8 @@ function _Core() constructor {
         case GMSurface: return result == "ref" && surface_exists(object)
         ///@description https://github.com/YoYoGames/GameMaker-Bugs/issues/2543
         case GMVideoSurface: return result == "number" && surface_exists(object)
+        case GMTexture: return (result == "ref" || result == "number") && sprite_exists(object)
+        ///@todo bug, ref will be returned only when gamemaker is initalizing
         case NonNull: return object != null
         case Number: return result == "number"
         case Prototype: return result == "number" && is_callable(object)

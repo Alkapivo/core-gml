@@ -99,7 +99,7 @@ function ParticlePropertyGravity(json) constructor {
 function ParticlePropertySprite(json) constructor {
   
   ///@type {Texture}
-  texture = Assert.isType(TextureUtil.fetch(Struct.get(json, "name")), Texture)
+  texture = Assert.isType(TextureUtil.parse(Struct.get(json, "name")), Texture)
   
   ///@type {Boolean}
   animate = Assert.isType(Struct.getDefault(json, "animate", false), Boolean)
@@ -154,6 +154,29 @@ function ParticleTemplate(_name, json) constructor {
 
   ///@type {?Struct}
   sprite = Struct.contains(json, "sprite") ? Struct.get(json, "sprite") : null
+
+  ///@return {Struct}
+  serialize = function() {
+    var json = {
+      shape: this.shape,
+      size: this.size,
+      scale: this.scale,
+      orientation: this.orientation,
+      color: this.color,
+      alpha: this.alpha,
+      blend: this.blend,
+      life: this.life,
+      speed: this.speed,
+      angle: this.angle,
+      gravity: this.gravity,
+    }
+
+    if (Optional.is(this.sprite)) {
+      Struct.set(json, "sprite", this.sprite)
+    }
+
+    return json
+  }
 }
 
 

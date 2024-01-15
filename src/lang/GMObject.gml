@@ -49,6 +49,14 @@ function _GMObjectUtil() constructor {
         }
       }
     },
+    onTextureLoadedEvent: {
+      gmObject: "__onTextureLoadedEvent",
+      factoryWrapper: function() {
+        return function(event) {
+          this.__context.onTextureLoadedEvent(event)
+        }
+      }
+    },
     onSceneEnter: {
       gmObject: "__onSceneEnter",
       factoryWrapper: function() {

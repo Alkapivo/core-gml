@@ -94,7 +94,7 @@ function StoreItem(_name, json) constructor {
   addSubscriber = function(config) {
     var subscriber = new StoreItemSubscriber(config)
     if (this.containsSubscriber(subscriber.name)) {
-      throw new Exception($"Subscriber already exists: '{name}'")
+      throw new Exception($"Subscriber '{subscriber.name}' for store item '{this.name}' already exists")
     }
     this.subscribers.add(subscriber)
 
@@ -115,7 +115,7 @@ function StoreItem(_name, json) constructor {
     var index = this.subscribers.findIndex(this.findSubscriberByName, name)
     if (Core.isType(index, Number)) {
       subscribers.remove(index)
-      Logger.debug("Store", $"Remove subscriber: \{ \"key\": \"{this.name}\", \"subscriber\": \"{name}\" \}")
+      //Logger.debug("Store", $"Remove subscriber: \{ \"key\": \"{this.name}\", \"subscriber\": \"{name}\" \}")
     }
     return this
   }

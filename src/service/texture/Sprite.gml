@@ -260,7 +260,7 @@ function _SpriteUtil() constructor {
     var sprite = null
     try {
       var json = JSON.clone(_json)
-      var texture = TextureUtil.fetch(json.name)
+      var texture = Assert.isType(TextureUtil.parse(json.name), Texture)
       if (Struct.contains(json, "frame")) {
         json.frame = clamp(
           json.frame == "random" 

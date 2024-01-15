@@ -338,24 +338,6 @@ function Array(_type = any, _container = null) constructor {
     this.removeMany(this.gc)
     return this
   }
-
-  ///@param {?Type} [type]
-  ///@throws {AssertException}
-  ///@return {Array}
-  static validate = function(/*type = null*/) {
-    static validateEntry = function(value, index, array) {
-      Assert.isType(value, array.type, $"Value '{value}' at index '{index}' is not type of '{array.type}'")
-    }
-
-    if (this.type != any) {
-      var type = this.type
-      this.type = argument_count > 0 ? argument[0] : type
-      Struct.forEach(array.container, validateEntry, this)
-      this.type = type
-    }
-
-    return this
-  }
 }
 
 ///@static

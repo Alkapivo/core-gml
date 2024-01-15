@@ -38,7 +38,9 @@ function Promise(config = null) constructor {
   ///@param {?Callable} resolve
   ///@return {Promise}
   whenSuccess = method(this, function(resolve) {
-    this.onSuccess = resolve != null ? method(this, Assert.isType(resolve, Callable)) : null
+    this.onSuccess = resolve != null 
+      ? method(this, Assert.isType(resolve, Callable)) 
+      : null
     return this
   })
   this.whenSuccess(Struct.getDefault(config, "onSuccess", function(data) { return data }))

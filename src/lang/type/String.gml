@@ -32,7 +32,19 @@ function _String() constructor {
 	///@param {Number} position
 	///@return {String}
 	getChar = function(text, position) {
-		return string_char_at(text, position)
+		return position > 0 ? string_char_at(text, position) : ""
+	}
+
+  ///@param {String} text
+	///@return {String}
+  getFirstChar = function(text) {
+		return  String.getChar(String.size() > 0 ? 1 : 0) 
+	}
+
+  ///@param {String} text
+	///@return {String}
+	getLastChar = function(text) {
+		return String.getChar(String.size(text))
 	}
 
 	///@param {String} text

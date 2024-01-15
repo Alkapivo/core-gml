@@ -1,39 +1,45 @@
 ///@package io.alkapivo.core.service.texture
+show_debug_message("init Texture.gml")
 
-#macro AssetTexture "AssetTexture"
+#macro GMTexture "GMTexture"
 
-///@param {AssetTexture} _asset
-///@param {Struct} [config]
-function Texture(_asset, config = {}) constructor {
+///@param {GMTexture} _asset
+///@param {?Struct} [config]
+function Texture(_asset, config = null) constructor {
 
   ///@final
-  ///@type {AssetTexture}
-  asset = _asset
+  ///@type {GMTexture}
+  asset = Assert.isType(_asset, GMTexture)
 
   ///@final
   ///@type {String}
-  name = sprite_get_name(this.asset)
+  name = Assert.isType(Struct.contains(config, "name")
+    ? config.name
+    : sprite_get_name(this.asset), String)
 
   ///@final
   ///@type {Number}
-  width = sprite_get_width(this.asset)
+  width = Assert.isType(sprite_get_width(this.asset), Number)
 
   ///@final
   ///@type {Number}
-  height = sprite_get_height(this.asset)
+  height = Assert.isType(sprite_get_height(this.asset), Number)
   
   ///@final
   ///@type {Number}
-  frames = sprite_get_number(this.asset)
+  frames = Assert.isType(sprite_get_number(this.asset), Number)
 
   ///@type {Number}
-  speed = Struct.getDefault(config, "speed", sprite_get_speed(this.asset))
+  speed = Assert.isType(Struct.getDefault(config, "speed",
+    sprite_get_speed(this.asset)), Number)
 
   ///@type {Number}
-  offsetX = Struct.getDefault(config, "offsetX", sprite_get_xoffset(this.asset))
+  offsetX = Assert.isType(Struct.getDefault(config, "offsetX",
+    sprite_get_xoffset(this.asset)), Number)
 
   ///@type {Number}
-  offsetY = Struct.getDefault(config, "offsetY", sprite_get_yoffset(this.asset))
+  offsetY = Assert.isType(Struct.getDefault(config, "offsetY",
+    sprite_get_yoffset(this.asset)), Number)
 
   ///@param {Number} x
   ///@param {Number} y
@@ -55,47 +61,78 @@ function Texture(_asset, config = {}) constructor {
   })
 }
 
-///@param {?String} _name
+
+///@param {String} _name
 ///@param {Struct} json
 function TextureTemplate(_name, json) constructor {
   
-  ///@type {?String}
-  name = Struct.get(json, "asset")
+  ///@type {String}
+  name = Assert.isType(_name, String)
 
-  ///@type {?String}
-  asset = _name
+  ///@type {GMTexture}
+  asset = Assert.isType(json.asset, GMTexture)
+
+  ///@type {String}
+  file = Assert.isType(json.file, String)
+
+  ///@type {Number}
+  frames = Assert.isType(Struct.getDefault(json, "frames", 1), Number)
+
+  ///@type {Number}
+  originX = Assert.isType(Struct.getDefault(json, "originX", 0), Number)
+
+  ///@type {Number}
+  originY = Assert.isType(Struct.getDefault(json, "originY", 0), Number)
+
+  ///@type {Boolean}
+  prefetch = Assert.isType(Struct.getDefault(json, "prefetch", true), Boolean)
   
-  ///@type {?Number}
-  offsetX = Struct.get(json, "offsetX")
-  
-  ///@type {?Number}
-  offsetY = Struct.get(json, "offsetY")
-  
-  ///@type {any}
-  frame = Struct.get(json, "frame")
-  
-  ///@type {?Number}
-  speed = Struct.get(json, "speed")
-  
-  ///@type {?Number}
-  scaleX = Struct.get(json, "scaleX")
-  
-  ///@type {?Number}
-  scaleY = Struct.get(json, "scaleY")
-  
-  ///@type {?Number}
-  alpha = Struct.get(json, "alpha")
-  
-  ///@type {?Number}
-  angle = Struct.get(json, "angle")
-  
-  ///@type {?GMColor}
-  blend = Struct.get(json, "blend")
-  
-  ///@type {?Boolean}
-  animate = Struct.get(json, "animate")
+  ///@return {Struct}
+  serialize = function() {
+    var template = this
+    var acc = {
+      template: template,
+      json: {},
+    }
+    
+    GMArray.forEach(Struct.keys(this), function(field, index, acc) {
+      if (field == "asset" || field == "serialize") {
+        return
+      }
+      
+      var value = Struct.get(acc.template, field)
+      if (Optional.is(value)) {
+        value = field == "file" ? FileUtil.getFilenameFromPath(value) : value
+        Struct.set(acc.json, field, value)
+      }
+    }, acc)
+     
+    return acc.json
+  }
 }
 
+
+///@param {Struct} json
+function TextureIntent(json) constructor {
+
+  ///@type {String}
+  name = Assert.isType(json.name, String)
+
+  ///@type {String}
+  file = Assert.isType(json.file, String)
+
+  ///@type {Number}
+  frames = Assert.isType(Struct.getDefault(json, "frames", 1), Number)
+
+  ///@type {Number}
+  originX = Assert.isType(Struct.getDefault(json, "originX", 0), Number)
+
+  ///@type {Number}
+  originY = Assert.isType(Struct.getDefault(json, "originY", 0), Number)
+
+  ///@type {Boolean}
+  prefetch = Assert.isType(Struct.getDefault(json, "prefetch", true), Boolean)
+}
 
 ///@static
 function _TextureUtil() constructor {
@@ -103,33 +140,41 @@ function _TextureUtil() constructor {
   ///@param {?String} name
   ///@return {Boolean}
   exists = function(name) {
-    return Core.isType(name, String) && asset_get_index(name) != -1
+    var textureService = Beans.get(BeanTextureService)
+    if (Optional.is(textureService) 
+      && Optional.is(textureService.templates.get(name))) {
+      return true
+    }
+
+    return Core.isType(name, String) 
+      && Core.isType(asset_get_index(name), GMTexture)
   }
 
   ///@param {String} name
-  ///@param {Struct} [config]
+  ///@param {?Struct} [config]
   ///@return {?Texture}
-  fetch = function(name, config = {}) {
-    var texture = null 
+  parse = function(name, config = null) {
+    if (!Core.isType(name, String)) {
+      Logger.warn("TextureUtil", $"parse method invoked with non string name")
+      return null
+    }
+
     var textureService = Beans.get(BeanTextureService)
-    if (textureService != null) {
+    if (Optional.is(textureService)) {
       var template = textureService.templates.get(name)
-      if (template != null && sprite_exists(template.asset)) {
-        texture = textureService.factoryTexture(template)
+      if (Optional.is(template)) {
+        return new Texture(template.asset, 
+          Optional.is(config) ? config : template)
       }
     }
 
-    if (texture == null) {
-      var asset = asset_get_index(name)
-      if (sprite_exists(asset)) {
-        texture = new Texture(asset, config)
-      }
+    var asset = asset_get_index(name)
+    if (Core.isType(asset, GMTexture)) {
+      return new Texture(asset, config)
     }
-
-    if (texture == null) {
-      Logger.warn("TextureUtil", $"Missing texture {name}")
-    }
-    return texture
+    
+    Logger.warn("TextureUtil", $"Texture does not exists: '{name}'")
+    return null
   }
 }
 global.__TextureUtil = new _TextureUtil()

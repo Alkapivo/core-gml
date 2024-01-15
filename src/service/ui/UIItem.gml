@@ -192,55 +192,6 @@ function _UIItemUtils() constructor {
       }
     },
   })
-
-  ///@return {Callable}
-  checkboxClick = function() {
-    return function() {
-      this.value = !this.value
-      var item = this.getStoreItem()
-      if (item != null) {
-        item.set(this.value)
-      }
-    }
-  }
-  
-  ///@return {Callable}
-  setValue = function() {
-    ///@param {any} value
-    ///@param {UIItem} data
-    return function(value, data){ 
-      Struct.set(data, "value", value)
-    }
-  }
-
-  ///@return {Callable}
-  updateStore = function() {
-    return function() {
-      var store = this.context.state.get("store")
-      var uiStore = this.store
-      if (Core.isType(store, Store) && Core.isType(uiStore, UIStore)) {
-        var item = store.get(uiStore.key)
-        if (Core.isType(item, StoreItem) && !item.containsSubscriber(context.name)) {
-          Core.print("DEBUG add subscriber", context.name, "to key", uiStore.key)
-          //item.addSubscriber(config)
-        }
-      }
-    }
-  }
-
-  ///@return {Callable}
-  getStoreItem = function() {
-    ///@return {?StoreItem}
-    return function() {
-      var brushForm = this.context.state.get("brushForm")
-      if (!Core.isType(brushForm, VEBrush)) {
-        return null
-      }
-      var item = brushForm.store.get(Struct.get(this, "storeKey"))
-      return Core.isType(item, StoreItem) ? item : null
-    }
-  }
-
 }
 global.__UIItemUtils = new _UIItemUtils()
 #macro UIItemUtils global.__UIItemUtils

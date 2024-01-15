@@ -36,7 +36,7 @@ function VideoService(_controller, config = {}): Service() constructor {
   ///@private
   ///@type {EventDispatcher}
   dispatcher = new EventDispatcher(this, new Map(String, Callable, {
-    "load-video": function(event) {
+    "open-video": function(event) {
       if (this.executor.tasks.size() > 0) {
         event.promise.reject("There are unfinished tasks in videoService")
         return
@@ -44,7 +44,7 @@ function VideoService(_controller, config = {}): Service() constructor {
 
       var video = new Video(event.data.video)
       var service = this
-      var task = new Task("load-video")
+      var task = new Task("open-video")
         .setPromise(event.promise // pass promise to TaskExecutor
           .whenSuccess(function(data) {
             data.context.setVideo(data.video.setVolume(data.video.volume))
@@ -244,6 +244,10 @@ function VideoService(_controller, config = {}): Service() constructor {
       //this.executor.tasks.forEach(this.rejectExistingTask)
       this.executor.add(task)
       event.setPromise() // disable promise in EventDispatcher, the promise will be resolved within TaskExecutor
+    },
+    "close-video": function(event) {
+      VideoUtil.runGC()
+      this.setVideo(null)
     },
   }), { enableLogger: true })
 

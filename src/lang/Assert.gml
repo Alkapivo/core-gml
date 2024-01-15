@@ -1,4 +1,5 @@
 ///@package io.alkapivo.core.lang
+show_debug_message("init Assert.gml")
 
 ///@static
 function _Assert() constructor {

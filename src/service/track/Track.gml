@@ -368,7 +368,6 @@ function TrackEvent(json, config = null): Event("TrackEvent") constructor {
 global.__TRACK_EVENT_HANDLERS = {
   "brush_shader_spawn": function(data) {
     var controller = Beans.get(BeanVisuController)
-    Logger.debug("Track", "brush_shader_spawn")
     controller.shaderPipeline.send(new Event("spawn-shader", {
       template: Struct.get(data, "shader-spawn_template"),
       duration: Struct.get(data, "shader-spawn_duration"),
@@ -449,6 +448,19 @@ global.__TRACK_EVENT_HANDLERS = {
     Core.print("brush_shader_config", "event")
   },
   "brush_shroom_spawn": function(data) {
+    ///@description composition
+    var shroom = {
+      template: Struct.get(data, "shroom-spawn_template"),
+      spawnX: Struct.get(data, "shroom-spawn_spawn-x"),
+      spawnY: Struct.get(data, "shroom-spawn_spawn-y"),
+      angle: Struct.get(data, "shroom-spawn_angle"),
+      speed: Struct.get(data, "shroom-spawn_speed"),
+    }
+    Beans.get(BeanVisuController).shroomService
+      .send(new Event("spawn-shroom", shroom))
+
+    ///@description ecs
+    /*
     var controller = Beans.get(BeanVisuController)
     controller.gridSystem.add(new GridEntity({
       type: GridEntityType.ENEMY,
@@ -462,27 +474,6 @@ global.__TRACK_EVENT_HANDLERS = {
       },
       renderSprite: { name: "texture_baron" },
     }))
-
-    /*
-    var shroom = {
-      template: Struct.get(data, "shroom-spawn_template"),
-      spawnX: Struct.get(data, "shroom-spawn_spawn-x"),
-      spawnY: Struct.get(data, "shroom-spawn_spawn-y"),
-      angle: Struct.get(data, "shroom-spawn_angle"),
-      speed: Struct.get(data, "shroom-spawn_speed"),
-    }
-    Beans.get(BeanVisuController).shroomService
-      .send(new Event("spawn-shroom", shroom))
-    */
-    /*
-    var controller = Beans.get(BeanVisuController)
-    var template = JSON.stringify(data.template, { pretty: true })
-    Logger.debug(
-      String.formatTimestamp(controller.trackService.time), 
-      $"spawn-shroom: {template}"
-    )
-    
-    controller.shroomService.send(new Event("spawn-shroom", data))
     */
   },
   "brush_shroom_clear": function(data) {
