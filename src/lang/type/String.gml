@@ -169,6 +169,11 @@ function _String() constructor {
 		}
 		return array
 	}
+
+	///@param {String} delimiter
+	///@param {...String} value
+	///@return {String}
+	join = string_join
 }
 global.__String = new _String()
 #macro String global.__String
