@@ -7,8 +7,8 @@ function FileService(_controller, config = {}): Service() constructor {
   ///@type {Controller}
   controller = Assert.isType(_controller, Struct)
 
-  ///@type {EventDispatcher}
-  dispatcher = new EventDispatcher(this, new Map(String, Callable, {
+  ///@type {EventPump}
+  dispatcher = new EventPump(this, new Map(String, Callable, {
     "fetch-file": function(event) {
       var task = new Task("fetch-file-buffer")
         .setPromise(event.promise) // pass promise to TaskExecutor
@@ -28,13 +28,13 @@ function FileService(_controller, config = {}): Service() constructor {
         })
       
       this.executor.add(task)
-      event.setPromise() // disable promise in EventDispatcher, the promise will be resolved within TaskExecutor
+      event.setPromise() // disable promise in EventPump, the promise will be resolved within TaskExecutor
     },
     "fetch-file-dialog": function(event) {
       this.send(new Event("fetch-file")
         .setPromise(event.promise)
         .setData({ path: FileUtil.getPathToOpenWithDialog(event.data) }))
-      event.setPromise() // disable promise in EventDispatcher, the promise will be resolved within TaskExecutor
+      event.setPromise() // disable promise in EventPump, the promise will be resolved within TaskExecutor
     },
     "fetch-file-sync": function(event) {
       var path = Assert.isType(event.data.path, String)
@@ -60,7 +60,7 @@ function FileService(_controller, config = {}): Service() constructor {
       this.send(new Event("fetch-file-sync")
         .setPromise(event.promise)
         .setData({ path: FileUtil.getPathToOpenWithDialog(event.data) }))
-      event.setPromise() // disable promise in EventDispatcher, the promise will be resolved within TaskExecutor
+      event.setPromise() // disable promise in EventPump, the promise will be resolved within TaskExecutor
     },
     "save-file-sync": function(event) {
       var path = Assert.isType(event.data.path, String)

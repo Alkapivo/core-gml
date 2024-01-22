@@ -121,7 +121,7 @@ function UI(config = {}) constructor {
         return true
       }
 
-      var dispatcher = item.fetchEventDispatcher(event)
+      var dispatcher = item.fetchEventPump(event)
       if (event.name == "MouseHoverOver" && Optional.is(dispatcher)) {
         if (item.isHoverOver) {
           return true

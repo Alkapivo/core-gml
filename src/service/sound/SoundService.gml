@@ -8,7 +8,7 @@ function SoundService(): Service() constructor {
   ///@type {Map<String, Sound>}
   sounds = new Map(String, Sound)
 
-  ///@type {EventDispatcher}
-  dispatcher = new EventDispatcher(this, new Map(String, Callable, { }))
+  ///@type {EventPump}
+  dispatcher = new EventPump(this, new Map(String, Callable, { }))
 }
 

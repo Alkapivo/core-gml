@@ -16,8 +16,8 @@ function TrackService(_context, config = {}): Service() constructor {
   ///@type {Number}
   duration = 0.0
 
-  ///@type {EventDispatcher}
-  dispatcher = new EventDispatcher(this, new Map(String, Callable, {
+  ///@type {EventPump}
+  dispatcher = new EventPump(this, new Map(String, Callable, {
     "open-track": function(event) {
       return this.openTrack(Struct.get(event.data, "track")).track
     },

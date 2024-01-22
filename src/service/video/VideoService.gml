@@ -34,8 +34,8 @@ function VideoService(_controller, config = {}): Service() constructor {
   }
 
   ///@private
-  ///@type {EventDispatcher}
-  dispatcher = new EventDispatcher(this, new Map(String, Callable, {
+  ///@type {EventPump}
+  dispatcher = new EventPump(this, new Map(String, Callable, {
     "open-video": function(event) {
       if (this.executor.tasks.size() > 0) {
         event.promise.reject("There are unfinished tasks in videoService")
@@ -94,7 +94,7 @@ function VideoService(_controller, config = {}): Service() constructor {
       
       this.executor.add(task)
       this.setVideo(null)
-      event.setPromise() // disable promise in EventDispatcher, the promise will be resolved within TaskExecutor
+      event.setPromise() // disable promise in EventPump, the promise will be resolved within TaskExecutor
     },
     "rewind-video": function(event) {
       if (this.executor.tasks.size() > 0) {
@@ -163,7 +163,7 @@ function VideoService(_controller, config = {}): Service() constructor {
       //this.executor.tasks.forEach(this.rejectExistingTask)
       this.executor.add(task)
       video.setTimestamp(event.data.timestamp)
-      event.setPromise() // disable promise in EventDispatcher, the promise will be resolved within TaskExecutor
+      event.setPromise() // disable promise in EventPump, the promise will be resolved within TaskExecutor
     },
     "resume-video": function(event) {
       if (this.executor.tasks.size() > 0) {
@@ -203,7 +203,7 @@ function VideoService(_controller, config = {}): Service() constructor {
       
       //this.executor.tasks.forEach(this.rejectExistingTask)
       this.executor.add(task)
-      event.setPromise() // disable promise in EventDispatcher, the promise will be resolved within TaskExecutor
+      event.setPromise() // disable promise in EventPump, the promise will be resolved within TaskExecutor
     },
     "pause-video": function(event) {
       if (this.executor.tasks.size() > 0) {
@@ -243,7 +243,7 @@ function VideoService(_controller, config = {}): Service() constructor {
       
       //this.executor.tasks.forEach(this.rejectExistingTask)
       this.executor.add(task)
-      event.setPromise() // disable promise in EventDispatcher, the promise will be resolved within TaskExecutor
+      event.setPromise() // disable promise in EventPump, the promise will be resolved within TaskExecutor
     },
     "close-video": function(event) {
       VideoUtil.runGC()

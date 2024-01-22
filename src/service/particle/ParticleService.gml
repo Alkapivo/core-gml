@@ -81,8 +81,8 @@ function ParticleService(_controller, config = {}): Service() constructor {
     main: new ParticleSystem(Struct.get(config, "layerName")),
   }))
 
-  ///@type {EventDispatcher}
-  dispatcher = new EventDispatcher(this, new Map(String, Callable, {
+  ///@type {EventPump}
+  dispatcher = new EventPump(this, new Map(String, Callable, {
     "spawn-particle-emitter": function(event) {
       var task = new Task("emmit-particle")
         .setTimeout(Struct.getDefault(event.data, "duration", 1.0))

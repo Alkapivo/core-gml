@@ -12,8 +12,8 @@ function UIService(_context, config = {}): Service(config) constructor {
 
   ///@private
   ///@param {Event} event
-  ///@param {EventDispatcher} dispatcher
-  mouseEventDispatcher = function(event) {
+  ///@param {EventPump} dispatcher
+  mouseEventPump = function(event) {
     this.containers.forEach(function(container, index, event) {
       if (container.enable && container.dispatch(event)) {
         return BREAK_LOOP
@@ -39,8 +39,8 @@ function UIService(_context, config = {}): Service(config) constructor {
   }
 
   ///@private
-  ///@type {EventDispatcher}
-  dispatcher = new EventDispatcher(this, new Map(String, Callable, {
+  ///@type {EventPump}
+  dispatcher = new EventPump(this, new Map(String, Callable, {
     "add": function(event) {
       var container = Assert.isType(Struct.get(event.data, "container"), UI)
       if (Struct.getDefault(event.data, "replace", true)) {
@@ -64,19 +64,19 @@ function UIService(_context, config = {}): Service(config) constructor {
         removeHandler(this, event.data)
       }
     },
-    "MouseHoverOver": mouseEventDispatcher,
-    "MouseOnLeft": mouseEventDispatcher,
-    "MouseOnRight": mouseEventDispatcher,
-    "MousePressedLeft": mouseEventDispatcher,
-    "MousePressedRight": mouseEventDispatcher,
-    "MouseReleasedLeft": mouseEventDispatcher,
-    "MouseReleasedRight": mouseEventDispatcher,
-    "MouseDragLeft": mouseEventDispatcher,
-    "MouseDropLeft": mouseEventDispatcher,
-    "MouseDragRight": mouseEventDispatcher,
-    "MouseDropRight": mouseEventDispatcher,
-    "MouseWheelUp": mouseEventDispatcher,
-    "MouseWheelDown": mouseEventDispatcher,
+    "MouseHoverOver": mouseEventPump,
+    "MouseOnLeft": mouseEventPump,
+    "MouseOnRight": mouseEventPump,
+    "MousePressedLeft": mouseEventPump,
+    "MousePressedRight": mouseEventPump,
+    "MouseReleasedLeft": mouseEventPump,
+    "MouseReleasedRight": mouseEventPump,
+    "MouseDragLeft": mouseEventPump,
+    "MouseDropLeft": mouseEventPump,
+    "MouseDragRight": mouseEventPump,
+    "MouseDropRight": mouseEventPump,
+    "MouseWheelUp": mouseEventPump,
+    "MouseWheelDown": mouseEventPump,
   }))
 
   ///@param {String} name

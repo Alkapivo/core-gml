@@ -1,11 +1,11 @@
 ///@package io.alkapivo.core.util.event
 
 ///@param {String} _message
-function EventDispatcherNotFoundException(_message): Exception(_message) constructor { }
+function EventPumpNotFoundException(_message): Exception(_message) constructor { }
 
 
 ///@static
-function _EventDispatcherUtil() constructor {
+function _EventPumpUtil() constructor {
   
   ///@return {Callable}
   static send = function() {
@@ -17,14 +17,14 @@ function _EventDispatcherUtil() constructor {
     }
   }
 }
-global.__EventDispatcherUtil = new _EventDispatcherUtil()
-#macro EventDispatcherUtil global.__EventDispatcherUtil
+global.__EventPumpUtil = new _EventPumpUtil()
+#macro EventPumpUtil global.__EventPumpUtil
 
 
 ///@param {Struct} _context
 ///@param {Map<String, Callable>} _dispatchers
 ///@param {Struct} [config]
-function EventDispatcher(_context, _dispatchers, config = {}) constructor {
+function EventPump(_context, _dispatchers, config = {}) constructor {
 
   ///@type {Struct}
   context = Assert.isType(_context, Struct, "context")
@@ -63,7 +63,7 @@ function EventDispatcher(_context, _dispatchers, config = {}) constructor {
   ///@return {?Promise}
   send = function(event) {
     if (this.enableLogger) {
-      Logger.debug("EventDispatcher", $"Send event: '{event.name}'")
+      Logger.debug("EventPump", $"Send event: '{event.name}'")
     }
     this.container.push(event)
     return event.promise
@@ -75,12 +75,12 @@ function EventDispatcher(_context, _dispatchers, config = {}) constructor {
   execute = function(entry, index) {
     static resolveEvent = function(context, event) {
       if (context.enableLogger) {
-        Logger.debug("EventDispatcher", $"Dispatch event: '{event.name}'")
+        Logger.debug("EventPump", $"Dispatch event: '{event.name}'")
       }
 
       var handler = context.dispatchers.get(event.name)
       if (!Core.isType(handler, Callable)) {
-        throw new EventDispatcherNotFoundException($"Dispatcher not found: '{event.name}'")
+        throw new EventPumpNotFoundException($"Dispatcher not found: '{event.name}'")
       }
 
       var response = handler(event)
@@ -94,13 +94,13 @@ function EventDispatcher(_context, _dispatchers, config = {}) constructor {
       try {
         resolveEvent(this, event)
       } catch (exception) {
-        Logger.error("EventDispatcher", $"'execute-dispatcher' fatal error: {exception.message}")
+        Logger.error("EventPump", $"'execute-dispatcher' fatal error: {exception.message}")
         Core.printStackTrace()
         if (Core.isType(Struct.get(event, "promise"), Promise)) {
           try {
             event.promise.reject(exception.message)
           } catch (ex) {
-            Logger.error("EventDispatcher", $"'dispatcher-promise-reject' fatal error: {ex.message}")
+            Logger.error("EventPump", $"'dispatcher-promise-reject' fatal error: {ex.message}")
           }
         }
       }
@@ -109,7 +109,7 @@ function EventDispatcher(_context, _dispatchers, config = {}) constructor {
     }
   }
 
-  ///@return {EventDispatcher}
+  ///@return {EventPump}
   update = function() {
     if (this.timer != null && !this.timer.update().finished) {
       return this

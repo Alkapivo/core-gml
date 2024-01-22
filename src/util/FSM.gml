@@ -73,8 +73,8 @@ function FSM(_context, config) constructor {
       : new Map(String, Struct), 
     Map)
 
-  ///@type {EventDispatcher}
-  dispatcher = new EventDispatcher(this, new Map(String, Callable, {
+  ///@type {EventPump}
+  dispatcher = new EventPump(this, new Map(String, Callable, {
     "transition": function(event) {
       var name = Struct.get(event.data, "name") 
       var data = Struct.get(event.data, "data")

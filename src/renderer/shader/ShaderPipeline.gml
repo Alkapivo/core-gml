@@ -117,8 +117,8 @@ function ShaderPipeline(config = {}): Service() constructor {
   ///@type {Map<String, ShaderTemplate>}
   templates = new Map(String, ShaderTemplate)
 
-  ///@type {EventDispatcher}
-  dispatcher = new EventDispatcher(this, new Map(String, Callable, {
+  ///@type {EventPump}
+  dispatcher = new EventPump(this, new Map(String, Callable, {
     "spawn-shader": function (event) {
       static mapProperties = function (property, name, uniforms) {
         return new ShaderPipelineTaskProperty(uniforms.get(name), property)
@@ -178,7 +178,7 @@ function ShaderPipeline(config = {}): Service() constructor {
     return this.dispatcher.send(event)
   }
 
-  ///@type {EventDispatcher}
+  ///@type {EventPump}
   executor = new TaskExecutor(this)
 
   ///@return {ShaderPipeline}

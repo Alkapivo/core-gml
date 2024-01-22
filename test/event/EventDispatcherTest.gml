@@ -1,10 +1,10 @@
-///@package io.alkapivo.test.core.EventDispatcherTest
+///@package io.alkapivo.test.core.EventPumpTest
 
-function EventDispatcherTest(): Test() constructor {
-    name = "Test EventDispatcher.gml"
+function EventPumpTest(): Test() constructor {
+    name = "Test EventPump.gml"
     cases = [
         {
-            name: "EventDispatcher.send",
+            name: "EventPump.send",
             config: {
                 events: [
                     new Event("notify"),

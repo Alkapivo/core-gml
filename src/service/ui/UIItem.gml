@@ -45,7 +45,7 @@ function UIItem(_name, config = {}) constructor {
 
   ///@param {Event} event
   ///@return {?Callable}
-  fetchEventDispatcher = method(this, Assert.isType(Struct.getDefault(config, "fetchEventDispatcher", function(event) {
+  fetchEventPump = method(this, Assert.isType(Struct.getDefault(config, "fetchEventPump", function(event) {
     return this.support(event) ? Struct.get(this, $"on{event.name}") : null
   }), Callable))
 

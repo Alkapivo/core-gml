@@ -9,8 +9,8 @@ function TextureService(): Service() constructor {
   templates = new Map(String, TextureTemplate)
 
   ///@private
-  ///@type {EventDispatcher}
-  dispatcher = new EventDispatcher(this, new Map(String, Callable, {
+  ///@type {EventPump}
+  dispatcher = new EventPump(this, new Map(String, Callable, {
     "load-texture": function(event) {
       var texture = Assert.isType(event.data, TextureIntent)
       if (templates.contains(texture.name)) {
@@ -42,7 +42,7 @@ function TextureService(): Service() constructor {
         }))
         .whenUpdate(function() { })
       this.executor.add(task)
-      event.setPromise() // disable promise in EventDispatcher, the promise will be resolved within TaskExecutor
+      event.setPromise() // disable promise in EventPump, the promise will be resolved within TaskExecutor
     },
     "free": function(event) {
       this.templates.forEach(function(template, name) {
