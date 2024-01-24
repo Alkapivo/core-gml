@@ -6,6 +6,14 @@
 ///@static
 ///@type {Map<String, Struct>}
 global.__shaders = new Map(String, Struct, {
+  "shader_art": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iTime": "FLOAT",
+      "iResolution": "VECTOR2",
+      "iIterations": "FLOAT"
+    }
+  },
   "shader_abberation": {
     "type": "GLSL_ES"
   },

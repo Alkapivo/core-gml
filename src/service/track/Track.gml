@@ -535,6 +535,12 @@ global.__TRACK_EVENT_HANDLERS = {
   },
   "brush_view_camera": function(data) {
     var controller = Beans.get(BeanVisuController)
+    if (Struct.get(data, "view-config_use-lock-target") == true) {
+      controller.editor.store
+        .get("target-locked")
+        .set(Struct.get(data, "view-config_lock-target"))
+    }
+
     if (Struct.get(data, "view-config_use-transform-x") == true) {
       var transformer = Struct.get(data, "view-config_transform-x")
       controller.gridService.send(new Event("transform-property", {

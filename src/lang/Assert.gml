@@ -89,18 +89,6 @@ function _Assert() constructor {
     return object
   }
 
-  ///@param {String} name
-  ///@throws {InvalidAssertException}
-  ///@param {?String} [message]
-  ///@return {String}
-  assetSoundExists = function(name, message = null) {
-    if (!SoundUtil.exists(name)) {
-      Core.print("todo: Assert.assetSoundExists message")
-      throw new InvalidAssertException()
-    }
-    return name
-  }
-
   ///@param {String} path
   ///@throws {InvalidAssertException}
   ///@param {?String} [message]

@@ -84,6 +84,7 @@ function ParticleService(_controller, config = {}): Service() constructor {
   ///@type {EventPump}
   dispatcher = new EventPump(this, new Map(String, Callable, {
     "spawn-particle-emitter": function(event) {
+      Core.print(event.data.distribution)
       var task = new Task("emmit-particle")
         .setTimeout(Struct.getDefault(event.data, "duration", 1.0))
         .setTick(Struct.getDefault(event.data, "tick", FRAME_MS))
@@ -99,18 +100,18 @@ function ParticleService(_controller, config = {}): Service() constructor {
           this.fullfill()
         })
         .whenUpdate(function(executor) {
-          var system = task.state.get("system")
-          var coords = task.state.get("coords")
-          var shape = task.state.get("shape")
-          var distribution = task.state.get("distribution")
+          var system = this.state.get("system")
+          var coords = this.state.get("coords")
+          var shape = this.state.get("shape")
+          var distribution = this.state.get("distribution")
           part_emitter_region(
             system.asset, system.emitter,
             coords.x, coords.y, coords.z, coords.a,
             shape, distribution
           )
 
-          var particle = task.state.get("particle")
-          var amount = task.state.get("amount")
+          var particle = this.state.get("particle")
+          var amount = this.state.get("amount")
           part_emitter_burst(system.asset, system.emitter, particle.asset, amount)
         })
       event.data.system.executor.add(task)
@@ -136,7 +137,7 @@ function ParticleService(_controller, config = {}): Service() constructor {
         Struct.get(config, "endX"),
         Struct.get(config, "endY")
       ),
-      shape: Struct.getDefault(config, "shape", "CIRCLE"),
+      shape: Struct.getDefault(config, "shape", ParticleEmitterShape.ELLIPSE),
       loop: Struct.getDefault(config, "loop", 10),
       duration: Struct.getDefault(config, "duration", FRAME_MS * 10),
       amount: Struct.getDefault(config, "amount", 10),

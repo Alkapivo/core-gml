@@ -1,7 +1,13 @@
 ///@package io.alkapivo.core.service.sound
 
-#macro AssetSound "AssetSound"
 #macro GMSound "GMSound"
+
+///@type {Struct} json
+function SoundIntent(json) constructor {
+
+  ///@type {String}
+  file = Assert.isType(json.file, String)
+}
 
 ///@type {Struct} json
 function SoundTemplate(json) constructor {
@@ -19,7 +25,7 @@ function SoundTemplate(json) constructor {
   timestamp = Assert.isType(Struct.getDefault(json, "timestamp", 0.0), Number)
 }
 
-///@type {AssetSound} _asset
+///@type {GMSound} _asset
 ///@type {Struct} [config]
 function Sound(_asset, config = {}) constructor {
 
@@ -83,13 +89,10 @@ function Sound(_asset, config = {}) constructor {
   ///@param {Number} [position]
   ///@return {Sound}
   load = function(position = 0.0) {
-    return this.stop().play().rewind(position).pause()
+    ///@todo report bug, cannot play and pause sound in one step if .ogg was loaded externally
+    this.play().rewind(position).pause()
+    return this
   }
-
-  ///@private
-  ///@type {?GMSound}
-  soundId = null
-  this.load(Struct.getDefault(config, "timestamp", 0.0))
 
   ///@return {Boolean}
   isLoaded = function() {
@@ -104,6 +107,11 @@ function Sound(_asset, config = {}) constructor {
   isPlaying = function() {
     return this.isLoaded() && !audio_is_paused(this.soundId)
   }
+
+  ///@private
+  ///@type {?GMSound}
+  soundId = null
+  this.load(Struct.getDefault(config, "timestamp", 0.0))
 
   ///@return {Number}
   getPosition = function() {
@@ -149,6 +157,14 @@ function _SoundUtil() constructor {
   ///@param {Struct} [config]
   ///@return {?Sound}
   fetch = method(this, function(name, config = {}) {
+    var soundService = Beans.get(BeanSoundService)
+    if (Optional.is(soundService)) {
+      var sound = soundService.sounds.get(name)
+      if (Optional.is(sound)) {
+        return new Sound(sound, config)
+      }
+    }
+    
     var asset = asset_get_index(name)
     if (asset == -1) {
       Logger.warn("SoundUtil", String.template(

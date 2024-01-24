@@ -159,16 +159,33 @@ function UI(config = {}) constructor {
   update = Struct.contains(config, "update")
     ? Assert.isType(method(this, config.update), Callable)
     : function() {
+      
+      if (Optional.is(this.updateArea)) {
+        if (Optional.is(this.timer)) {
+          if (this.timer.update().finished || mouse_check_button(mb_any)) {
+            this.updateArea()
+
+            if (Optional.is(this.updateItems)) {
+              this.updateItems()
+            }
+          }
+        } else {
+          this.updateArea()
+          if (Optional.is(this.updateItems)) {
+            this.updateItems()
+          }
+        }
+      }
+      
+
+      /* 
       if (Optional.is(this.updateArea)) {
         this.updateArea()
       }
+      */
 
       if (Optional.is(this.updateCustom)) {
         this.updateCustom()
-      }
-
-      if (Optional.is(this.updateItems)) {
-        this.updateItems()
       }
       return this
     }

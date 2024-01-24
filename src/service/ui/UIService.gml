@@ -15,8 +15,12 @@ function UIService(_context, config = {}): Service(config) constructor {
   ///@param {EventPump} dispatcher
   mouseEventPump = function(event) {
     this.containers.forEach(function(container, index, event) {
-      if (container.enable && container.dispatch(event)) {
-        return BREAK_LOOP
+      try {
+        if (container.enable && container.dispatch(event)) {
+          return BREAK_LOOP
+        }
+      } catch (exception) {
+        Logger.error("UIService", exception.message)
       }
     }, event)
   }
@@ -98,10 +102,7 @@ function UIService(_context, config = {}): Service(config) constructor {
   ///@return {UIService}
   update = function() {
     static updateContainer = function(container) {
-      if (!container.enable) 
-        || (Core.isType(container.timer, Timer) 
-        && container.timer.update().finished == false) {
-
+      if (!container.enable) {
         return
       }
       container.update()
@@ -115,8 +116,12 @@ function UIService(_context, config = {}): Service(config) constructor {
   ///@return {UIService} 
   render = function() {
     static renderContainer = function(container) {
-      if (container.enable) {
-        container.render()
+      try {
+        if (container.enable) {
+          container.render()
+        }
+      } catch (exception) {
+        Logger.error("UIService", exception.message)
       }
     }
 

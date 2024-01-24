@@ -60,10 +60,10 @@ function _Core() constructor {
         case GMMouseButton: return MouseButtonType.contains(object)
         case GMObject: return result == "ref"
         case GMShader: return result == "ref" && shader_is_compiled(object)
-        case GMShaderUniform: return result == "number" && object != -1
-        case GMSound: return result == "number" && audio_exists(object)
+        case GMShaderUniform: return (result == "number" || result == "ref") && object != -1
+        case GMSound: return (result == "number" || result == "ref") && audio_exists(object)
         case GMSurface: return result == "ref" && surface_exists(object)
-        ///@description https://github.com/YoYoGames/GameMaker-Bugs/issues/2543
+        ///@bug https://github.com/YoYoGames/GameMaker-Bugs/issues/2543
         case GMVideoSurface: return result == "number" && surface_exists(object)
         case GMTexture: return (result == "ref" || result == "number") && sprite_exists(object)
         ///@todo bug, ref will be returned only when gamemaker is initalizing
