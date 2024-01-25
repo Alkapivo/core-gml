@@ -165,7 +165,7 @@ function ShaderPipeline(config = {}): Service() constructor {
           }
 
           updateAlpha(this)
-          state.get("properties").forEach(updateProperty)
+          this.state.get("properties").forEach(updateProperty)
         })
         
       this.executor.add(task)

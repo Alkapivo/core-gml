@@ -14,6 +14,28 @@ global.__shaders = new Map(String, Struct, {
       "iIterations": "FLOAT"
     }
   },
+  "shader_octagrams": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iTime": "FLOAT",
+      "iResolution": "VECTOR2",
+      "iIterations": "FLOAT"
+    }
+  },
+  "shader_70s_melt": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iTime": "FLOAT",
+      "iResolution": "VECTOR2"
+    }
+  },
+  "shader_warping_procedural_2": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iTime": "FLOAT",
+      "iResolution": "VECTOR2"
+    }
+  },
   "shader_abberation": {
     "type": "GLSL_ES"
   },
