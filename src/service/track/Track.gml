@@ -368,25 +368,43 @@ function TrackEvent(json, config = null): Event("TrackEvent") constructor {
 global.__TRACK_EVENT_HANDLERS = {
   "brush_shader_spawn": function(data) {
     var controller = Beans.get(BeanVisuController)
-    controller.shaderPipeline.send(new Event("spawn-shader", {
+    var pipeline = Struct.getDefault(data, "shader-spawn_pipeline", "Grid")
+    var event = new Event("spawn-shader", {
       template: Struct.get(data, "shader-spawn_template"),
       duration: Struct.get(data, "shader-spawn_duration"),
-    }))
+    })
+    
+    switch (pipeline) {
+      case "Grid": 
+        controller.shaderPipeline.send(event)
+        break
+      case "Background":
+        controller.shaderBackgroundPipeline.send(event)
+        break
+      case "All": 
+        controller.shaderPipeline.send(event)
+        controller.shaderBackgroundPipeline.send(new Event("spawn-shader", {
+          template: Struct.get(data, "shader-spawn_template"),
+          duration: Struct.get(data, "shader-spawn_duration"),
+        }))
+        break
+      default: throw new Exception($"Found unsupported pipeline: {pipeline}")
+    }
   },
   "brush_shader_overlay": function(data) {
     var controller = Beans.get(BeanVisuController)
     if (Struct.get(data, "shader-overlay_use-render-support-grid") == true) {
-      controller.gridService.properties.renderOverlay = Struct.get(data, "shader-overlay_render-support-grid")
+      controller.gridService.properties.renderSupportGrid = Struct.get(data, "shader-overlay_render-support-grid")
     }
 
     if (Struct.get(data, "shader-overlay_use-transform-support-grid-treshold") == true) {
       var transformer = Struct.get(data, "shader-overlay_transform-support-grid-treshold")
       controller.gridService.send(new Event("transform-property", {
-        key: "renderOverlayTreshold",
+        key: "renderSupportGridTreshold",
         container: controller.gridService.properties,
         executor: controller.gridService.executor,
         transformer: new NumberTransformer({
-          value: controller.gridService.properties.renderOverlayTreshold,
+          value: controller.gridService.properties.renderSupportGridTreshold,
           target: transformer.target,
           factor: transformer.factor,
           increase: transformer.increase,
@@ -397,11 +415,11 @@ global.__TRACK_EVENT_HANDLERS = {
     if (Struct.get(data, "shader-overlay_use-transform-support-grid-alpha") == true) {
       var transformer = Struct.get(data, "shader-overlay_transform-support-grid-alpha")
       controller.gridService.send(new Event("transform-property", {
-        key: "renderOverlayAlpha",
+        key: "renderSupportGridAlpha",
         container: controller.gridService.properties,
         executor: controller.gridService.executor,
         transformer: new NumberTransformer({
-          value: controller.gridService.properties.renderOverlayAlpha,
+          value: controller.gridService.properties.renderSupportGridAlpha,
           target: transformer.target,
           factor: transformer.factor,
           increase: transformer.increase,
@@ -442,10 +460,99 @@ global.__TRACK_EVENT_HANDLERS = {
     }
   },
   "brush_shader_clear": function(data) {
-    Core.print("brush_shader_clear", "event")
+    static fadeOutTask = function(task) {
+      var fadeOut = task.state.getDefault("fadeOut", 0.0)
+      if (task.timeout.time < task.timeout.duration - fadeOut) {
+        task.timeout.time = task.timeout.duration - fadeOut
+      }
+    }
+
+    static amountTask = function(task, iterator, acc) {
+      if (acc.amount <= 0) {
+        return BREAK_LOOP
+      }
+
+      if (task.timeout.time < task.timeout.duration 
+         - task.state.getDefault("fadeOut", 0.0)) {
+        acc.handler(task)
+        acc.amount = acc.amount - 1
+      }
+    }
+
+    var controller = Beans.get(BeanVisuController)
+    var pipeline = Struct.getDefault(data, "shader-spawn_pipeline", "All")    
+    if (Struct.get(data, "shader-clear_use-clear-all-shaders") == true) {
+      switch (pipeline) {
+        case "Grid":
+          controller.shaderPipeline.executor.tasks.forEach(fadeOutTask)
+          break
+        case "Background":
+          controller.shaderBackgroundPipeline.executor.tasks.forEach(fadeOutTask)
+          break
+        case "All":
+          controller.shaderPipeline.executor.tasks.forEach(fadeOutTask)
+          controller.shaderBackgroundPipeline.executor.tasks.forEach(fadeOutTask)
+          break
+      }
+    }
+
+    if (Struct.get(data, "shader-clear_use-clear-amount") == true) {
+      var amount = Struct.getDefault(data, "shader-clear_clear-amount", 1)
+      switch (pipeline) {
+        case "Grid":
+          controller.shaderPipeline.executor.tasks.forEach(amountTask, {
+            amount: amount,
+            handler: fadeOutTask,
+          })
+          break
+        case "Background":
+          controller.shaderBackgroundPipeline.executor.tasks.forEach(amountTask, {
+            amount: amount,
+            handler: fadeOutTask,
+          })
+          break
+        case "All":
+          controller.shaderPipeline.executor.tasks.forEach(amountTask, {
+            amount: amount,
+            handler: fadeOutTask,
+          })
+          controller.shaderBackgroundPipeline.executor.tasks.forEach(amountTask, {
+            amount: amount,
+            handler: fadeOutTask,
+          })
+          break
+      }
+    }
   },
   "brush_shader_config": function(data) {
-    Core.print("brush_shader_config", "event")
+    if (Struct.get(data, "shader-config_use-render-grid-shaders") == true) {
+      controller.gridService.properties.renderGridShaders = Struct.get(data, "shader-config_render-grid-shaders")
+    }
+
+    if (Struct.get(data, "shader-config_use-render-background-shaders") == true) {
+      controller.gridService.properties.renderBackgroundShaders = Struct.get(data, "shader-config_render-background-shaders")
+    }
+
+    /* 
+    if (Struct.get(data, "grid-config_use-clear-frame") == true) {
+      controller.gridService.properties.gridClearFrame = Struct.get(data, "grid-config_clear-frame")
+    }
+
+    if (Struct.get(data, "shader-config_use-transform-shader-alpha") == true) {
+      var transformer = Struct.get(data, "shader-config_transform-shader-alpha")
+      controller.gridService.send(new Event("transform-property", {
+        key: "renderSupportGridAlpha",
+        container: controller.gridService.properties,
+        executor: controller.gridService.executor,
+        transformer: new NumberTransformer({
+          value: controller.gridService.properties.renderSupportGridAlpha,
+          target: transformer.target,
+          factor: transformer.factor,
+          increase: transformer.increase,
+        })
+      }))
+    }
+    */
   },
   "brush_shroom_spawn": function(data) {
     ///@description composition
@@ -666,12 +773,97 @@ global.__TRACK_EVENT_HANDLERS = {
         })
       }))
     }
+
+    if (Struct.get(data, "grid-channel_use-primary-color") == true) {
+      controller.gridService.send(new Event("transform-property", {
+        key: "channelsPrimaryColor",
+        container: controller.gridService.properties,
+        executor: controller.gridService.executor,
+        transformer: new ColorTransformer({
+          value: controller.gridService.properties.gridClearColor.toHex(true),
+          target: Struct.get(data, "grid-channel_primary-color"),
+          factor: Struct.getDefault(data, "grid-channel_primary-color-speed", 0.01),
+        })
+      }))
+    }
+
+    if (Struct.get(data, "grid-channel_use-transform-primary-alpha") == true) {
+      var transformer = Struct.get(data, "grid-channel_transform-primary-alpha")
+      controller.gridService.send(new Event("transform-property", {
+        key: "channelsPrimaryAlpha",
+        container: controller.gridService.properties,
+        executor: controller.gridService.executor,
+        transformer: new NumberTransformer({
+          value: controller.gridService.properties.channelsPrimaryAlpha,
+          target: transformer.target,
+          factor: transformer.factor,
+          increase: transformer.increase,
+        })
+      }))
+    }
+
+    if (Struct.get(data, "grid-channel_use-transform-primary-size") == true) {
+      var transformer = Struct.get(data, "grid-channel_transform-primary-size")
+      controller.gridService.send(new Event("transform-property", {
+        key: "channelsPrimaryThickness",
+        container: controller.gridService.properties,
+        executor: controller.gridService.executor,
+        transformer: new NumberTransformer({
+          value: controller.gridService.properties.channelsPrimaryThickness,
+          target: transformer.target,
+          factor: transformer.factor,
+          increase: transformer.increase,
+        })
+      }))
+    }
     
+    if (Struct.get(data, "grid-channel_use-secondary-color") == true) {
+      controller.gridService.send(new Event("transform-property", {
+        key: "channelsSecondaryColor",
+        container: controller.gridService.properties,
+        executor: controller.gridService.executor,
+        transformer: new ColorTransformer({
+          value: controller.gridService.properties.gridClearColor.toHex(true),
+          target: Struct.get(data, "grid-channel_secondary-color"),
+          factor: Struct.getDefault(data, "grid-channel_secondary-color-speed", 0.01),
+        })
+      }))
+    }
+
+    if (Struct.get(data, "grid-channel_use-transform-secondary-alpha") == true) {
+      var transformer = Struct.get(data, "grid-channel_transform-secondary-alpha")
+      controller.gridService.send(new Event("transform-property", {
+        key: "channelsSecondaryAlpha",
+        container: controller.gridService.properties,
+        executor: controller.gridService.executor,
+        transformer: new NumberTransformer({
+          value: controller.gridService.properties.channelsSecondaryAlpha,
+          target: transformer.target,
+          factor: transformer.factor,
+          increase: transformer.increase,
+        })
+      }))
+    }
+
+    if (Struct.get(data, "grid-channel_use-transform-secondary-size") == true) {
+      var transformer = Struct.get(data, "grid-channel_transform-secondary-size")
+      controller.gridService.send(new Event("transform-property", {
+        key: "channelsSecondaryThickness",
+        container: controller.gridService.properties,
+        executor: controller.gridService.executor,
+        transformer: new NumberTransformer({
+          value: controller.gridService.properties.channelsSecondaryThickness,
+          target: transformer.target,
+          factor: transformer.factor,
+          increase: transformer.increase,
+        })
+      }))
+    }
   },
   "brush_grid_config": function(data) {
     var controller = Beans.get(BeanVisuController)
     if (Struct.get(data, "grid-config_use-render-grid") == true) {
-      controller.gridService.properties.renderMesh = Struct.get(data, "grid-config_render-grid")
+      controller.gridService.properties.renderGrid = Struct.get(data, "grid-config_render-grid")
     }
     
     if (Struct.get(data, "grid-config_use-transform-speed") == true) {
@@ -746,6 +938,92 @@ global.__TRACK_EVENT_HANDLERS = {
         executor: controller.gridService.executor,
         transformer: new NumberTransformer({
           value: controller.gridService.properties.depths.channelZ,
+          target: transformer.target,
+          factor: transformer.factor,
+          increase: transformer.increase,
+        })
+      }))
+    }
+
+    if (Struct.get(data, "grid-separator_use-primary-color") == true) {
+      controller.gridService.send(new Event("transform-property", {
+        key: "separatorsPrimaryColor",
+        container: controller.gridService.properties,
+        executor: controller.gridService.executor,
+        transformer: new ColorTransformer({
+          value: controller.gridService.properties.gridClearColor.toHex(true),
+          target: Struct.get(data, "grid-separator_primary-color"),
+          factor: Struct.getDefault(data, "grid-separator_primary-color-speed", 0.01),
+        })
+      }))
+    }
+
+    if (Struct.get(data, "grid-separator_use-transform-primary-alpha") == true) {
+      var transformer = Struct.get(data, "grid-separator_transform-primary-alpha")
+      controller.gridService.send(new Event("transform-property", {
+        key: "separatorsPrimaryAlpha",
+        container: controller.gridService.properties,
+        executor: controller.gridService.executor,
+        transformer: new NumberTransformer({
+          value: controller.gridService.properties.separatorsPrimaryAlpha,
+          target: transformer.target,
+          factor: transformer.factor,
+          increase: transformer.increase,
+        })
+      }))
+    }
+
+    if (Struct.get(data, "grid-separator_use-transform-primary-size") == true) {
+      var transformer = Struct.get(data, "grid-separator_transform-primary-size")
+      controller.gridService.send(new Event("transform-property", {
+        key: "separatorsPrimaryThickness",
+        container: controller.gridService.properties,
+        executor: controller.gridService.executor,
+        transformer: new NumberTransformer({
+          value: controller.gridService.properties.separatorsPrimaryThickness,
+          target: transformer.target,
+          factor: transformer.factor,
+          increase: transformer.increase,
+        })
+      }))
+    }
+    
+    if (Struct.get(data, "grid-separator_use-secondary-color") == true) {
+      controller.gridService.send(new Event("transform-property", {
+        key: "separatorsSecondaryColor",
+        container: controller.gridService.properties,
+        executor: controller.gridService.executor,
+        transformer: new ColorTransformer({
+          value: controller.gridService.properties.gridClearColor.toHex(true),
+          target: Struct.get(data, "grid-separator_secondary-color"),
+          factor: Struct.getDefault(data, "grid-separator_secondary-color-speed", 0.01),
+        })
+      }))
+    }
+
+    if (Struct.get(data, "grid-separator_use-transform-secondary-alpha") == true) {
+      var transformer = Struct.get(data, "grid-separator_transform-secondary-alpha")
+      controller.gridService.send(new Event("transform-property", {
+        key: "separatorsSecondaryAlpha",
+        container: controller.gridService.properties,
+        executor: controller.gridService.executor,
+        transformer: new NumberTransformer({
+          value: controller.gridService.properties.separatorsSecondaryAlpha,
+          target: transformer.target,
+          factor: transformer.factor,
+          increase: transformer.increase,
+        })
+      }))
+    }
+
+    if (Struct.get(data, "grid-separator_use-transform-secondary-size") == true) {
+      var transformer = Struct.get(data, "grid-separator_transform-secondary-size")
+      controller.gridService.send(new Event("transform-property", {
+        key: "separatorsSecondaryThickness",
+        container: controller.gridService.properties,
+        executor: controller.gridService.executor,
+        transformer: new NumberTransformer({
+          value: controller.gridService.properties.separatorsSecondaryThickness,
           target: transformer.target,
           factor: transformer.factor,
           increase: transformer.increase,

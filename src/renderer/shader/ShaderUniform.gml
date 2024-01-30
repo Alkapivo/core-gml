@@ -31,7 +31,6 @@ function ShaderUniform(_asset, _name, _type) constructor {
   Core.print("shaderuniform", this.name, this.type, shader_get_uniform(_asset, this.name))
   asset = Assert.isType(shader_get_uniform(_asset, this.name), GMShaderUniform)
 
-  ///@todo investigate
   ///@param {any} value
   static set = function(value) { }
 }

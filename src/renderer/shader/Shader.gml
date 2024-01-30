@@ -29,11 +29,21 @@ global.__shaders = new Map(String, Struct, {
       "iResolution": "VECTOR2"
     }
   },
-  "shader_warping_procedural_2": {
+  "shader_warp": {
     "type": "GLSL_ES",
     "uniforms": {
       "iTime": "FLOAT",
       "iResolution": "VECTOR2"
+    }
+  },
+  "shader_phantom_star": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iResolution": "VECTOR2",
+      "iTime": "FLOAT",
+      "iIterations": "FLOAT",
+      "sizeA": "FLOAT",
+      "sizeB": "FLOAT"
     }
   },
   "shader_abberation": {

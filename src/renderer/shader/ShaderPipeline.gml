@@ -115,7 +115,9 @@ function ShaderPipeline(config = {}): Service() constructor {
   }
 
   ///@type {Map<String, ShaderTemplate>}
-  templates = new Map(String, ShaderTemplate)
+  templates = Struct.contains(config, "templates")
+     ? Assert.isType(config.templates, Map)
+     : new Map(String, ShaderTemplate)
 
   ///@type {EventPump}
   dispatcher = new EventPump(this, new Map(String, Callable, {
