@@ -40,7 +40,6 @@ global.__HAlign = new _HAlign()
 #macro HAlign global.__HAlign
 
 
-
 ///@static
 function _GPU() constructor {
   render = {
@@ -99,6 +98,29 @@ function _GPU() constructor {
         }
       }
     },
+
+    ///@param {Number} _x
+    ///@param {Number} _y
+    ///@param {String} text
+    ///@param {GMColor} [color]
+    ///@param {?GMColor} [outline]
+    ///@param {Number} [alpha]
+    ///@return {Struct}
+    text: function(_x, _y, text, color = c_white, outline = null, alpha = 1.0) {
+      if (Optional.is(outline)) {
+        draw_text_color(_x + 1, _y + 1, text, outline, outline, outline, outline, alpha)
+        draw_text_color(_x - 1, _y - 1, text, outline, outline, outline, outline, alpha)
+        draw_text_color(_x    , _y + 1, text, outline, outline, outline, outline, alpha)
+        draw_text_color(_x + 1, _y    , text, outline, outline, outline, outline, alpha)
+        draw_text_color(_x    , _y - 1, text, outline, outline, outline, outline, alpha)
+        draw_text_color(_x - 1, _y    , text, outline, outline, outline, outline, alpha)
+        draw_text_color(_x - 1, _y + 1, text, outline, outline, outline, outline, alpha)
+        draw_text_color(_x + 1, _y - 1, text, outline, outline, outline, outline, alpha)
+      }
+
+      draw_text_color(_x, _y, text, color, color, color, color, alpha)
+      return GPU.render
+    }
   }
 
   set = {
@@ -128,6 +150,29 @@ function _GPU() constructor {
     blendEnable: function(enable) {
       gpu_set_blendenable(enable)
       return GPU.set
+    },
+
+    ///@param {GMFont} asset
+    ///@return {Struct}
+    font: function(asset) {
+      draw_set_font(asset)
+      return GPU.set
+    },
+
+    align: {
+      ///@param {Struct} align
+      ///@return {Struct}
+      h: function(align) {
+        draw_set_halign(align.h)
+        return GPU.set
+      },
+
+      ///@param {Struct} align
+      ///@return {Struct}
+      v: function(align) {
+        draw_set_valign(align.v)
+        return GPU.set
+      },
     },
   }
 

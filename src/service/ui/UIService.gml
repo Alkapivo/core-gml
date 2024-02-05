@@ -20,7 +20,7 @@ function UIService(_context, config = {}): Service(config) constructor {
           return BREAK_LOOP
         }
       } catch (exception) {
-        Logger.error("UIService", exception.message)
+        Logger.error("UIService", $"Event pump exception: {exception.message}")
       }
     }, event)
   }
@@ -121,7 +121,10 @@ function UIService(_context, config = {}): Service(config) constructor {
           container.render()
         }
       } catch (exception) {
-        Logger.error("UIService", exception.message)
+        Logger.error("UIService", $"Render exception: {exception.message}")
+        GPU.reset.shader() ///@todo remove
+        GPU.reset.surface() ///@todo remove
+        GPU.reset.blendMode() ///@todo remove
       }
     }
 

@@ -180,6 +180,11 @@ function _FileUtil() constructor {
         return this
     }
 
+    if (file == target) {
+      Logger.info("FileUtil", $"Skip copying, paths are the same: '{file}'")
+      return this
+    }
+
     Logger.info("FileUtil", $"Copy file '{file}' to '{target}'")
     file_copy(file, target)
     return this

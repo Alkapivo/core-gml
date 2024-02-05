@@ -4,11 +4,11 @@
 
 function SoundService(): Service() constructor {
 
-  ///@type {Map<String, SoundTemplate>}
-  templates = new Map(String, SoundTemplate)
-
   ///@type {Map<String, GMSound>}
   sounds = new Map(String, any)
+
+  ///@type {Map<String, SoundIntent>}
+  intents = new Map(String, SoundIntent)
 
   ///@type {EventPump}
   dispatcher = new EventPump(this, new Map(String, Callable, { }))
@@ -16,13 +16,15 @@ function SoundService(): Service() constructor {
   ///@override
   ///@return {SoundService}
   free = function() {
-    this.sounds.forEach(function(sound, key) {
+    this.sounds.forEach(function(sound, name) {
       try {
+        Logger.debug("SoundService", $"Free sound '{name}'")
         audio_destroy_stream(sound)
       } catch (exception) {
-        Logger.error("SoundService", $"Cannot parse key '{key}'. {exception.message}")
+        Logger.error("SoundService", $"Free sound '{name}' exception: {exception.message}")
       }
     }).clear()
+    this.intents.clear()
     return this
   }
 }

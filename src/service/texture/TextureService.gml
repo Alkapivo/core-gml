@@ -77,6 +77,14 @@ function TextureService(): Service() constructor {
   ///@override
   ///@return {TextureService}
   free = function() {
+    this.templates.forEach(function(template, name) {
+      try {
+        Logger.debug("TextureService", $"Free texture '{name}'")
+        sprite_delete(template.asset)
+      } catch (exception) {
+        Logger.error("TextureService", $"Free texture '{name}' exception: {exception.message}")
+      }
+    }).clear()
     return this
   }
 

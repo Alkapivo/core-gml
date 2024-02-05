@@ -11,11 +11,8 @@ function _Assert() constructor {
   ///@return {Boolean}
   areEqual = function(a, b, message = null) {
     if (a != b) {
-      var msg = !Core.isType(message, String)
-        ? $"'areEqual' assert error: \{ a: {a}, b: {b} \}"
-        : message
-      Logger.error("Assert", msg)
-      throw new InvalidAssertException(msg)
+      Logger.error("Assert.areEqual", message == null ? "Assert exception." : message)
+      throw new InvalidAssertException()
     }
     return true
   }
@@ -26,11 +23,8 @@ function _Assert() constructor {
   ///@return {Boolean}
   isTrue = function(object, message = null) {
     if (object != true) {
-      var msg = !Core.isType(message, String)
-        ? $"'isTrue' assert error: \{ \"object\": \"{object}\" \}"
-        : message
-      Logger.error("Assert", msg)
-      throw new InvalidAssertException(msg)
+      Logger.error("Assert.isTrue", message == null ? "Assert exception." : message)
+      throw new InvalidAssertException()
     }
     return true
   }
@@ -41,11 +35,8 @@ function _Assert() constructor {
   ///@return {Boolean}
   isFalse = function(object, message = null) {
     if (object != false) {
-      var msg = !Core.isType(message, String)
-        ? $"'isFalse' assert error: \{ \"object\": \"{object}\" \}"
-        : message
-      Logger.error("Assert", msg)
-      throw new InvalidAssertException(msg)
+      Logger.error("Assert.isFalse", message == null ? "Assert exception." : message)
+      throw new InvalidAssertException()
     }
     return true
   }
@@ -57,7 +48,7 @@ function _Assert() constructor {
   ///@return {any}
   isType = method(this, function(object, type, message = null) {
     if (!Core.isType(object, type)) {
-      Core.print($"todo: Assert.isType message")
+      Logger.error("Assert.isType", message == null ? "Assert exception." : message)
       throw new InvalidAssertException()
     }
     return object
@@ -70,7 +61,7 @@ function _Assert() constructor {
   ///@return {Enum}
   isEnum = function(object, enumerable, message = null) {
     if (!Core.isEnum(object, enumerable)) {
-      Core.print("todo: Assert.isEnum message")
+      Logger.error("Assert.isEnum", message == null ? "Assert exception." : message)
       throw new InvalidAssertException()
     }
     return object
@@ -83,7 +74,7 @@ function _Assert() constructor {
   ///@return {Enum}
   isEnumKey = function(object, enumerable, message = null) {
     if (!Core.isEnumKey(object, enumerable)) {
-      Core.print("todo: Assert.isEnumKey message")
+      Logger.error("Assert.isEnumKey", message == null ? "Assert exception." : message)
       throw new InvalidAssertException()
     }
     return object
@@ -95,7 +86,7 @@ function _Assert() constructor {
   ///@return {String}
   fileExists = function(path, message = null) {
     if (!Core.isType(path, String) && !file_exists(path)) {
-      Core.print("todo: Assert.fileExists message")
+      Logger.error("Assert.fileExists", message == null ? "Assert exception." : message)
       throw new InvalidAssertException()
     }
     return path

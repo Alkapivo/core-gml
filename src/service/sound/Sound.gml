@@ -7,6 +7,11 @@ function SoundIntent(json) constructor {
 
   ///@type {String}
   file = Assert.isType(json.file, String)
+
+  ///@return {Struct}
+  serialize = function() {
+    return { file: this.file }
+  }
 }
 
 ///@type {Struct} json
@@ -34,7 +39,9 @@ function Sound(_asset, config = {}) constructor {
   asset = _asset
 
   ///@type {String}
-  name = audio_get_name(this.asset)
+  name = Assert.isType(Struct.contains(config, "name") 
+    ? config.name 
+    : audio_get_name(this.asset), String)
 
   ///@type {Number}
   duration = audio_sound_length(this.asset)
@@ -154,9 +161,10 @@ function _SoundUtil() constructor {
   })
 
   ///@param {String} name
-  ///@param {Struct} [config]
+  ///@param {?Struct} [config]
   ///@return {?Sound}
-  fetch = method(this, function(name, config = {}) {
+  fetch = method(this, function(name, _config = null) {
+    var config = Struct.set(Core.isType(_config, Struct) ? _config : { name: name }, "name", name)
     var soundService = Beans.get(BeanSoundService)
     if (Optional.is(soundService)) {
       var sound = soundService.sounds.get(name)
@@ -166,9 +174,9 @@ function _SoundUtil() constructor {
     }
     
     var asset = asset_get_index(name)
-    if (asset == -1) {
+    if (!Core.isType(asset, GMSound)) {
       Logger.warn("SoundUtil", String.template(
-        "{0} does not exist: { \"name\": \"{1}\" }", AssetSound, name))
+        "{0} does not exist: { \"name\": \"{1}\" }", GMSound, name))
       return null
     }
     return new Sound(asset, config)

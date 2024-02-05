@@ -159,6 +159,45 @@ function _String() constructor {
 		return $"{minutes}:{seconds}.{miliSeconds}"
 	}
 
+	///@description Breake string into word wrap lines by delimiter
+	///@param {String} text
+	///@param {Integer} width
+	///@param {String} delimiter
+	///@param {Number} wordsplitSize
+	///@return {String}
+	wrapText = function(text, width, delimiter, wordsplitSize) {
+		var currentText = text
+		var spacePosition = -1
+		var currentPosition = 1
+		var result = ""
+		while (string_length(currentText) >= currentPosition) {
+			if (string_width(string_copy(currentText, 1, currentPosition)) > width) {
+				if (spacePosition != -1) {
+					result += string_copy(currentText, 1, spacePosition) + delimiter;
+					currentText = string_copy(currentText, spacePosition + 1, string_length(currentText) - (spacePosition));
+					currentPosition = 1
+					spacePosition = -1
+				} else if (wordsplitSize > 0) {
+					result += string_copy(currentText, 1, currentPosition - 1) + delimiter;
+					currentText = string_copy(currentText, currentPosition, string_length(currentText) - (currentPosition - 1));
+					currentPosition = 1
+					spacePosition = -1
+				}
+			}
+			
+			if (string_char_at(currentText, currentPosition) == " ") {
+				spacePosition = currentPosition
+			}
+
+			currentPosition++
+		}
+
+		if (string_length(currentText) > 0) {
+			result += currentText
+		}
+		return result
+	}
+
 	///@param {String} text
 	///@return {Array<String>}
 	toArray = function(text) {

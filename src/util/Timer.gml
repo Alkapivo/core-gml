@@ -33,7 +33,7 @@ function Timer(_duration, config = {}) constructor {
 
   ///@param {any} [callbackData]
   ///@return {Timer}
-  static update = function(callbackData = null) {
+  update = function(callbackData = null) {
     if (this.finished && (this.loop == Infinity || this.loopCounter < this.loop)) {
       this.finished = false;
     } else if (this.finished) {
@@ -58,15 +58,13 @@ function Timer(_duration, config = {}) constructor {
     return this
   }
 
-  ///@param {Timer} timer
   ///@return {Number}
-  static getProgress = function() {
+  getProgress = function() {
     return this.finished ? 1.0 : clamp(this.time / this.duration, 0.0, 1.0)
   }
 
-  ///@param {Timer} timer
   ///@return {Timer}
-  static reset = function() {
+  reset = function() {
     this.time = 0
     this.loopCounter = 0
     this.finished = false

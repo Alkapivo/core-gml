@@ -13,6 +13,7 @@
 #macro Prototype "Prototype"
 #macro Matrix "Matrix"
 #macro NonNull "NonNull"
+#macro GMCamera "GMCamera"
 
 ///@static
 function _Core() constructor {
@@ -54,6 +55,7 @@ function _Core() constructor {
           || is_instanceof(object, Queue))
         case GMArray: return result == "array"
         case GMBuffer: return result == "ref" && buffer_exists(object)
+        case GMCamera: return result == "number"
         case GMColor: return result == "number"
         case GMFont: return result == "ref" && font_exists(object)
         case GMKeyboardKey: return typeof(object) == "number"

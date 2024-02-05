@@ -84,7 +84,6 @@ function ParticleService(_controller, config = {}): Service() constructor {
   ///@type {EventPump}
   dispatcher = new EventPump(this, new Map(String, Callable, {
     "spawn-particle-emitter": function(event) {
-      Core.print(event.data.distribution)
       var task = new Task("emmit-particle")
         .setTimeout(Struct.getDefault(event.data, "duration", 1.0))
         .setTick(Struct.getDefault(event.data, "tick", FRAME_MS))

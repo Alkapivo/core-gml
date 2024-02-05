@@ -28,7 +28,6 @@ function ShaderUniform(_asset, _name, _type) constructor {
   type = Assert.isEnumKey(_type, ShaderUniformType)
 
   ///@type {GMShaderUniform}
-  Core.print("shaderuniform", this.name, this.type, shader_get_uniform(_asset, this.name))
   asset = Assert.isType(shader_get_uniform(_asset, this.name), GMShaderUniform)
 
   ///@param {any} value

@@ -76,7 +76,6 @@ function Track(json, config = null) constructor {
   addChannel = method(this, Assert.isType(Struct
     .getDefault(config, "addChannel", function(name) {
       if (this.channels.contains(name)) {
-        Logger.warn("Track", $"Cannot create channel '{name}', because channel already exists")
         return this
       }
 
@@ -89,7 +88,6 @@ function Track(json, config = null) constructor {
   removeChannel = method(this, Assert.isType(Struct
     .getDefault(config, "removeChannel", function(name) {
       if (!this.channels.contains(name)) {
-        Logger.warn("Track", $"Cannot remove channel '{name}', because channel does not exists")
         return this
       }
 
@@ -206,7 +204,7 @@ function TrackChannel(json, config = null) constructor {
 
   ///@private
   ///@type {Number}
-  MAX_EXECUTION_PER_FRAME = 10
+  MAX_EXECUTION_PER_FRAME = 99
 
   ///@param {TrackEvent} event
   ///@return {TrackChannel}
@@ -366,6 +364,9 @@ function TrackEvent(json, config = null): Event("TrackEvent") constructor {
 
 ///@type {Struct}
 global.__TRACK_EVENT_HANDLERS = {
+  "dummy": function(data) {
+    Core.print("dummy")
+  },
   "brush_shader_spawn": function(data) {
     var controller = Beans.get(BeanVisuController)
     var pipeline = Struct.getDefault(data, "shader-spawn_pipeline", "Grid")
@@ -584,10 +585,10 @@ global.__TRACK_EVENT_HANDLERS = {
     */
   },
   "brush_shroom_clear": function(data) {
-    Core.print("brush_shroom_clear", "event")
+    Core.print("todo:", "brush_shroom_clear", "event")
   },
   "brush_shroom_config": function(data) {
-    Core.print("brush_shroom_config", "event")
+    Core.print("todo:", "brush_shroom_config", "event")
   },
   "brush_view_wallpaper": function(data) {
     var controller = Beans.get(BeanVisuController)
@@ -739,8 +740,66 @@ global.__TRACK_EVENT_HANDLERS = {
       }))
     }
   },
+  "brush_view_lyrics": function(data) {
+    var controller = Beans.get(BeanVisuController)
+
+    var align = { v: VAlign.TOP, h: HAlign.LEFT }
+    var alignV = Struct.get(data, "view-lyrics_align-v")
+    var alignH = Struct.get(data, "view-lyrics_align-h")
+    if (alignV == "BOTTOM") {
+      align.v = VAlign.BOTTOM
+    }
+    if (alignH == "CENTER") {
+      align.h = HAlign.CENTER
+    } else if (alignH == "RIGHT") {
+      align.h = HAlign.RIGHT
+    }
+
+    controller.lyricsService.send(new Event("add")
+      .setData({
+        template: Struct.get(data, "view-lyrics_template"),
+        font: FontUtil.fetch(Struct.get(data, "view-lyrics_font")).asset,
+        fontHeight: Struct.get(data, "view-lyrics_font-height"),
+        charSpeed: Struct.get(data, "view-lyrics_char-speed"),
+        color: ColorUtil.fromHex(Struct.get(data, "view-lyrics_color")).toGMColor(),
+        outline: Struct.get(data, "view-lyrics_use-outline")
+          ? ColorUtil.fromHex(Struct.get(data, "view-lyrics_outline")).toGMColor()
+          : null,
+        timeout: Struct.get(data, "view-lyrics_use-timeout")
+          ? Struct.get(data, "view-lyrics_timeout")
+          : null,
+        align: align,
+        area: new Rectangle({ 
+          x: Struct.get(data, "view-lyrics_x"),
+          y: Struct.get(data, "view-lyrics_y"),
+          width: Struct.get(data, "view-lyrics_width"),
+          height: Struct.get(data, "view-lyrics_height"),
+        }),
+        lineDelay: Struct.get(data, "view-lyrics_use-line-delay")
+          ? new Timer(Struct.get(data, "view-lyrics_line-delay"))
+          : null,
+        finishDelay: Struct.get(data, "view-lyrics_use-finish-delay")
+          ? new Timer(Struct.get(data, "view-lyrics_finish-delay"))
+          : null,
+      }))
+  },
   "brush_view_config": function(data) {
-    Core.print("brush_view_config", "event")
+    var controller = Beans.get(BeanVisuController)
+    var bktGlitchService = controller.gridRenderer.bktGlitchService
+    if (Struct.get(data, "view-config_bkt-trigger") == true) {
+      var event = new Event("spawn")
+      if (Struct.get(data, "view-config_bkt-use-factor") == true) {
+        event.setData({ factor: Struct.get(data, "view-config_bkt-factor")})
+      }
+      bktGlitchService.send(event)
+    }
+
+    if (Struct.get(data, "view-config_bkt-use-config") == true) {
+      var config = bktGlitchService.configs.get(Struct.get(data, "view-config_bkt-config"))
+      if (Optional.is(config)) {
+        bktGlitchService.send(new Event("load-config").setData(config))
+      }
+    }
   },
   "brush_grid_channel": function(data) {
     var controller = Beans.get(BeanVisuController)
@@ -1031,22 +1090,5 @@ global.__TRACK_EVENT_HANDLERS = {
       }))
     }
   },
-  "dummy": function(data) {
-    Core.print("dummy")
-  },
-  "set-foreground": function(data) {
-    /*
-    var controller = Beans.get(BeanVisuController)
-    Logger.debug(String.formatTimestamp(controller.trackService.time),
-      $"set-foreground: {JSON.stringify(data, { pretty: true })}")
-    
-    controller.gridService.send(new Event("fade-sprite", {
-      sprite: SpriteUtil.parse(data),
-      collection: controller.gridRenderer.overlayRenderer.foregrounds,
-      executor: controller.gridService.executor,
-    }))
-    */
-  },
-  "set-video-rendering": function(data) { },
 }
 #macro TRACK_EVENT_HANDLERS global.__TRACK_EVENT_HANDLERS

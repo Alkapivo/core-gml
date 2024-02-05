@@ -13,9 +13,6 @@ global.__PromiseStatus = new _PromiseStatus()
 ///@type {?Struct} [config]
 function Promise(config = null) constructor {
 
-  ///@type {any}
-  state = null
-
   ///@type {PromiseStatus}
   status = Assert.isEnum(PromiseStatus.PENDING, PromiseStatus)
 
@@ -52,6 +49,9 @@ function Promise(config = null) constructor {
     return this
   })
   this.whenFailure(Struct.getDefault(config, "onFailure", function(data) { return data }))
+
+  ///@type {any}
+  state = null
 
   ///@param {any} state
   ///@return {Promise}

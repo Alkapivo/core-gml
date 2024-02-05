@@ -20,7 +20,7 @@ function _FontUtil() constructor {
   ///@return {?Font}
   fetch = function(name) {
     var asset = asset_get_index(name)
-    if (asset == -1) {
+    if (!Core.isType(asset, GMFont)) {
       Logger.warn("FontUtil", $"Font does not exists: '{name}'")
       return null
     }
