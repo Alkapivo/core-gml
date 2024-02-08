@@ -214,6 +214,22 @@ function Array(_type = any, _container = null) constructor {
     return size > 0 ? this.get(size - 1) : null
   }
 
+  ///@param {Number} indexA
+  ///@param {Number} indexB
+  ///@return {Array}
+  static swapItems = function(indexA, indexB) {
+    var size = this.size()
+    if (indexA >= size || indexB >= size) {
+      return this //todo throw OutOfBoundary?
+    }
+
+    var itemA = this.get(indexA)
+    var itemB = this.get(indexB)
+    this.set(indexB, itemA)
+    this.set(indexA, itemB)
+    return this
+  }
+
   ///@param {Collection} keys
   ///@return {Array}
   static removeMany = function(keys) {
