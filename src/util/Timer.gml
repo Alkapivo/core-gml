@@ -27,7 +27,7 @@ function Timer(_duration, config = {}) constructor {
     ? Assert.isType(config.callback, Callable)
     : null
 
-  if (Struct.getDefault(config, "randomize", false)) {
+  if (Struct.getDefault(config, "shuffle", false)) {
     this.time = random(this.duration)
   }
 
