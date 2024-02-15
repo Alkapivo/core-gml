@@ -228,7 +228,7 @@ function _JSON() constructor {
 
   ///@param {Struct} object
   ///@param {?Struct} [config]
-  ///@return {?Struct|?Array|?String|?Number|?Boolean}
+  ///@return {?Struct|?GMArray|?String|?Number|?Boolean}
   clone = function(object, config = null) {
     return this.parse(this.stringify(object, config))
   }

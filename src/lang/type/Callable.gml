@@ -5,14 +5,14 @@ function _Callable() constructor {
 
   ///@param {String} name
   ///@return {?Callable}
-  get = method(this, function(name) {
+  get = function(name) {
     if (!Core.isType(name, String)) {
       return null
     }
     
     var callable = asset_get_index(name)
     return Core.isType(callable, Callable) ? callable : null
-  })
+  }
 
   ///@param {Struct} context
   ///@return {Callable}
