@@ -107,8 +107,32 @@ function UI(config = {}) constructor {
 
       var _x = Struct.get(event.data, "x")
       var _y = Struct.get(event.data, "y")
+      
+      if (this.enableScrollbarY) {
+        var halign = this.scrollbarY.align
+        this.area.setWidth(this.area.getWidth() + this.scrollbarY.width)
+        if (halign == HAlign.LEFT) {
+          this.area.setX(this.area.getX() - this.scrollbarY.width)
+        }
+      }
+
       if (!Core.isType(_x, Number) || !Core.isType(_y, Number) || !this.area.collide(_x, _y)) {
+        if (this.enableScrollbarY) {
+          var halign = this.scrollbarY.align
+          this.area.setWidth(this.area.getWidth() - this.scrollbarY.width)
+          if (halign == HAlign.LEFT) {
+            this.area.setX(this.area.getX() + this.scrollbarY.width)
+          }
+        }
         return false
+      }
+
+      if (this.enableScrollbarY) {
+        var halign = this.scrollbarY.align
+        this.area.setWidth(this.area.getWidth() - this.scrollbarY.width)
+        if (halign == HAlign.LEFT) {
+          this.area.setX(this.area.getX() + this.scrollbarY.width)
+        }
       }
 
       var item = this.items.find(isValidItem, event)
@@ -168,25 +192,25 @@ function UI(config = {}) constructor {
             if (Optional.is(this.updateItems)) {
               this.updateItems()
             }
+
+            if (Optional.is(this.updateCustom)) {
+              this.updateCustom()
+            }
           }
         } else {
           this.updateArea()
           if (Optional.is(this.updateItems)) {
             this.updateItems()
           }
+
+          if (Optional.is(this.updateCustom)) {
+            this.updateCustom()
+          }
         }
       }
+
+
       
-
-      /* 
-      if (Optional.is(this.updateArea)) {
-        this.updateArea()
-      }
-      */
-
-      if (Optional.is(this.updateCustom)) {
-        this.updateCustom()
-      }
       return this
     }
 
@@ -333,6 +357,9 @@ function UI(config = {}) constructor {
     Struct.getDefault(config, "scrollbarY", {})
   )
 
+  ///@type {Boolean}
+  enableScrollbarY = Struct.contains(config, "scrollbarY")
+
   ///@type {?Callable}
   onInit = null
 
@@ -381,6 +408,7 @@ function _UIUtil() constructor {
         this.context.collection.remove(this.component.index)
       }
     },
+    
   })
   
   ///@type {Map<String, Callable>}
@@ -401,7 +429,9 @@ function _UIUtil() constructor {
         this.area.setHeight(this.layout.height())
 
         this.textField.style.w = this.area.getWidth()
-        this.textField.style.h = this.area.getHeight()
+        if (!this.textField.style.v_grow) {
+          this.textField.style.h = this.area.getHeight()
+        }
         this.textField.update_style()
       }
     },
@@ -557,6 +587,19 @@ function _UIUtil() constructor {
       return function(event) {
         this.offset.y = clamp(this.offset.y - this.state.getDefault("offset-y", 20), 
           -1 * this.offsetMax.y, 0)
+      }
+    },
+    "onMouseScrollbarY": function() {
+      return function(event) {
+        var _x = event.data.x - this.area.getX()
+        var _y = event.data.y - this.area.getY()
+        var collide = this.scrollbarY.align == HAlign.LEFT
+          ? (_x <= this.scrollbarY.width)
+          : (_x >= this.area.getWidth() - this.scrollbarY.width)
+        if (collide) {
+          var ratio = _y / this.area.getHeight() 
+          this.offset.y = -1 * (this.offsetMax.y * ratio)
+        }
       }
     },
   })

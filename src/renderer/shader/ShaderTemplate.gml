@@ -36,4 +36,22 @@ function ShaderTemplate(_name, json) constructor {
   if (!Optional.is(this.properties)) {
     Struct.remove(this, "properties")
   }
+
+  ///@return {Struct}
+  serialize = function() {
+    var json = {
+      name: this.name,
+      shader: this.shader,
+    }
+    
+    if (Optional.is(Struct.get(this, "inherit"))) {
+      Struct.set(json, "inherit", this.inherit)
+    }
+
+    if (Optional.is(Struct.get(this, "properties"))) {
+      Struct.set(json, "properties", this.properties)
+    }
+
+    return JSON.clone(json)
+  }
 }

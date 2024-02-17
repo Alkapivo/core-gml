@@ -40,19 +40,25 @@ global.__Vector = new _Vector()
 ///@param {Number} _y
 function Vector2(_x = 0.0, _y = 0.0) constructor {
 
-    ///@type {Number}
-    x = _x
-    Assert.isType(this.x, Number, "x")
+  ///@type {Number}
+  x = Assert.isType(_x, Number)
 
-    ///@type {Number}
-    y = _y
-    Assert.isType(this.y, Number, "y")
+  ///@type {Number}
+  y = Assert.isType(_y, Number)
 
-    ///@param {Vector2} vec2
-    ///@return {Boolean}
-    static areEqual = function(vec2) {
-        return this.x == vec2.x && this.y == vec2.y
+  ///@param {Vector2} vec2
+  ///@return {Boolean}
+  static areEqual = function(vec2) {
+      return this.x == vec2.x && this.y == vec2.y
+  }
+
+  ///@return {Struct}
+  serialize = function() {
+    return {
+      x: this.x,
+      y: this.y,
     }
+  }
 }
 
 
@@ -61,9 +67,17 @@ function Vector2(_x = 0.0, _y = 0.0) constructor {
 ///@param {Number} _z
 function Vector3(_x = 0.0, _y = 0.0, _z = 0.0): Vector2(_x, _y) constructor {
 
-    ///@type {Number}
-    z = _z
-    Assert.isType(this.z, Number, "z")
+  ///@type {Number}
+  z = Assert.isType(_z, Number)
+
+  ///@return {Struct}
+  serialize = function() {
+    return {
+      x: this.x,
+      y: this.y,
+      z: this.z,
+    }
+  }
 }
 
 
@@ -73,9 +87,18 @@ function Vector3(_x = 0.0, _y = 0.0, _z = 0.0): Vector2(_x, _y) constructor {
 ///@param {Number} _a
 function Vector4(_x = 0.0, _y = 0.0, _z = 0.0, _a = 0.0): Vector3(_x, _y, _z) constructor {
 
-    ///@type {Number}
-    a = _a
-    Assert.isType(this.z, Number, "a")
+  ///@type {Number}
+  a = Assert.isType(_a, Number)
+
+  ///@return {Struct}
+  serialize = function() {
+    return {
+      x: this.x,
+      y: this.y,
+      z: this.z,
+      a: this.a,
+    }
+  }
 }
 
 

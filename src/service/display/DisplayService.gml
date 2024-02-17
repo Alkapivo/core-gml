@@ -33,6 +33,16 @@ function DisplayService(_controller, config = {}): Service() constructor {
     return window_get_height()
   }
 
+  ///@return {Number}
+  getDisplayWidth = function() {
+    return display_get_width()
+  }
+
+  ///@return {Number}
+  getDisplayHeight = function() {
+    return display_get_height()
+  }
+
   ///@return {Boolean}
   getFullscreen = function() {
     return window_get_fullscreen()

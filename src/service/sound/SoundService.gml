@@ -1,7 +1,6 @@
 ///@package io.alkapivo.core.service.sound
 
 #macro BeanSoundService "SoundService"
-
 function SoundService(): Service() constructor {
 
   ///@type {Map<String, GMSound>}

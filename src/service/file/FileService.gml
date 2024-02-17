@@ -21,10 +21,7 @@ function FileService(_controller, config = {}): Service() constructor {
           var data = buffer.get()
           buffer.free()
           Logger.info("FileService", $"FetchFileBuffer successfully: {path}")
-          this.fullfill({
-            path: path,
-            data: data,
-          })
+          this.fullfill(new File({ path: path, data: data }))
         })
       
       this.executor.add(task)
@@ -37,24 +34,7 @@ function FileService(_controller, config = {}): Service() constructor {
       event.setPromise() // disable promise in EventPump, the promise will be resolved within TaskExecutor
     },
     "fetch-file-sync": function(event) {
-      var path = Assert.isType(event.data.path, String)
-      var file = file_text_open_read(path)
-      if (file == -1) {
-        throw new FileNotFoundException(path)
-      }
-
-      var data = "";
-      while (!file_text_eof(file)) {
-        var line = file_text_read_string(file);
-        data = data + line + "\n"
-        file_text_readln(file);
-      }
-      file_text_close(file)
-      Logger.info("FileService", $"fetch-file-sync successfully: {path}")
-      return {
-        path: path,
-        data: data,
-      }
+      return FileUtil.readFileSync(event.data.path)
     },
     "fetch-file-sync-dialog": function(event) {
       this.send(new Event("fetch-file-sync")
@@ -63,16 +43,7 @@ function FileService(_controller, config = {}): Service() constructor {
       event.setPromise() // disable promise in EventPump, the promise will be resolved within TaskExecutor
     },
     "save-file-sync": function(event) {
-      var path = Assert.isType(event.data.path, String)
-      var data = Assert.isType(event.data.data, String)
-      var file = file_text_open_write(event.data.path);
-      if (file == -1) {
-        throw new FileNotFoundException(path)
-      }
-
-      file_text_write_string(file, data);
-      file_text_close(file);
-      Logger.info("FileService", $"save-file-sync successfully: {path}")
+      FileUtil.writeFileSync(Assert.isType(event.data, File))
     },
   }))
 

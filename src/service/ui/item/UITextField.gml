@@ -95,8 +95,17 @@ function UITextField(name, json = null) {
       }
       
       this.textField.style.w = this.area.getWidth()
-      this.textField.style.h = this.area.getHeight()
+      if (this.textField.style.v_grow) {
+        this.area.setHeight(this.textField.style.h)
+        var layout = Struct.get(this, "layout")
+        if (Optional.is(Struct.get(layout, "setHeight"))) {
+          layout.setHeight(this.textField.style.h)
+        }
+      } else {
+        this.textField.style.h = this.area.getHeight()
+      }
       this.textField.update_style()
+      
       if (Optional.is(this.context.surface)) {
         this.textField.update(this.context.area.getX(), this.context.area.getY())
       } else {

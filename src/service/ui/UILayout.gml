@@ -175,7 +175,7 @@ function UILayout(config, _context = null) constructor {
   ///@type {Struct}
   nodes = this.parseNodes(config, this)
 
-  Struct.appendUnique(this, config)
+  Struct.appendUnique(this, config, true)
 }
 
 

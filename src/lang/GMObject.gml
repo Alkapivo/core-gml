@@ -9,6 +9,14 @@ function _GMObjectUtil() constructor {
   ///@private
   ///@type {Map<String, Struct>}
   bindings = new Map(String, Struct, {
+    updateBegin: {
+      gmObject: "__updateBegin",
+      factoryWrapper: function() {
+        return function() {
+          this.__context.updateBegin()
+        }
+      }
+    },
     update: {
       gmObject: "__update",
       factoryWrapper: function() {
@@ -205,6 +213,13 @@ function _GMObjectUtil() constructor {
     GMObjectUtil.bindings.forEach(unbindWrapper, { gmObject: gmObject })
 
     return GMObjectUtil
+  }
+
+  ///@param {GMObjectType} gmObjectType
+  ///@throws {Exception}
+  ///@return {String}
+  static getTypeName = function(gmObjectType) {
+    return Assert.isType(object_get_name(gmObjectType), String)
   }
 }
 global.__GMObjectUtil = new _GMObjectUtil()

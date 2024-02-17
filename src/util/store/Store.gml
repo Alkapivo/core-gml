@@ -74,6 +74,4 @@ function Store(json) constructor {
     }, this)
     return this
   }
-
-  HELLO_WORLD = "hello world"
 }

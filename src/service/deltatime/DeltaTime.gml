@@ -1,20 +1,25 @@
-///@package io.alkapivo.core.DeltaTime
+///@package io.alkapivo.core.service.deltatime
 
 ///@static
 function _DeltaTime() constructor {
 	
+  ///@private
 	///@type {Number}
   deltaTime = 0
 	
+  ///@private
 	///@type {Number}
   fpsMin = 2
 	
+  ///@private
 	///@type {Number}
 	deltaTimePrecision = 1000000.0
 	
-	///@type {Number}
+	///@private
+  ///@type {Number}
 	deltaTimePrevious = 0.0
 	
+  ///@private
 	///@type {Boolean}
 	deltaTimeRestored = false
   
@@ -22,6 +27,11 @@ function _DeltaTime() constructor {
   ///@return {Number}
   static apply = function(value) {
     return this.deltaTime * value
+  }
+
+  ///@return {Number}
+  static get = function() {
+    return this.deltaTime
   }
 
   ///@return {DeltaTime}

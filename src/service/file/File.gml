@@ -4,25 +4,10 @@
 function File(json) constructor {
 
   ///@type {String}
-  name = Assert.isType(json.name, String)
-
-  ///@type {String}
-  path = Assert.isType(json.path, String)
+  path = Assert.isType(FileUtil.get(json.path), String)
 
   ///@type {any}
   data = Struct.getDefault(json, "data", null)
-
-  ///@return {String}
-  static getName = function() {
-    return this.name
-  }
-
-  ///@param {String} name
-  ///@return {File}
-  static setName = function(name) {
-    this.name = Assert.isType(name, String)
-    return this
-  }
 
   ///@return {String}
   static getPath = function() {
@@ -32,7 +17,7 @@ function File(json) constructor {
   ///@param {String} path
   ///@return {File}
   static setPath = function(path) {
-    this.path = Assert.isType(path, String)
+    this.path = Assert.isType(FileUtil.get(json.path), String)
     return this
   }
 
@@ -189,6 +174,47 @@ function _FileUtil() constructor {
     file_copy(file, target)
     return this
   }
+
+  ///@param {String} _path
+  ///@throws {FileNotFoundException}
+  ///@return {File}
+  static readFileSync = function(_path) {
+    var path = FileUtil.get(_path)
+    if (!FileUtil.fileExists(path)) {
+      throw new FileNotFoundException(_path)
+    }
+
+    var file = file_text_open_read(path)
+    if (file == -1) {
+      throw new FileNotFoundException(path)
+    }
+
+    var data = ""
+    while (!file_text_eof(file)) {
+      var line = file_text_read_string(file)
+      data = data + line + "\n"
+      file_text_readln(file)
+    }
+    file_text_close(file)
+    Logger.info("FileUtil", $"fetch-file-sync successfully: {path}")
+    return new File({ path: path, data: data })
+  }
+
+  ///@param {File} file
+  ///@throws {FileNotFoundException}
+  ///@return {FileUtil}
+  static writeFileSync = function(file) {
+    var path = file.getPath()
+    var _file = file_text_open_write(path)
+    if (_file == -1) {
+      throw new FileNotFoundException(path)
+    }
+
+    file_text_write_string(_file, file.getData())
+    file_text_close(_file)
+    Logger.info("File", $"save-file-sync successfully: {path}")
+  }
+
 }
 global.__FileUtil = new _FileUtil()
 #macro FileUtil global.__FileUtil

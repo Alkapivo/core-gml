@@ -1,8 +1,6 @@
 ///@package io.alkapivo.core.service.texture
 
 #macro BeanTextureService "TextureService"
-
-
 function TextureService(): Service() constructor {
 
   ///@type {Map<String, TextureTemplate>}

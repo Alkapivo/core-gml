@@ -37,6 +37,9 @@ function _Core() constructor {
     "unknown": any,
   })
 
+  ///@type {Map<String, any>}
+  properties = new Map(String, any)
+
   ///@param {any} object
   ///@param {any} type
   ///@return {Boolean}
@@ -120,6 +123,14 @@ function _Core() constructor {
     return type
   }
 
+  ///@param {?Prototype} prototype
+  ///@return {?String}
+  static getPrototypeName = function(prototype) {
+    return Core.isType(prototype, Prototype)
+      ? script_get_name(prototype)
+      : null
+  }
+
   ///@param {String} name
   ///@return {?Callable}
   static getConstructor = function(name) {
@@ -161,7 +172,7 @@ function _Core() constructor {
       buffer = $"'print' fatal error: {exception.message}"
     }
     show_debug_message(buffer)
-    return this
+    return Core
   }
 
   ///@return {Core}
@@ -174,7 +185,40 @@ function _Core() constructor {
         Core.print(line)
       }
     }
-    return this
+    return Core
+  }
+
+  ///@param {String} [_path]
+  ///@return {Core}
+  static loadProperties = function(_path = $"{working_directory}properties.json") {
+    try {
+      var path = FileUtil.get(_path)
+      Logger.debug("Core", $"Start loading properties from '{path}'")
+
+      var file = FileUtil.readFileSync(path)
+      var properties = Assert.isType(JSON.parse(file.getData()), Struct)
+      Core.properties = new Map(String, any)
+      Struct.forEach(properties, function(property, key) {
+        Logger.debug("Core", $"Load property '{key}'")
+        if (Core.isType(property, GMArray)) {
+          Core.properties.set(key, new Array(any, property)) 
+        } else {
+          Core.properties.set(key, property) 
+        }
+      })
+
+    } catch (exception) {
+      Logger.error("Core", $"Unable to load properties from file. {exception.message}")
+    }
+
+    return Core
+  }
+
+  ///@param {String} key
+  ///@param {any} [defaultValue]
+  ///@return {any}
+  static getProperty = function(key, defaultValue = null) {
+    return Core.properties.getDefault(key, defaultValue)
   }
 }
 global.__Core = new _Core()
