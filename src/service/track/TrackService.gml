@@ -5,7 +5,7 @@
 function TrackService(_context, config = {}): Service() constructor {
 
   ///@type {Struct}
-  context = Assert.isType(_context, Struct, "context")
+  context = Assert.isType(_context, Optional.of(Struct))
 
   ///@type {?Track}
   track = null
@@ -50,9 +50,11 @@ function TrackService(_context, config = {}): Service() constructor {
   }
 
   ///@return {Boolean}
-  isTrackLoaded = function() {
-    return Core.isType(this.track, Track)
-  }
+  isTrackLoaded = method(this, Struct.contains(config, "isTrackLoaded")
+    ? Assert.isType(config.isTrackLoaded, Callable)
+    : function() {
+      return Core.isType(this.track, Track)
+    })
 
   ///@param {Track} track
   ///@return {TrackService}
