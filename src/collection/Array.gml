@@ -464,9 +464,10 @@ function _GMArray() constructor {
       return item 
     }
 
-    return new Array(type, this.map(arr, Core.isType(callback, Callable) 
-      ? callback 
-      : passthroughCallback, acc))
+    return new Array(type, this.map(arr, (Core.isType(callback, Callable) 
+        ? callback 
+        : passthroughCallback), 
+      acc))
   }
 
   ///@param {GMArray} arr

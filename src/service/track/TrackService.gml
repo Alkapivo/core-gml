@@ -16,6 +16,11 @@ function TrackService(_context, config = {}): Service() constructor {
   ///@type {Number}
   duration = 0.0
 
+  ///@type {Map<String, Callable>}
+  handlers = Struct.contains(config, "handlers")
+    ? Assert.isType(config.handlers, Map)
+    : new Map(String, Callable)
+
   ///@type {EventPump}
   dispatcher = new EventPump(this, new Map(String, Callable, {
     "open-track": function(event) {
