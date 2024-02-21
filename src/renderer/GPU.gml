@@ -187,7 +187,10 @@ function _GPU() constructor {
       shader_reset()
     },
     surface: function() {
-      surface_reset_target()
+      var target = surface_get_target()
+      if (target != application_surface && target != -1) {
+        surface_reset_target()
+      }
     },
     blendMode: function() {
       gpu_set_blendmode(BlendMode.NORMAL)

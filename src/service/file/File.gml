@@ -92,18 +92,20 @@ function _FileUtil() constructor {
   ///@param {?Struct} [config]
   ///@return {?String}
   static getPathToOpenWithDialog = function(config = null) {
+    var description = Assert.isType(Struct.getDefault(config, "description", ""), String)
     var extension = Assert.isType(Struct.getDefault(config, "extension", ""), String)
     var filename = Assert.isType(Struct.getDefault(config, "filename", ""), String)
-    var path = get_open_filename($"|*.{extension}", $"{filename}")
+    var path = get_open_filename($"{description}|*.{extension}", filename)
     return FileUtil.get(path)
   }
 
   ///@param {?Struct} [config]
   ///@return {?String}
   static getPathToSaveWithDialog = function(config = null) {
+    var description = Assert.isType(Struct.getDefault(config, "description", ""), String)
     var extension = Assert.isType(Struct.getDefault(config, "extension", ""), String)
     var filename = Assert.isType(Struct.getDefault(config, "filename", ""), String)
-    var path = get_save_filename($"|*.{extension}", $"{filename}")
+    var path = get_save_filename($"{description}|*.{extension}", filename)
     return FileUtil.get(path)
   }
 
@@ -196,7 +198,7 @@ function _FileUtil() constructor {
       file_text_readln(file)
     }
     file_text_close(file)
-    Logger.info("FileUtil", $"fetch-file-sync successfully: {path}")
+    Logger.debug("FileUtil", $"fetch-file-sync successfully: {path}")
     return new File({ path: path, data: data })
   }
 
