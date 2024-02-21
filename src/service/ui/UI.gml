@@ -227,23 +227,23 @@ function UI(config = {}) constructor {
       var areaY = this.area.y
       this.area.x = this.offset.x
       this.area.y = this.offset.y
-      this.items.forEach(this.renderItem)
+      this.items.forEach(this.renderItem, this.area)
       this.area.x = areaX
       this.area.y = areaY
     }
 
   ///@param {UIItem} item
-  renderItem = Struct.contains(config, "renderItem")
-    ? Assert.isType(method(this, config.renderItem), Callable)
-    : function(item) {
-      item.render()
-    }
+  renderItem = method(this, Assert.isType(
+    Struct.contains(config, "renderItem")
+      ? config.renderItem
+      : Callable.run(UIUtil.renderTemplates.get("renderItemDefault")), 
+    Callable))
 
   ///@return {UI}
   render = Struct.contains(config, "render")
     ? Assert.isType(method(this, config.render), Callable)
     : function() {
-      this.items.forEach(this.renderItem)
+      this.items.forEach(this.renderItem, this.area)
       return this
     }
 
@@ -540,7 +540,7 @@ function _UIUtil() constructor {
           )
         }
         
-        this.items.forEach(this.renderItem)
+        this.items.forEach(this.renderItem, this.area)
       }
     },
     "renderDefaultScrollable": function() {
@@ -549,7 +549,7 @@ function _UIUtil() constructor {
           this.surface = new Surface()
         }
 
-        this.surface.update(this.area.getWidth(), this.area.getHeight())
+        this.surface.update(round(this.area.getWidth()), round(this.area.getHeight()))
           .renderOn(this.renderSurface)
         GPU.set.blendEnable(false)
         this.surface.render(this.area.getX(), this.area.getY())
@@ -559,6 +559,26 @@ function _UIUtil() constructor {
           return
         }
         this.scrollbarY.render(this)
+      }
+    },
+    "renderItemDefault": function() {
+      return function(item, iterator, area) {
+        item.render()
+      }
+    },
+    "renderItemDefaultScrollable": function() {
+      return function(item, iterator, area) {
+        var itemX = item.area.x
+        var itemY = item.area.y
+        var areaX = abs(area.x)
+        var areaY = abs(area.y)
+        if (Math.rectangleOverlaps(
+          itemX, itemY,
+          itemX + item.area.z, itemY + item.area.a,
+          areaX, areaY,
+          areaX + area.z, areaY + area.a)) {
+          item.render()
+        }
       }
     },
   })
