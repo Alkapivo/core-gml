@@ -368,7 +368,7 @@ function TrackEvent(json, config = null): Event("TrackEvent") constructor {
   ///@todo refactor
   ///@return {Struct}
   serialize = method(this, Assert.isType(Struct
-    .getDefault(config, "toTemplate", function() {
+    .getDefault(config, "serialize", function() {
       var json = {
         "timestamp": this.timestamp,
         "callable": this.callableName,

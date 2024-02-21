@@ -137,7 +137,7 @@ function ParticleService(_controller, config = {}): Service() constructor {
         Struct.get(config, "endY")
       ),
       shape: Struct.getDefault(config, "shape", ParticleEmitterShape.ELLIPSE),
-      duration: Struct.getDefault(config, "duration", FRAME_MS * 3),
+      duration: Struct.getDefault(config, "duration", FRAME_MS * 4),
       amount: Struct.getDefault(config, "amount", 100),
       distribution: Struct.getDefault(config, "distribution", ParticleEmitterDistribution.LINEAR),
     })

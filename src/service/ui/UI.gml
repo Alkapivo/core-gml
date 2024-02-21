@@ -408,7 +408,51 @@ function _UIUtil() constructor {
         this.context.collection.remove(this.component.index)
       }
     },
-    
+    "updateVerticalSelectedIndex": function() {
+      return function(size) {
+        var mouseX = device_mouse_x_to_gui(0)
+        var mouseY = device_mouse_y_to_gui(0)
+        var areaX = this.area.getX()
+        var areaY = this.area.getY()
+        var areaWidth = this.area.getWidth()
+        var areaHeight = this.area.getHeight()
+        if (point_in_rectangle(mouseX, mouseY, areaX, areaY, areaX + areaWidth, areaY + areaHeight)) {
+          var previousElement = this.collection.findByIndex(Struct.inject(this, "selectedIndex", 0))
+          if (Optional.is(previousElement)) {
+            previousElement.items.forEach(function(item) {
+              if (!Struct.contains(item, "colorHoverOut")) {
+                return
+              }
+              item.backgroundColor = ColorUtil.fromHex(item.colorHoverOut).toGMColor()
+            })
+          }
+
+          this.selectedIndex = (abs(this.offset.y) + (mouseY - areaY)) div size
+          var currentElement = this.collection.findByIndex(this.selectedIndex)
+          if (Optional.is(currentElement)) {
+            currentElement.items.forEach(function(item) {
+              if (!Struct.contains(item, "colorHoverOver")) {
+                return
+              }
+              item.backgroundColor = ColorUtil.fromHex(item.colorHoverOver).toGMColor()
+            })
+          }
+        } else {
+          if (Optional.is(Struct.get(this, "selectedIndex"))) {
+            var element = this.collection.findByIndex(this.selectedIndex)
+            if (Optional.is(element)) {
+              element.items.forEach(function(item) {
+                if (!Struct.contains(item, "colorHoverOut")) {
+                  return
+                }
+                item.backgroundColor = ColorUtil.fromHex(item.colorHoverOut).toGMColor()
+              })
+            }
+            this.selectedIndex = null
+          }
+        }
+      }
+    },
   })
   
   ///@type {Map<String, Callable>}
@@ -555,10 +599,9 @@ function _UIUtil() constructor {
         this.surface.render(this.area.getX(), this.area.getY())
         GPU.set.blendEnable(true)
 
-        if (!Optional.is(this.scrollbarY)) {
-          return
+        if (this.enableScrollbarY) {
+          this.scrollbarY.render(this)
         }
-        this.scrollbarY.render(this)
       }
     },
     "renderItemDefault": function() {
