@@ -69,19 +69,24 @@ function Mouse(json) constructor {
           button.release = false
           button.drop = false
           button.drag = false
-          button.draging = false
+          button.dragging = false
         } else {
           button.released = button.on ? true : false
           button.on = false
           button.pressed = false
           button.drop = false
           button.drag = false
-          button.draging = false
+          button.dragging = false
         }
       } else {
         button.on = mouse_check_button(button.type)
         button.pressed = mouse_check_button_pressed(button.type)
         button.released = mouse_check_button_released(button.type)
+
+        if (button.dragging && !button.on && !button.released && !button.pressed) {
+          button.released = true
+          button.drop = true
+        }
 
         if (button.drop) {
           button.drop = false
