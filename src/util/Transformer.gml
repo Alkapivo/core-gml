@@ -74,9 +74,15 @@ function ColorTransformer(json = { value: "#ffffff" }): Transformer(json) constr
 
 
 ///@param {Struct} [json]
-function NumberTransformer(json = { value: 0 }): Transformer(json) constructor {
+function NumberTransformer(json = null): Transformer(json) constructor {
 
-  Assert.isType(this.value, Number)
+  ///@override
+  ///@type {Number}
+  value = Assert.isType(Struct.getDefault(json, "value", 0), Number)
+
+  ///@override
+  ///@type {Color}
+  startValue = this.value
 
   ///@type {Number}
   target = Assert.isType(Struct.getDefault(json, "target", this.value), Number)
@@ -86,7 +92,6 @@ function NumberTransformer(json = { value: 0 }): Transformer(json) constructor {
 
   ///@type {Number}
   increase = Assert.isType(Struct.getDefault(json, "increase", 0), Number)
-
   ///@override
   ///@return {NumberTransformer}
   update = function() {
@@ -120,7 +125,7 @@ function Vector2Transformer(json = {}): Transformer(json) constructor {
 
   ///@override
   ///@type {Vector2}
-  this.startValue = new Vector2(this.x.value, this.y.value)
+  startValue = new Vector2(this.x.value, this.y.value)
 
   ///@override
   ///@return {Vector2Transformer}

@@ -120,6 +120,7 @@ function Track(json, config = null) constructor {
         channel.rewind(timestamp)
       }
 
+      this.audio.rewind(timestamp)
       this.channels.forEach(rewindChannel, timestamp)
       return this
     }), Callable))
@@ -132,7 +133,10 @@ function Track(json, config = null) constructor {
         channel.update(timestamp)
       }
 
-      this.channels.forEach(updateChannel, timestamp)
+      if (this.getStatus() == TrackStatus.PLAYING) {
+        this.channels.forEach(updateChannel, timestamp)
+      }
+
       return this
     }), Callable))
 
@@ -293,7 +297,6 @@ function TrackChannel(json, config = null) constructor {
       this.pointer = null
       this.time = timestamp
       for (var index = 0; index < events.size(); index++) {
-        this.pointer = index
         if (events.get(index).timestamp > timestamp) {
           this.pointer = index == 0 ? null : index - 1
           break
@@ -316,7 +319,7 @@ function TrackChannel(json, config = null) constructor {
       }
 
       for (var index = 0; index < this.MAX_EXECUTION_PER_FRAME; index++) {
-        var pointer = this.pointer == null ? 0 : this.pointer + 1
+        var pointer = this.pointer == null ? 0 : (this.pointer + 1)
         if (pointer == events.size()) {
           break
         }
@@ -326,6 +329,7 @@ function TrackChannel(json, config = null) constructor {
           this.pointer = pointer
           event.callable(event.data)
         } else {
+          ///@todo execute events based on some dictionary
           break
         }
       }

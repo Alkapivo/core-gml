@@ -76,7 +76,7 @@ function TrackService(_context, config = {}): Service() constructor {
   ///@return {TrackService}
   resume = function() {
     if (this.isTrackLoaded()) {
-      this.track.audio.resume().setVolume(0.1, 1)
+      this.track.audio.resume().setVolume(1)
     }
     return this
   }
@@ -102,7 +102,6 @@ function TrackService(_context, config = {}): Service() constructor {
   rewind = function(timestamp) {
     if (this.isTrackLoaded) {
       this.track.rewind(timestamp)
-      this.track.audio.rewind(timestamp)
     }
     return this
   }
