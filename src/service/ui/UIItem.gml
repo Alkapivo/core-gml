@@ -27,7 +27,7 @@ function UIItem(_name, config = {}) constructor {
   store = Struct.contains(config, "store") ? new UIStore(config.store, this) : null
 
   ///@type {?Struct}
-  component = Struct.contains(config, "component")
+  component = Optional.is(Struct.get(config, "component"))
     ? Assert.isType(config.component, Struct)
     : null
 
