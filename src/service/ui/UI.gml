@@ -324,6 +324,7 @@ function UI(config = {}) constructor {
   ///@type {Struct}
   scrollbarY = Struct.appendRecursive(
     {
+      isDragEvent: false,
       align: HAlign.LEFT,
       width: 10,
       thickness: 3,
@@ -565,6 +566,18 @@ function _UIUtil() constructor {
             ? abs(this.area.getHeight() - viewHeight) + this.margin.bottom
             : 0.0
         this.offset.y = clamp(this.offset.y, -1 * this.offsetMax.y, 0.0)
+
+        var scrollbarY = Struct.get(this, "scrollbarY")
+        if (Struct.get(scrollbarY, "isDragEvent")) {
+          if (mouse_check_button(mb_left)) { ///@todo button should be a parameter
+            this.onMousePressedLeft(new Event("MouseOnLeft", { 
+              x: MouseUtil.getMouseX(), 
+              y: MouseUtil.getMouseY(),
+            }))
+          } else {
+            Struct.set(scrollbarY, "isDragEvent", false)
+          }
+        }
       }
     },
   })
@@ -659,9 +672,11 @@ function _UIUtil() constructor {
         var collide = this.scrollbarY.align == HAlign.LEFT
           ? (_x <= this.scrollbarY.width)
           : (_x >= this.area.getWidth() - this.scrollbarY.width)
-        if (collide) {
+        var scrollbarY = Struct.get(this, "scrollbarY")
+        if (collide) || (Struct.get(scrollbarY, "isDragEvent") == true) {
           var ratio = _y / this.area.getHeight() 
           this.offset.y = -1 * (this.offsetMax.y * ratio)
+          Struct.set(scrollbarY, "isDragEvent", true)
         }
       }
     },
