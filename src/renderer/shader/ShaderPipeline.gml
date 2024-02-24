@@ -131,6 +131,9 @@ function ShaderPipeline(config = {}): Service() constructor {
       var duration = Assert.isType(Struct.get(event.data, "duration"), Number)
       var template = Assert.isType(this.factoryShaderPipelineTaskTemplate(
         templateName, json), ShaderPipelineTaskTemplate)
+      var fadeIn = Assert.isType(Struct.getDefault(event.data, "fadeIn", 1.0), Number)
+      var fadeOut = Assert.isType(Struct.getDefault(event.data, "fadeOut", 1.0), Number)
+      var alphaMax = Assert.isType(Struct.getDefault(event.data, "alphaMax", 1.0), Number)
       var properties = template.properties.map(mapProperties, template.shader.uniforms,
         String, ShaderPipelineTaskProperty)
       var task = new Task("shader-effect")
@@ -142,8 +145,9 @@ function ShaderPipeline(config = {}): Service() constructor {
           name: template.name,
           shader: template.shader,
           alpha: 0.0,
-          fadeIn: 1.0,
-          fadeOut: 1.0,
+          alphaMax: alphaMax,
+          fadeIn: fadeIn,
+          fadeOut: fadeOut,
           properties: properties
         }))
         .whenUpdate(function() {
@@ -151,6 +155,7 @@ function ShaderPipeline(config = {}): Service() constructor {
             var fadeIn = task.state.get("fadeIn")
             var fadeOut = task.state.get("fadeOut")
             var alpha = task.state.get("alpha")
+            var alphaMax = task.state.get("alphaMax")
             var timer = task.timeout
             if (timer.time < fadeIn) {
               alpha = clamp(timer.time / fadeIn, 0.0, 1.0)
@@ -159,7 +164,7 @@ function ShaderPipeline(config = {}): Service() constructor {
             } else {
               alpha = 1.0
             }
-            task.state.set("alpha", alpha)
+            task.state.set("alpha", min(alpha, alphaMax))
           }
 
           static updateProperty = function(property) {
