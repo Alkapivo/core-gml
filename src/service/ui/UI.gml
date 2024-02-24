@@ -675,7 +675,7 @@ function _UIUtil() constructor {
         var scrollbarY = Struct.get(this, "scrollbarY")
         if (collide) || (Struct.get(scrollbarY, "isDragEvent") == true) {
           var ratio = _y / this.area.getHeight() 
-          this.offset.y = -1 * (this.offsetMax.y * ratio)
+          this.offset.y = clamp(-1 * (this.offsetMax.y * ratio), -1 * this.offsetMax.y, 0)
           Struct.set(scrollbarY, "isDragEvent", true)
         }
       }
