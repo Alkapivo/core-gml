@@ -39,6 +39,8 @@ function UIImage(name, json = null) {
 
       if (this.image != null) {
         var alpha = this.image.getAlpha()
+        var scaleX = this.image.getScaleX()
+        var scaleY = this.image.getScaleY()
         this.image
           .setAlpha(alpha * (Struct.get(this.enable, "value") == false ? 0.5 : 1.0))
           .scaleToFit(this.area.getWidth(), this.area.getHeight())
@@ -47,6 +49,8 @@ function UIImage(name, json = null) {
             this.context.area.getY() + this.area.getY() + image.texture.offsetY * image.getScaleY() + ((this.area.getHeight() - (image.getHeight() * image.getScaleY())) / 2)
           )
           .setAlpha(alpha)
+          .setScaleX(scaleX)
+          .setScaleY(scaleY)
       }
 
       if (this.label != null) {
