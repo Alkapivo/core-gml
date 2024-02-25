@@ -168,6 +168,7 @@ function Video(json) constructor {
   open = function() {
     this.close()
     video_open(this.path)
+    this.setLoop(this.loop)
     return this
   }
 
@@ -211,6 +212,14 @@ function Video(json) constructor {
   ///@return {Video}
   setVolume = function(volume) {
     video_set_volume(clamp(volume, 0.0, 1.0))
+    return this
+  }
+
+  ///@param {Boolean} loop
+  ///@return {Video}
+  setLoop = function(loop) {
+    this.loop = loop
+    video_enable_loop(loop)
     return this
   }
 }
