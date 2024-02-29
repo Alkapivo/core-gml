@@ -515,6 +515,20 @@ function _UIUtil() constructor {
         this.area.setY(this.margin.top)
       }
     },
+    "groupByXWidth": function() {
+      return function() {
+        ///@todo group.align support
+        ///@todo group.amount support
+        ///@todo group.width() support
+        ///@todo group.height() support
+        this.area.setWidth(this.group.width)
+        this.area.setHeight(this.context.area.getHeight()
+          - this.margin.top - this.margin.bottom)
+        this.area.setX(this.context.area.getWidth() 
+          - (this.area.getWidth() * (this.group.index + 1)))
+        this.area.setY(this.margin.top)
+      }
+    },
 
     ///@deprecated
     "layout": function() {

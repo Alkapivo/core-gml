@@ -34,9 +34,12 @@ function UIButton(name, json = null) {
       ? Assert.isType(json.enable, Struct)
       : null,
 
-    updateEnable: Assert.isType(Callable.run(UIItemUtils.templates.get("updateEnable")), Callable),
+    updateEnable: Assert.isType(Optional.is(Struct.get(json, "updateEnable"))
+      ? json.updateEnable
+      : Callable.run(UIItemUtils.templates.get("updateEnable")), Callable),
     
-    renderBackgroundColor: new BindIntent(Callable.run(UIItemUtils.templates.get("renderBackgroundColor"))),
+    renderBackgroundColor: new BindIntent(Callable
+      .run(UIItemUtils.templates.get("renderBackgroundColor"))),
 
     ///@override
     ///@return {UIItem}
