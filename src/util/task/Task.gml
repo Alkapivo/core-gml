@@ -151,13 +151,8 @@ function Task(_name, config = {}) constructor {
   ///@return {Task}
   ///@throws {TaskTimeoutException}
   update = method(this, function(executor = null) {
-    if (this.timeout != null && this.timeout.update().finished) {
-      if (Core.isType(this.onTimeout, Callable)) {
-        this.onTimeout(executor)
-      } else {
-        throw new TaskTimeoutException("timeout")
-      }
-      return this
+    if (this.timeout != null) {
+      this.timeout.update()
     }
 
     if (this.tick != null && !this.tick.update().finished) {
@@ -165,6 +160,14 @@ function Task(_name, config = {}) constructor {
     }
 
     this.onUpdate(executor)
+
+    if (this.timeout != null && this.timeout.finished) {
+      if (Core.isType(this.onTimeout, Callable)) {
+        this.onTimeout(executor)
+      } else {
+        throw new TaskTimeoutException($"Timer state: {this.timeout.serialize()}")
+      }
+    }
     return this
   })
 }

@@ -85,8 +85,8 @@ function ParticleService(_controller, config = {}): Service() constructor {
   dispatcher = new EventPump(this, new Map(String, Callable, {
     "spawn-particle-emitter": function(event) {
       var task = new Task("emmit-particle")
-        .setTimeout(Struct.getDefault(event.data, "duration", 1.0))
-        .setTick(Struct.getDefault(event.data, "tick", FRAME_MS))
+        .setTimeout(Struct.getDefault(event.data, "duration", FRAME_MS))
+        .setTick(Struct.getDefault(event.data, "interval", FRAME_MS))
         .setState(new Map(String, any, {
           particle: event.data.particle,
           system: event.data.system,
@@ -115,6 +115,9 @@ function ParticleService(_controller, config = {}): Service() constructor {
         })
       event.data.system.executor.add(task)
     },
+    "clear-particles": function(event) {
+      this.templates.clear()
+    },
   }))
 
   ///@param {String} name
@@ -137,7 +140,8 @@ function ParticleService(_controller, config = {}): Service() constructor {
         Struct.get(config, "endY")
       ),
       shape: Struct.getDefault(config, "shape", ParticleEmitterShape.ELLIPSE),
-      duration: Struct.getDefault(config, "duration", FRAME_MS * 4),
+      duration: Struct.getDefault(config, "duration", 0.0),
+      interval: Struct.getDefault(config, "interval", FRAME_MS),
       amount: Struct.getDefault(config, "amount", 100),
       distribution: Struct.getDefault(config, "distribution", ParticleEmitterDistribution.LINEAR),
     })

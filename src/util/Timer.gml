@@ -70,4 +70,17 @@ function Timer(_duration, config = {}) constructor {
     this.finished = false
     return this
   }
+
+  ///@return {Struct}
+  serialize = function() {
+    return {
+      time: this.time,
+      loopCounter: this.loopCounter,
+      finished: this.finished,
+      duration: this.duration,
+      loop: this.loop,
+      amount: this.amount,
+      callback: Core.isType(this.callback, Callable) ? "custom" : "default",
+    }
+  }
 }
