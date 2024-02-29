@@ -62,7 +62,7 @@ function DisplayService(_controller, config = {}): Service() constructor {
   resize = function(width, height) {
     try {
       if (width < 2 || height < 2) {
-        throw new Exception($"Canot resize to: \{ \"width\": {width}, \"height\": {height} \}")
+        throw new Exception($"Cannot resize to: \{ \"width\": {width}, \"height\": {height} \}")
       }
       display_set_gui_size(width, height)
       window_set_size(width, height)

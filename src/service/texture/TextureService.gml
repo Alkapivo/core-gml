@@ -25,15 +25,7 @@ function TextureService(): Service() constructor {
       var asset = sprite_add_ext(texture.file, texture.frames, texture.originX, 
         texture.originY, texture.prefetch)
       var task = new Task("load-texture")
-        .setPromise(event.promise // pass promise to TaskExecutor
-          .whenSuccess(function(data) {
-            Logger.debug("TextureService", $"load-texture success: {data}")
-            return data
-          })
-          .whenFailure(function(data) {
-            Logger.error("TextureService", $"load-texture failure: {data}")
-            return null
-          }))
+        .setPromise(event.promise)
         .setState(new Map(String, any, {
           texture: texture,
           asset: asset,
