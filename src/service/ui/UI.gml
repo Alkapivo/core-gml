@@ -470,7 +470,7 @@ function _UIUtil() constructor {
       return function() {
         this.area.setX(this.layout.x())
         this.area.setY(this.layout.y())
-        this.area.setWidth(this.layout.width())
+        this.area.setWidth(max(this.layout.width(), this.textField.style.w_min))
         this.area.setHeight(this.layout.height())
 
         this.textField.style.w = this.area.getWidth()
