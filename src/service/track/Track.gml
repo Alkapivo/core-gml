@@ -297,7 +297,8 @@ function TrackChannel(json, config = null) constructor {
       this.pointer = null
       this.time = timestamp
       for (var index = 0; index < events.size(); index++) {
-        if (events.get(index).timestamp > timestamp) {
+        this.pointer = index
+        if (events.get(index).timestamp >= timestamp) {
           this.pointer = index == 0 ? null : index - 1
           break
         }
