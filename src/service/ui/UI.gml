@@ -631,6 +631,21 @@ function _UIUtil() constructor {
         }
       }
     },
+    "renderDefaultScrollableBlend": function() {
+      return function() {
+       if (!Optional.is(this.surface)) {
+         this.surface = new Surface()
+       }
+
+       this.surface.update(round(this.area.getWidth()), round(this.area.getHeight()))
+         .renderOn(this.renderSurface)
+       this.surface.render(this.area.getX(), this.area.getY())
+
+       if (this.enableScrollbarY) {
+         this.scrollbarY.render(this)
+       }
+     }
+   },
     "renderItemDefault": function() {
       return function(item, iterator, area) {
         item.render()

@@ -44,7 +44,7 @@ function UILabel(json) constructor {
     var config = gpu_get_colorwriteenable()
     var enableBlend = gpu_get_blendenable()
     gpu_set_blendenable(true)
-    gpu_set_colorwriteenable(true, true, true, false)
+    //gpu_set_colorwriteenable(true, true, true, false)
 
     if (this.font.asset != draw_get_font()) {
       draw_set_font(this.font.asset)

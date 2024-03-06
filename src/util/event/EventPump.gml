@@ -71,8 +71,7 @@ function EventPump(_context, _dispatchers, config = {}) constructor {
 
   ///@private
   ///@param {Event|Number} entry
-  ///@param {Number} index
-  execute = function(entry, index) {
+  execute = function(entry) {
     static resolveEvent = function(context, event) {
       if (context.enableLogger) {
         Logger.debug("EventPump", $"Dispatch event: '{event.name}'")

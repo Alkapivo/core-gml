@@ -9,10 +9,10 @@ function _String() constructor {
 		return string_length(text)
 	}
 
-	///@param {String} substr
 	///@param {String} text
+	///@param {String} substr
 	///@return {Number}
-	count = function(substr, text) {
+	count = function(text, substr) {
 		return string_count(substr, text)
 	}
 
@@ -98,7 +98,7 @@ function _String() constructor {
 	///@param {String} delimiter
 	///@return {Array<String>}
 	split = function(text, delimiter) {
-		var size = this.count(delimiter, text) + 1
+		var size = this.count(text, delimiter) + 1
 		var delimiterSize = this.size(delimiter)
 		var array = GMArray.create(String, size, "")
 		var buffer = text
