@@ -439,7 +439,7 @@ function _GMArray() constructor {
   ///@override
   ///@param {Callable} callback
   ///@param {any} [acc]
-  ///@return {Array}
+  ///@return {GMArray}
   static map = function(arr, callback, acc = null) {
     var mapped = []
     var size = this.size(arr)

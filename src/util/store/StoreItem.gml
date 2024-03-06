@@ -27,7 +27,7 @@ function StoreItem(_name, json) constructor {
   ///@param {any} value
   ///@return {StoreItem}
   set = method(this, Assert.isType(Struct.getDefault(json, "set", function(value) {
-    try {
+    //try {
       var _value = Assert.isType(this.passthrough(value), this.type)
       this.validate(_value)
       this.value = _value
@@ -38,9 +38,9 @@ function StoreItem(_name, json) constructor {
           Logger.error("StoreItem", $"'{this.name}' forEach thrown an exception at index {index}. {exception.message}")
         }
       }, _value)
-    } catch (exception) {
-      Logger.error("StoreItem", $"'{this.name}' set fatal error: {exception.message}")
-    }
+    //} catch (exception) {
+    //  Logger.error("StoreItem", $"'{this.name}' set fatal error: {exception.message}")
+    //}
     return this
   }), Callable))
 
