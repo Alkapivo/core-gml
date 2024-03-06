@@ -220,6 +220,13 @@ function _Core() constructor {
   static getProperty = function(key, defaultValue = null) {
     return Core.properties.getDefault(key, defaultValue)
   }
+
+  ///@param {Boolean} value
+  ///@return {Core}
+  static debugOverlay = function(value) {
+    show_debug_overlay(value)
+    return this
+  }
 }
 global.__Core = new _Core()
 #macro Core global.__Core

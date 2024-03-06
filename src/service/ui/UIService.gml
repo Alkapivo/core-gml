@@ -116,18 +116,17 @@ function UIService(_context, config = {}): Service(config) constructor {
   ///@return {UIService} 
   render = function() {
     static renderContainer = function(container) {
-      try {
-        
+      //try {
         if (container.enable) {
           container.render()
         }
-      } catch (exception) {
-        var name = Struct.get(container, "name")
-        Logger.error("UIService", $"Render exception, name: '{name}'. {exception.message}")
-        GPU.reset.shader() ///@todo remove
-        GPU.reset.surface() ///@todo remove
-        GPU.reset.blendMode() ///@todo remove
-      }
+      //} catch (exception) {
+      //  var name = Struct.get(container, "name")
+      //  Logger.error("UIService", $"Render exception, name: '{name}'. {exception.message}")
+      //  GPU.reset.shader() ///@todo remove
+      //  GPU.reset.surface() ///@todo remove
+      //  GPU.reset.blendMode() ///@todo remove
+      //}
     }
 
     

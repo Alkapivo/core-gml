@@ -1,5 +1,15 @@
 ///@package io.alkapivo.core.service
 
+///@enum
+function _Cursor(): Enum() constructor {
+  DEFAULT = cr_default
+  RESIZE_HORIZONTAL = cr_size_we
+  RESIZE_VERTICAL = cr_size_ns
+}
+global.__Cursor = new _Cursor()
+#macro Cursor global.__Cursor
+
+
 ///@param {Controller} _controller
 ///@param {Struct} [config]
 function DisplayService(_controller, config = {}): Service() constructor {
@@ -53,6 +63,30 @@ function DisplayService(_controller, config = {}): Service() constructor {
     if (this.getFullscreen() != enable) {
       window_set_fullscreen(enable)
     }
+    return this
+  }
+
+  ///@return {Cursor}
+  getCursor = function(cursor) {
+    return window_get_cursor()
+  }
+
+  ///@param {Cursor} cursor
+  ///@return {DisplayService}
+  setCursor = function(cursor) {
+    window_set_cursor(cursor)
+    return this
+  }
+
+  ///@return {String}
+  getCaption = function() {
+    return window_get_caption()
+  }
+
+  ///@param {String} caption
+  ///@return {DisplayService}
+  setCaption = function(caption) {
+    window_set_caption(caption)
     return this
   }
 

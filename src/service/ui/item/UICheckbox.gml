@@ -31,6 +31,11 @@ function UICheckbox(name, json = null) {
     enable: Struct.contains(json, "enable")
       ? Assert.isType(json.enable, Struct)
       : null,
+
+    ///@type {Boolean}
+    scaleToFillStretched: Struct.contains(json, "scaleToFillStretched")
+      ? Assert.isType(json.scaleToFillStretched, Boolean)
+      : true,
     
     ///@param {any} value
     updateValue: new BindIntent(Assert.isType(Struct.getDefault(json, "updateValue", function(value) {
@@ -63,9 +68,11 @@ function UICheckbox(name, json = null) {
       var sprite = this.value ? this.spriteOn : this.spriteOff
       if (sprite != null) {
         var alpha = sprite.getAlpha()
+        if (this.scaleToFillStretched) {
+          sprite.scaleToFillStretched(this.area.getWidth(), this.area.getHeight())
+        }
         sprite
           .setAlpha(alpha * (Struct.get(this.enable, "value") == false ? 0.5 : 1.0))
-          .scaleToFillStretched(this.area.getWidth(), this.area.getHeight())
           .render(
             this.context.area.getX() + this.area.getX(),
             this.context.area.getY() + this.area.getY()

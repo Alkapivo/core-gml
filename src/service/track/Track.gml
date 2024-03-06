@@ -35,15 +35,16 @@ function Track(json, config = null) constructor {
   ///@param {Number} index
   ///@param {?Struct} [config]
   ///@return {TrackChannel}
-  parseTrackChannel = method(this, Assert.isType(Struct
-    .getDefault(config, "parseTrackChannel", function(channel, index, config = null) {
-      Logger.debug("Track", $"Parse channel '{channel.name}' at index {index}")
-      return new TrackChannel({ 
-        name: Assert.isType(Struct.get(channel, "name"), String),
-        events: Assert.isType(Struct.get(channel, "events"), GMArray),
-        index: index,
-      }, config)
-    }), Callable))
+  parseTrackChannel = Core.isType(Struct.get(config, "parseTrackChannel"), Callable)
+    ? method(this, config.parseTrackChannel)
+    : function(channel, index, config = null) {
+        Logger.debug("Track", $"Parse channel '{channel.name}' at index {index}")
+        return new TrackChannel({ 
+          name: Assert.isType(Struct.get(channel, "name"), String),
+          events: Assert.isType(Struct.get(channel, "events"), GMArray),
+          index: index,
+        }, config)
+      }
 
   ///@type {Map<String, TrackChannel>}
   channels = new Map(String, TrackChannel)
@@ -192,19 +193,21 @@ function TrackChannel(json, config = null) constructor {
   ///@param {Number} index
   ///@param {?Struct} [config]
   ///@return {TrackEvent}
-  parseEvent = method(this, Assert.isType(Struct
-    .getDefault(config, "parseEvent", function(event, index, config = null) {
-      return new TrackEvent(event, config)
-    }), Callable))
+  parseEvent = Core.isType(Struct.get(config, "parseEvent"), Callable)
+    ? method(this, config.parseEvent)
+    : function(event, index, config = null) {
+        return new TrackEvent(event, config)
+      }
   
   ///@private
   ///@param {TrackEvent} a
   ///@param {TrackEvent} b
   ///@return {Boolean}
-  compareEvents = method(this, Assert.isType(Struct
-    .getDefault(config, "compareEvents", function(a, b) { 
-      return a.timestamp < b.timestamp
-    }), Callable))
+  compareEvents = Core.isType(Struct.get(config, "compareEvents"), Callable)
+    ? method(this, config.compareEvents)
+    : function(a, b) { 
+        return a.timestamp < b.timestamp
+      }
 
   ///@type {String}
   name = Assert.isType(Struct.get(json, "name"), String)
