@@ -129,7 +129,7 @@ function ParticleService(_controller, config = {}): Service() constructor {
 
   ///@param {Struct} [config]
   ///@return {Event}
-  factoryEventSpawnParticleEmitter = method(this, function(config = {}) {
+  factoryEventSpawnParticleEmitter = function(config = {}) {
     return new Event("spawn-particle-emitter", {
       particle: this.factoryParticle(Struct.getDefault(config, "particleName", "particle_default")),
       system: this.systems.get(Struct.getDefault(config, "systemName", "main")),
@@ -145,7 +145,7 @@ function ParticleService(_controller, config = {}): Service() constructor {
       amount: Struct.getDefault(config, "amount", 100),
       distribution: Struct.getDefault(config, "distribution", ParticleEmitterDistribution.LINEAR),
     })
-  })
+  }
 
   ///@param {Event} event
   ///@return {?Promise}

@@ -87,6 +87,7 @@ function TextureTemplate(_name, json) constructor {
   ///@type {Boolean}
   prefetch = Assert.isType(Struct.getDefault(json, "prefetch", true), Boolean)
   
+  sprite_set_offset(this.asset, this.originX, this.originY)
   ///@return {Struct}
   serialize = function() {
     var template = this

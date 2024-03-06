@@ -97,7 +97,7 @@ function ParticlePropertyGravity(json) constructor {
 
 ///@param {Struct} json
 function ParticlePropertySprite(json) constructor {
-  
+
   ///@type {Texture}
   texture = Assert.isType(TextureUtil.parse(Struct.get(json, "name")), Texture)
   
@@ -123,37 +123,111 @@ function ParticleTemplate(_name, json) constructor {
   shape = Struct.getDefault(json, "shape", "CIRCLE")
 
   ///@type {Struct}
-  size = Struct.get(json, "size")
+  size = Struct.appendRecursiveUnique(
+    Struct.get(json, "size"),
+    {
+      wiggle: 0.0,
+      increase: 0.0,
+      minValue: 0.0,
+      maxValue: 0.0,
+    },
+    false
+  )
 
   ///@type {Struct}
-  scale = Struct.get(json, "scale")
+  scale = Struct.appendRecursiveUnique(
+    Struct.get(json, "scale"),
+    {
+      x: 1.0,
+      y: 1.0,
+    },
+    false
+  )
 
   ///@type {Struct}
-  orientation = Struct.get(json, "orientation")
+  orientation = Struct.appendRecursiveUnique(
+    Struct.get(json, "orientation"),
+    {
+      relative: 0.0,
+      wiggle: 0.0,
+      increase: 0.0,
+      minValue: 0.0,
+      maxValue: 0.0,
+    },
+    false
+  )
 
   ///@type {Struct}
-  color = Struct.get(json, "color")
+  color = Struct.appendRecursiveUnique(
+    Struct.get(json, "color"),
+    {
+      start: "#ffffff",
+      halfway: "#ffffff",
+      finish: "#ffffff",
+    },
+    false
+  )
 
   ///@type {Struct}
-  alpha = Struct.get(json, "alpha")
+  alpha = Struct.appendRecursiveUnique(
+    Struct.get(json, "alpha"),
+    {
+      start: 0.0,
+      halfway: 1.0,
+      finish: 0.0,
+    },
+    false
+  )
 
   ///@type {Boolean}
-  blend = Struct.get(json, "blend")
+  blend = Struct.contains(json, "blend") ? json.blend : false
 
   ///@type {Struct}
-  life = Struct.get(json, "life")
+  life = Struct.appendRecursiveUnique(
+    Struct.get(json, "life"),
+    {
+      minValue: 80.0,
+      maxValue: 120.0,
+    },
+    false
+  )
 
   ///@type {Struct}
-  speed = Struct.get(json, "speed")
+  speed = Struct.appendRecursiveUnique(
+    Struct.get(json, "speed"),
+    {
+      wiggle: 0.0,
+      increase: 0.0,
+      minValue: 0.0,
+      maxValue: 0.0,
+    },
+    false
+  )
 
   ///@type {Struct}
-  angle = Struct.get(json, "angle")
+  angle = Struct.appendRecursiveUnique(
+    Struct.get(json, "angle"),
+    {
+      wiggle: 0.0,
+      increase: 0.0,
+      minValue: 0.0,
+      maxValue: 0.0,
+    },
+    false
+  )
 
   ///@type {Struct}
-  gravity = Struct.get(json, "gravity")
+  gravity = Struct.appendRecursiveUnique(
+    Struct.get(json, "gravity"),
+    {
+      angle: 0.0,
+      amount: 0.0,
+    },
+    false
+  )
 
   ///@type {?Struct}
-  sprite = Struct.contains(json, "sprite") ? Struct.get(json, "sprite") : null
+  sprite = Core.isType(Struct.get(json, "sprite"), Struct) ? json.sprite : null
 
   ///@return {Struct}
   serialize = function() {
@@ -220,8 +294,8 @@ function Particle(json) constructor {
   gravity = new ParticlePropertyGravity(Struct.get(json, "gravity"))
 
   ///@type {?ParticlePropertySprite}
-  sprite = Struct.contains(json, "sprite") 
-    ? new ParticlePropertySprite(Struct.get(json, "sprite"))
+  sprite = Core.isType(Struct.get(json, "sprite"), Struct)
+    ? new ParticlePropertySprite(json.sprite)
     : null
 
   ///@type {?GMParticle}
