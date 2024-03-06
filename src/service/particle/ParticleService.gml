@@ -105,7 +105,7 @@ function ParticleService(_controller, config = {}): Service() constructor {
           var distribution = this.state.get("distribution")
           part_emitter_region(
             system.asset, system.emitter,
-            coords.x, coords.y, coords.z, coords.a,
+            coords.x, coords.z, coords.y, coords.a,
             shape, distribution
           )
 
