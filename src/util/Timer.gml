@@ -40,21 +40,37 @@ function Timer(_duration, config = {}) constructor {
       return this;
     }
 
-
     this.time += DeltaTime.apply(this.amount)
-    if (this.time < this.duration) {
-      return this
+    if (this.amount > 0) {
+      if (this.time < this.duration) {
+        return this
+      }
+      
+      this.time = this.time - (this.duration * floor(this.time / this.duration))
+      this.finished = true
+      if (this.callback) {
+        this.callback(callbackData, this)
+      }
+  
+      if (this.loop != Infinity) {
+        this.loopCounter++
+      }
+    } else {
+      if (this.time > 0) {
+        return this
+      }
+
+      this.time = this.duration + (abs(this.time) - (this.duration * floor(abs(this.time) / this.duration)))
+      this.finished = true
+      if (this.callback) {
+        this.callback(callbackData, this)
+      }
+  
+      if (this.loop != Infinity) {
+        this.loopCounter++
+      }
     }
     
-    this.time = this.time - (this.duration * floor(this.time / this.duration))
-    this.finished = true
-    if (this.callback) {
-      this.callback(callbackData, this)
-    }
-
-    if (this.loop != Infinity) {
-      this.loopCounter++
-    }
     return this
   }
 
