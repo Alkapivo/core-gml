@@ -178,6 +178,17 @@ function Rectangle(json = {}): Vector4() constructor {
       && y >= this.getY() 
       && y <= this.getY() + this.getHeight()
   })
+
+  ///@override
+  ///@return {Struct}
+  serialize = function() {
+    return {
+      x: this.getX(),
+      y: this.getY(),
+      width: this.getWidth(),
+      height: this.getHeight(),
+    }
+  }
 }
 
 
