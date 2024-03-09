@@ -25,6 +25,12 @@ function DisplayService(_controller, config = {}): Service() constructor {
 	///@type {Number}
 	previousHeight = 0;
 
+	///@type {Number}
+	windowWidth = 0
+	
+	///@type {Number}
+	windowHeight = 0
+
   ///@private
   ///@type {String}
 	state = "idle"
@@ -60,8 +66,16 @@ function DisplayService(_controller, config = {}): Service() constructor {
 
   ///@return {DisplayService}
   setFullscreen = function(enable) {
-    if (this.getFullscreen() != enable) {
+    var fullscreen = this.getFullscreen()
+    if (fullscreen != enable) {
       window_set_fullscreen(enable)
+
+      if (fullscreen) {
+        this.resize(this.windowWidth, this.windowHeight)
+      } else {
+        this.windowWidth = this.getWidth()
+        this.windowHeight = this.getHeight()
+      }
     }
     return this
   }
@@ -96,11 +110,16 @@ function DisplayService(_controller, config = {}): Service() constructor {
   resize = function(width, height) {
     try {
       if (width < 2 || height < 2) {
-        throw new Exception($"Cannot resize to: \{ \"width\": {width}, \"height\": {height} \}")
+        return this
+        //throw new Exception($"Cannot resize to: \{ \"width\": {width}, \"height\": {height} \}")
       }
       display_set_gui_size(width, height)
       window_set_size(width, height)
       surface_resize(application_surface, width, height)
+      if (!this.getFullscreen()) {
+        this.windowWidth = this.getWidth()
+        this.windowHeight = this.getHeight()
+      }
     } catch (exception) {
       Logger.error("[ResizeEvent]", exception.message)
     }
