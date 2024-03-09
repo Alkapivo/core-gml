@@ -99,4 +99,14 @@ function Timer(_duration, config = {}) constructor {
       callback: Core.isType(this.callback, Callable) ? "custom" : "default",
     }
   }
+
+  ///@return {Timer}
+  finish = function() {
+    if (this.amount > 0) {
+      this.time = duration
+    } else {
+      this.time = 0
+    }
+    return this
+  }
 }
