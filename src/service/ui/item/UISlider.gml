@@ -47,7 +47,7 @@ function UISliderHorizontal(name, json = null) {
 
     ///@param {Number} mouseX
     updateValue: new BindIntent(Assert.isType(Struct.getDefault(json, "updateValue", function(mouseX) {
-      var position = mouseX - this.context.area.getX() - this.area.getX()
+      var position = this.context.area.getX() + mouseX - this.context.area.getX() - this.area.getX()
       var length = abs(this.minValue - this.maxValue) * (position / this.area.getWidth())
       this.value = clamp(this.minValue + length, this.minValue, this.maxValue)
       if (Core.isType(this.store, UIStore)) {
@@ -95,10 +95,6 @@ function UISliderHorizontal(name, json = null) {
         }
       }
 
-      var promise = MouseUtil.getClipboard()
-      if (Struct.get(Struct.get(promise, "state"), "context") == this) {
-        this.updateValue(MouseUtil.getMouseX())
-      }
       return this
     },
 
@@ -106,6 +102,14 @@ function UISliderHorizontal(name, json = null) {
 
     ///@return {UIItem}
     render: Struct.getDefault(json, "render", function() {
+      var promise = MouseUtil.getClipboard()
+      if (Struct.get(Struct.get(promise, "state"), "context") == this) {
+        var offsetX = Core.isType(Struct.get(this.context, "layout"), UILayout)
+          ? this.context.layout.x() 
+          : 0
+        this.updateValue(MouseUtil.getMouseX() - offsetX)
+      }
+      
       if (Optional.is(this.preRender)) {
         this.preRender()
       }
@@ -130,7 +134,10 @@ function UISliderHorizontal(name, json = null) {
         return
       }
 
-      this.updateValue(event.data.x)
+      var offsetX = Core.isType(Struct.get(this.context, "layout"), UILayout) 
+        ? this.context.layout.x() 
+        : 0
+      this.updateValue(MouseUtil.getMouseX() - offsetX)
     }), Callable),
 
     ///@param {Event} event
