@@ -39,14 +39,17 @@ function Sprite(_texture, config = {}) constructor {
   ///@type {Boolean}
   animate = Struct.getDefault(config, "animate", true)
 
+  ///@return {String}
   getName = function() {
     return this.texture.name
   }
 
+  ///@return {Number}
   getWidth = function() {
     return this.texture.width
   }
 
+  ///@return {Number}
   getHeight = function() {
     return this.texture.height
   }
@@ -208,6 +211,7 @@ function Sprite(_texture, config = {}) constructor {
     var json = {
       name: this.getName(),
       frame: this.getFrame(),
+      speed: this.getSpeed(),
       scaleX: this.getScaleX(),
       scaleY: this.getScaleY(),
       alpha: this.getAlpha(),
@@ -240,6 +244,10 @@ function Sprite(_texture, config = {}) constructor {
 
       if (json.blend == "#ffffff") {
         Struct.remove(json, "blend")
+      }
+
+      if (json.speed == 0.0) {
+        Struct.remove(json, "animate")
       }
 
       if (json.animate == true) {
