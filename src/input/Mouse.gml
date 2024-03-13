@@ -82,6 +82,7 @@ function Mouse(json) constructor {
         button.on = mouse_check_button(button.type)
         button.pressed = mouse_check_button_pressed(button.type)
         button.released = mouse_check_button_released(button.type)
+        var clipboard = MouseUtil.getClipboard()
 
         if (button.dragging && !button.on && !button.released && !button.pressed) {
           button.released = true
@@ -91,9 +92,12 @@ function Mouse(json) constructor {
         if (button.drop) {
           button.drop = false
 
-          var promise = MouseUtil.getClipboard()
-          if (Core.isType(promise, Promise)) {
-            promise.fullfill()
+          if (Core.isType(clipboard, Promise)) {
+            clipboard.fullfill()
+          }
+
+          if (Core.isType(Struct.get(clipboard, "drop"), Callable)) {
+            clipboard.drop()
           }
           MouseUtil.clearClipboard()
         }
@@ -121,6 +125,10 @@ function Mouse(json) constructor {
           button.drop = false
           button.drag = false
           button.dragging = true
+
+          if (Core.isType(Struct.get(clipboard, "drag"), Callable)) {
+            clipboard.drag()
+          }
         }
 
         var vec2 = button.lastPressedPosition 
