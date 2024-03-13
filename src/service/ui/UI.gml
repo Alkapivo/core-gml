@@ -183,10 +183,9 @@ function UI(config = {}) constructor {
   update = Struct.contains(config, "update")
     ? Assert.isType(method(this, config.update), Callable)
     : function() {
-      
       if (Optional.is(this.updateArea)) {
-        if (Optional.is(this.updateAreaTimer)) {
-          if (this.updateAreaTimer.update().finished || mouse_check_button(mb_any)) {
+        if (Optional.is(this.updateTimer)) {
+          if (this.updateTimer.update().finished) {
             this.updateArea()
 
             if (Optional.is(this.updateItems)) {
@@ -208,8 +207,6 @@ function UI(config = {}) constructor {
           }
         }
       }
-
-
       
       return this
     }
@@ -319,14 +316,7 @@ function UI(config = {}) constructor {
   }
 
   ///@type {?Timer}
-  timer = Struct.contains(config, "timer") ? Assert.isType(config.timer, Timer) : null
-
-  ///@type {?Timer}
-  updateAreaTimer =  Struct.contains(config, "updateAreaTimer") 
-    ? Assert.isType(config.updateAreaTimer, Timer) : null
-
-  ///@type {?Timer}
-  updateTimer = Struct.contains(config, "updateTimer") 
+  updateTimer =  Struct.contains(config, "updateTimer") 
     ? Assert.isType(config.updateTimer, Timer) : null
 
   ///@type {Struct}
