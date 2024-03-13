@@ -45,8 +45,8 @@ function Timer(_duration, config = {}) constructor {
       if (this.time < this.duration) {
         return this
       }
-      
-      this.time = this.time - (this.duration * floor(this.time / this.duration))
+
+      this.time = this.time - this.duration * ceil(this.time / this.duration)
       this.finished = true
       if (this.callback) {
         this.callback(callbackData, this)
@@ -60,7 +60,7 @@ function Timer(_duration, config = {}) constructor {
         return this
       }
 
-      this.time = this.duration + (abs(this.time) - (this.duration * floor(abs(this.time) / this.duration)))
+      this.time = this.duration + (abs(this.time) - (this.duration * ceil(abs(this.time) / this.duration)))
       this.finished = true
       if (this.callback) {
         this.callback(callbackData, this)
