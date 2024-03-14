@@ -21,8 +21,8 @@ function UISliderHorizontal(name, json = null) {
     ///@type {Sprite}
     pointer: Assert.isType(SpriteUtil.parse(Struct.getDefault(json, "pointer", {
       name: "texture_slider_pointer_default",
-      scaleX: 0.075,
-      scaleY: 0.075,
+      scaleX: 0.6,
+      scaleY: 0.6,
     })), Sprite),
 
     ///@type {TexturedLine}
