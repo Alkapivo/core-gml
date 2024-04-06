@@ -349,9 +349,10 @@ function UI(config = {}) constructor {
   }
 
   ///@type {?Timer}
-  updateTimer =  Struct.contains(config, "updateTimer") 
-    ? Assert.isType(config.updateTimer, Timer) : null
-
+  updateTimer = Core.isType(Struct.get(config, "updateTimer"), Timer)
+    ? config.updateTimer 
+    : null
+  
   ///@type {Struct}
   scrollbarY = Struct.appendRecursive(
     {

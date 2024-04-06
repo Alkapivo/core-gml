@@ -84,7 +84,7 @@ function _Core() constructor {
           return is_instanceof(object, type)
       }
     } catch (exception) {
-      Logger.error("Core.isType", $"Fatal error: {exception.message}")
+      Logger.error("Core.isType", $"'{type}' Fatal error: {exception.message}")
     }
     return false
   }
