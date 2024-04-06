@@ -15,14 +15,9 @@ function UIService(_context, config = {}): Service(config) constructor {
   ///@param {EventPump} dispatcher
   mouseEventPump = function(event) {
     for (var index = this.containers.size() - 1; index >= 0; index--) {
-      try {
-        var container = this.containers.get(index)
-        if (container.enable && container.dispatch(event)) {
-          break
-        }
-      } catch (exception) {
-        Logger.error("UIService", $"Event pump exception: {exception.message}")
-        Core.printStackTrace()
+      var container = this.containers.get(index)
+      if (container.enable && container.dispatch(event)) {
+        break
       }
     }
   }
