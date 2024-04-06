@@ -26,6 +26,11 @@ function UIItem(_name, config = {}) constructor {
   ///@type {?UIStore}
   store = Struct.contains(config, "store") ? new UIStore(config.store, this) : null
 
+  ///@type {Boolean}
+  storeSubscribed = Core.isType(Struct.get(config, "storeSubscribed"), Boolean) 
+    ? config.storeSubscribed 
+    : false
+
   ///@type {?Struct}
   component = Optional.is(Struct.get(config, "component"))
     ? Assert.isType(config.component, Struct)
@@ -81,11 +86,12 @@ function UIItem(_name, config = {}) constructor {
       }
     }
 
+  ///@param {Boolean} [_updateArea]
   ///@return {UIItem}
   update = Struct.contains(config, "update")
     ? Assert.isType(method(this, config.update), Callable)
-    : function() {
-      if (Optional.is(this.updateArea)) {
+    : function(_updateArea = true) {
+      if (_updateArea && Optional.is(this.updateArea)) {
         this.updateArea()
       }
 
@@ -97,8 +103,9 @@ function UIItem(_name, config = {}) constructor {
         this.updateCustom()
       }
 
-      if (Optional.is(this.store)) {
+      if (!storeSubscribed && Optional.is(this.store)) {
         this.store.subscribe()
+        this.storeSubscribed = true
       }
 
       if (this.isHoverOver) {
@@ -111,6 +118,7 @@ function UIItem(_name, config = {}) constructor {
   free = method(this, Assert.isType(Struct.getDefault(config, "free", function() {
     if (Optional.is(this.store)) {
       this.store.unsubscribe()
+      this.storeSubscribed = false
     }
   }), Callable))
 

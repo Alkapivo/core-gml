@@ -136,7 +136,7 @@ function Map(_keyType = any, _valueType = any, _container = null, config = { val
   ///@param {Callable} callback
   ///@param {any} [acc]
   ///@return {Map}
-  static forEach = function(callback, acc = null) {
+  static _forEach = function(callback, acc = null) {
     var keys = this.keys()
     var size = keys.size()
     for (var index = 0; index < size; index++) {
@@ -147,6 +147,25 @@ function Map(_keyType = any, _valueType = any, _container = null, config = { val
         break
       }
     }
+    return this
+  }
+
+  _acc = null
+  _callback = null
+  _forEachWrapper = function(key, value) {
+    this._callback(value, key, this._acc)
+  }
+
+  ///@override
+  ///@param {Callable} callback
+  ///@param {any} [acc]
+  ///@return {Map}
+  static forEach = function(callback, acc = null) {
+    this._callback = callback
+    this._acc = acc
+    struct_foreach(this.getContainer(), this._forEachWrapper)
+    this._callback = null
+    this._acc = null
     return this
   }
 

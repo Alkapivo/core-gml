@@ -21,6 +21,7 @@ function UIService(_context, config = {}): Service(config) constructor {
         }
       } catch (exception) {
         Logger.error("UIService", $"Event pump exception: {exception.message}")
+        Core.printStackTrace()
       }
     }, event)
   }
@@ -63,6 +64,7 @@ function UIService(_context, config = {}): Service(config) constructor {
           removeHandler(this, event.data)
         } catch (exception) {
           Logger.error("UIService", $"'remove' fatal error: {exception.message}")
+          Core.printStackTrace()
         }
       } else {
         removeHandler(this, event.data)

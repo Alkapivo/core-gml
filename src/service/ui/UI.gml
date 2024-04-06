@@ -75,6 +75,10 @@ function UI(config = {}) constructor {
     ? Assert.isType(config.surface, Surface)
     : null
 
+  ///@private
+  ///@type {Boolean}
+  renderSurfaceTick = false
+
   updateArea = Struct.contains(config, "updateArea")
     ? Assert.isType(method(this, config.updateArea), Callable)
     : null
@@ -86,14 +90,18 @@ function UI(config = {}) constructor {
   ///@param {UIItem} item
   updateItem = Struct.contains(config, "updateItem")
     ? Assert.isType(method(this, config.updateItem), Callable)
-    : function(item) {
-      item.update()
+    : function(item, iterator, acc) {
+      item.update(acc)
     }
 
   updateItems = Struct.contains(config, "updateItems")
     ? Assert.isType(method(this, config.updateItems), Callable)
     : function() {
-      this.items.forEach(this.updateItem)
+      var updateItemArea = !this.renderSurfaceTick
+      if (Optional.is(this.updateTimer)) {
+        updateItemArea = this.updateTimer.finished
+      }
+      this.items.forEach(this.updateItem, updateItemArea)
     }
 
   ///@param {Event} event
@@ -183,6 +191,19 @@ function UI(config = {}) constructor {
   update = Struct.contains(config, "update")
     ? Assert.isType(method(this, config.update), Callable)
     : function() {
+
+      if (this.enableScrollbarY && Struct.get(this.scrollbarY, "isDragEvent")) {
+        if (mouse_check_button(mb_left) ///@todo button should be a parameter
+          && Optional.is(Struct.get(this, "onMousePressedLeft"))) {
+          this.onMousePressedLeft(new Event("MouseOnLeft", { 
+            x: MouseUtil.getMouseX(), 
+            y: MouseUtil.getMouseY(),
+          }))
+        } else {
+          Struct.set(scrollbarY, "isDragEvent", false)
+        }
+      }
+      
       if (Optional.is(this.updateArea)) {
         if (Optional.is(this.updateTimer)) {
           if (this.updateTimer.update().finished) {
@@ -215,10 +236,21 @@ function UI(config = {}) constructor {
   renderSurface = Struct.contains(config, "renderSurface")
     ? Assert.isType(method(this, config.renderSurface), Callable)
     : function() {
+      this.renderSurfaceTick = !this.renderSurfaceTick
+      if (!this.renderSurfaceTick) {
+        return
+      }
+
       var color = this.state.get("background-color")
       GPU.render.clear(Core.isType(color, GMColor) 
         ? ColorUtil.fromGMColor(color) 
         : ColorUtil.BLACK_TRANSPARENT)
+
+      var deltaTime = DeltaTime.deltaTime
+
+      ///@hack
+      ///@description 2 *, because `renderSurfaceTick`
+      DeltaTime.deltaTime = 2 * deltaTime 
 
       var areaX = this.area.x
       var areaY = this.area.y
@@ -227,6 +259,7 @@ function UI(config = {}) constructor {
       this.items.forEach(this.renderItem, this.area)
       this.area.x = areaX
       this.area.y = areaY
+      DeltaTime.deltaTime = deltaTime
     }
 
   ///@param {UIItem} item
@@ -580,6 +613,7 @@ function _UIUtil() constructor {
         this.offset.y = clamp(this.offset.y, -1 * this.offsetMax.y, 0.0)
 
         var scrollbarY = Struct.get(this, "scrollbarY")
+        ///@todo unreachable code
         if (Struct.get(scrollbarY, "isDragEvent")) {
           if (mouse_check_button(mb_left)) { ///@todo button should be a parameter
             this.onMousePressedLeft(new Event("MouseOnLeft", { 
@@ -590,6 +624,86 @@ function _UIUtil() constructor {
             Struct.set(scrollbarY, "isDragEvent", false)
           }
         }
+      }
+    },
+    ///@description cached scrollableY
+    "__scrollableY": function() { 
+      return function() {
+        var resetLayoutCache = false
+        var scrollbarY = Struct.get(this, "scrollbarY")
+        if (Struct.get(scrollbarY, "isDragEvent")) {
+          resetLayoutCache = true
+          if (mouse_check_button(mb_left)) { ///@todo button should be a parameter
+            this.onMousePressedLeft(new Event("MouseOnLeft", { 
+              x: MouseUtil.getMouseX(), 
+              y: MouseUtil.getMouseY(),
+            }))
+          } else {
+            Struct.set(scrollbarY, "isDragEvent", false)
+          }
+        }
+
+        var viewHeight = this.fetchViewHeight()
+        this.offsetMax.y = viewHeight >= this.area.getHeight()
+          ? abs(this.area.getHeight() - viewHeight) + this.margin.bottom
+          : 0.0
+        this.offset.y = clamp(this.offset.y, -1 * this.offsetMax.y, 0.0)
+        
+        var layoutCache = Struct.get(this, "layoutCache")
+        if (!Core.isType(layoutCache, Struct)) {
+          layoutCache = {
+            x: -1,
+            y: -1,
+            width: -1,
+            height: -1,
+            viewHeight: -1,
+            displayWidth: GuiWidth(), ///@todo replace GuiWidth with DisplayService call
+            displayHeight: GuiHeight(), ///@todo replace GuiHeight with DisplayService call
+            finalized: false,
+            resetItemsCache: false,
+          }
+          Struct.set(this, "layoutCache", layoutCache)
+        }
+        layoutCache.resetItemsCache = false
+
+        if (layoutCache.displayWidth != GuiWidth() ///@todo replace GuiWidth with DisplayService call
+          || layoutCache.displayHeight != GuiHeight()) { ///@todo replace GuiHeight with DisplayService call
+          resetLayoutCache = true
+        }
+
+        if (resetLayoutCache) {
+          layoutCache.finalized = false
+        }
+
+        if (layoutCache.finalized) {
+          return
+        }
+
+        var _x = this.layout.x()
+        var _y = this.layout.y()
+        var _width = this.layout.width()
+        var _height = this.layout.height()
+        this.area.setX(_x)
+        this.area.setY(_y)
+        this.area.setWidth(_width)
+        this.area.setHeight(_height)
+
+        if (layoutCache.x == _x
+          && layoutCache.y == _y
+          && layoutCache.width == _width
+          && layoutCache.height == _height) {
+
+          layoutCache.finalized = true
+        }
+
+        layoutCache.x = _x
+        layoutCache.y = _y
+        layoutCache.width = _width
+        layoutCache.height = _height
+        layoutCache.viewHeight = viewHeight
+        layoutCache.displayWidth = GuiWidth() ///@todo replace GuiWidth with DisplayService call
+        layoutCache.displayHeight = GuiHeight() ///@todo replace GuiHeight with DisplayService call
+        layoutCache.resetItemsCache = resetLayoutCache
       }
     },
   })
@@ -711,6 +825,49 @@ function _UIUtil() constructor {
 
   ///@type {Map<String, Callable>}
   itemUpdateTemplates = new Map(String, Callable, {
+    ///@description cached
+    "applyLayoutCached": function() {
+      return function() {
+
+        var layoutCache = Struct.get(this, "layoutCache")
+        if (!Core.isType(layoutCache, Struct)) {
+          layoutCache = {
+            x: -1,
+            y: -1,
+            width: -1,
+            height: -1,
+            finalized: false,
+          }
+          Struct.set(this, "layoutCache", layoutCache)
+        }
+
+        if (layoutCache.finalized) {
+          return
+        }
+
+        var _x = this.layout.x()
+        var _y = this.layout.y()
+        var _width = this.layout.width()
+        var _height = this.layout.height()
+        this.area.setX(_x)
+        this.area.setY(_y)
+        this.area.setWidth(_width)
+        this.area.setHeight(_height)
+
+        if (layoutCache.x == _x
+          && layoutCache.y == _y
+          && layoutCache.width == _width
+          && layoutCache.height == _height) {
+
+          layoutCache.finalized = true
+        }
+
+        layoutCache.x = _x
+        layoutCache.y = _y
+        layoutCache.width = _width
+        layoutCache.height = _height
+      }
+    },
     "updateScrollableXItem": function() {
       if (!this.state.contains("index")) {
         throw new Exception($"updateScrollableXItem require 'state.index' to be initialized")

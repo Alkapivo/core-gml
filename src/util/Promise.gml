@@ -14,82 +14,88 @@ global.__PromiseStatus = new _PromiseStatus()
 function Promise(config = null) constructor {
 
   ///@type {PromiseStatus}
-  status = Assert.isEnum(PromiseStatus.PENDING, PromiseStatus)
+  status = PromiseStatus.PENDING
+
+  ///@type {any}
+  state = null
 
   ///@type {any}
   response = null
 
   ///@private
   ///@type {?Callable}
-  onSuccess = method(this, function(data) { return data })
-
+  onSuccess = Core.isType(config, "onSuccess", Callable)
+    ? method(this, config.onSuccess)
+    : function(data) { return data }
+  
   ///@private
   ///@type {?Callable}
-  onFailure = method(this, function(data) { return data })
+  onFailure = Core.isType(config, "onFailure", Callable)
+    ? method(this, config.onFailure)
+    : function(data) { return data }
+  
 
   ///@return {Boolean}
-  isReady = method(this, function() {
+  isReady = function() {
     return this.status != PromiseStatus.PENDING
-  })
+  }
 
   ///@param {?Callable} resolve
   ///@return {Promise}
-  whenSuccess = method(this, function(resolve) {
-    this.onSuccess = resolve != null 
-      ? method(this, Assert.isType(resolve, Callable)) 
+  whenSuccess = function(resolve) {
+    this.onSuccess = Core.isType(resolve, Callable)
+      ? method(this, resolve)
       : null
+
     return this
-  })
-  this.whenSuccess(Struct.getDefault(config, "onSuccess", function(data) { return data }))
+  }
 
   ///@param {?Callable} reject
   ///@return {Promise}
-  whenFailure = method(this, function(reject) {
-    this.onFailure = reject != null ? method(this, Assert.isType(reject, Callable)) : null
-    return this
-  })
-  this.whenFailure(Struct.getDefault(config, "onFailure", function(data) { return data }))
+  whenFailure = function(reject) {
+    this.onFailure = Core.isType(reject, Callable)
+      ? method(this, reject)
+      : null
 
-  ///@type {any}
-  state = null
+    return this
+  }
 
   ///@param {any} state
   ///@return {Promise}
-  setState = method(this, function(state) {
+  setState = function(state) {
     this.state = state
     return this
-  })
+  }
 
   ///@param {PromiseStatus} status
   ///@return {Promise}
-  setStatus = method(this, function(status) {
+  setStatus = function(status) {
     if (PromiseStatus.contains(status)) {
       this.status = status
     }
     return this
-  })
+  }
 
   ///@param {any} response
   ///@return {Promise}
-  setResponse = method(this, function(response) {
+  setResponse = function(response) {
     this.response = response
     return this
-  })
+  }
 
   ///@param {any} [data]
   ///@return {Promise}
-  fullfill = method(this, function(data = null) {
+  fullfill = function(data = null) {
     return this.status == PromiseStatus.PENDING
       ? this.setStatus(PromiseStatus.FULLFILLED)
-        .setResponse(Callable.run(this.onSuccess, data))
+          .setResponse(Callable.run(this.onSuccess, data))
       : this
-  })
+  }
 
   ///@param {any} [data]
   ///@return {Promise}
-  reject = method(this, function(data = null) {
-    return this
-      .setStatus(PromiseStatus.REJECTED)
+  reject = function(data = null) {
+    return this.setStatus(PromiseStatus.REJECTED)
       .setResponse(Callable.run(this.onFailure, data))
-  })
+  }
 }

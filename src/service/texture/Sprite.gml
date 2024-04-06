@@ -263,8 +263,9 @@ function Sprite(_texture, config = {}) constructor {
 function _SpriteUtil() constructor {
 
   ///@param {Struct} _json
+  ///@param {?Struct} [defaultJson]
   ///@return {?Sprite}
-  parse = function(_json) {
+  parse = function(_json, defaultJson = null) {
     var sprite = null
     try {
       var json = JSON.clone(_json)
@@ -287,6 +288,10 @@ function _SpriteUtil() constructor {
       sprite = new Sprite(texture, json)
     } catch (exception) {
       Logger.error("SpriteUtil", $"'parse-sprite' fatal error: {exception.message}")
+      if (Core.isType(defaultJson, Struct)) {
+        Logger.error("SpriteUtil", $"'parse-sprite' use defaultJson: {JSON.stringify(defaultJson)}")
+        sprite = SpriteUtil.parse(defaultJson)
+      }
     }
     return sprite
   }

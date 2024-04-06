@@ -94,7 +94,11 @@ function StoreItem(_name, json) constructor {
   addSubscriber = function(config) {
     var subscriber = new StoreItemSubscriber(config)
     if (this.containsSubscriber(subscriber.name)) {
-      throw new Exception($"Subscriber '{subscriber.name}' for store item '{this.name}' already exists")
+      if (Struct.get(config, "overrideSubscriber")) {
+        this.removeSubscriber(subscriber.name)
+      } else {
+        throw new Exception($"Subscriber '{subscriber.name}' for store item '{this.name}' already exists")
+      }
     }
     this.subscribers.add(subscriber)
 

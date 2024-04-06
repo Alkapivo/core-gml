@@ -1,4 +1,4 @@
-///@package io.alkapivo.core.uti
+///@package io.alkapivo.core.util
 
 ///@param {Number} _duration
 ///@param {Struct} [config]
@@ -8,13 +8,13 @@ function Timer(_duration, config = {}) constructor {
   time = 0
 
   ///@type {Number}
-  loopCounter = 0
-
-  ///@type {Boolean}
-  finished = false
+  duration = Assert.isType(_duration, Number)
 
   ///@type {Number}
-  duration = Assert.isType(_duration, Number)
+  loopCounter = Assert.isType(Struct.getDefault(config, "loopCounter", 0), Number)
+
+  ///@type {Boolean}
+  finished = Assert.isType(Struct.getDefault(config, "finished", false), Boolean)
 
   ///@type {Number}
   loop = Assert.isType(Struct.getDefault(config, "loop", 1), Number)
@@ -22,8 +22,8 @@ function Timer(_duration, config = {}) constructor {
   ///@type {Number}
   amount = Assert.isType(Struct.getDefault(config, "amount", FRAME_MS), Number)
 
-  ///@type {Callable}
-  callback = Struct.contains(config, "callback")
+  ///@type {?Callable}
+  callback = Struct.get(config, "callback") != null
     ? Assert.isType(config.callback, Callable)
     : null
 
@@ -35,9 +35,9 @@ function Timer(_duration, config = {}) constructor {
   ///@return {Timer}
   update = function(callbackData = null) {
     if (this.finished && (this.loop == Infinity || this.loopCounter < this.loop)) {
-      this.finished = false;
+      this.finished = false
     } else if (this.finished) {
-      return this;
+      return this
     }
 
     this.time += DeltaTime.apply(this.amount)
@@ -46,29 +46,23 @@ function Timer(_duration, config = {}) constructor {
         return this
       }
 
-      this.time = this.time - this.duration * ceil(this.time / this.duration)
+      this.time = this.time - (floor(this.time / this.duration) * this.duration)
       this.finished = true
-      if (this.callback) {
-        this.callback(callbackData, this)
-      }
-  
-      if (this.loop != Infinity) {
-        this.loopCounter++
-      }
     } else {
       if (this.time > 0) {
         return this
       }
 
-      this.time = this.duration + (abs(this.time) - (this.duration * ceil(abs(this.time) / this.duration)))
+      this.time = this.duration + (this.time - (floor(this.time / this.duration) * this.duration))
       this.finished = true
-      if (this.callback) {
-        this.callback(callbackData, this)
-      }
-  
-      if (this.loop != Infinity) {
-        this.loopCounter++
-      }
+    }
+
+    if (this.callback) {
+      this.callback(callbackData, this)
+    }
+
+    if (this.loop != Infinity) {
+      this.loopCounter++
     }
     
     return this
@@ -96,17 +90,12 @@ function Timer(_duration, config = {}) constructor {
       duration: this.duration,
       loop: this.loop,
       amount: this.amount,
-      callback: Core.isType(this.callback, Callable) ? "custom" : "default",
     }
   }
 
   ///@return {Timer}
   finish = function() {
-    if (this.amount > 0) {
-      this.time = duration
-    } else {
-      this.time = 0
-    }
+    this.time = this.amount > 0 ? this.duration : 0.0
     return this
   }
 }

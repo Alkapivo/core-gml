@@ -32,7 +32,7 @@ function UITextField(name, json = null) {
     }, Struct.getDefault(json, "store", {})))
   }
 
-  return new UIItem(name, Struct.append(json, {
+  var uiTextField = new UIItem(name, Struct.append(json, {
 
     ///@param {Callable}
     type: UITextField,
@@ -59,9 +59,10 @@ function UITextField(name, json = null) {
     updateEnable: Assert.isType(Callable.run(UIItemUtils.templates.get("updateEnable")), Callable),
 
     ///@override
+    ///@param {Boolean} [_updateArea]
     ///@return {UIItem}
-    update: Struct.getDefault(json, "update", function() {
-      if (Optional.is(this.updateArea)) {
+    update: Struct.getDefault(json, "update", function(_updateArea = true) {
+      if (_updateArea && Optional.is(this.updateArea)) {
         this.updateArea()
       }
 
@@ -73,8 +74,9 @@ function UITextField(name, json = null) {
         this.updateCustom()
       }
 
-      if (Optional.is(this.store)) {
+      if (!storeSubscribed && Optional.is(this.store)) {
         this.store.subscribe()
+        this.storeSubscribed = true
       }
 
       if (this.isHoverOver) {
@@ -118,6 +120,12 @@ function UITextField(name, json = null) {
       return this
     }),
     
+    ///@param {Event} event
+    onMousePressedLeft: Assert.isType(Struct.getDefault(json, "onMousePressedLeft", function(event) {
+      this.textField.focus()
+      this.update(true)
+    }), Callable),
+
     ///@override
     ///@return {UIItem}
     render: Struct.getDefault(json, "render", function() {
@@ -132,4 +140,7 @@ function UITextField(name, json = null) {
       return this
     }),
   }, false))
+
+  uiTextField.textField.uiItem = uiTextField
+  return uiTextField
 }

@@ -61,9 +61,10 @@ function UISliderHorizontal(name, json = null) {
     updatePosition: new BindIntent(Assert.isType(Struct.getDefault(json, "updatePosition", function(mouseX) { }), Callable)),
 
     ///@override
+    ///@param {Boolean} [_updateArea]
     ///@return {UIItem}
-    update: function() {
-      if (Optional.is(this.updateArea)) {
+    update: function(_updateArea = true) {
+      if (_updateArea && Optional.is(this.updateArea)) {
         this.updateArea()
       }
 
@@ -79,8 +80,9 @@ function UISliderHorizontal(name, json = null) {
         this.updateHover()
       }
 
-      if (Optional.is(this.store)) {
+      if (!storeSubscribed && Optional.is(this.store)) {
         this.store.subscribe()
+        this.storeSubscribed = true
       }
 
       if (Core.isType(this.enable, Struct)) {
