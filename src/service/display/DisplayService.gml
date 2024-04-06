@@ -31,6 +31,12 @@ function DisplayService(_controller, config = {}): Service() constructor {
 	///@type {Number}
 	windowHeight = 0
 
+  ///@type {Number}
+  minWidth = Core.isType(Struct.get(config, "minWidth"), Number) ? config.minWidth : 320
+
+  ///@type {Number}
+  minHeight = Core.isType(Struct.get(config, "minHeight"), Number) ? config.minHeight : 240
+
   ///@private
   ///@type {String}
 	state = "idle"
@@ -104,15 +110,13 @@ function DisplayService(_controller, config = {}): Service() constructor {
     return this
   }
 
-  ///@param {Number} width
-  ///@param {Number} height
+  ///@param {Number} _width
+  ///@param {Number} _height
   ///@return {DisplayService}
-  resize = function(width, height) {
+  resize = function(_width, _height) {
+    var width = max(this.minWidth, _width)
+    var height = max(this.minHeight, _height)
     try {
-      if (width < 2 || height < 2) {
-        return this
-        //throw new Exception($"Cannot resize to: \{ \"width\": {width}, \"height\": {height} \}")
-      }
       display_set_gui_size(width, height)
       window_set_size(width, height)
       surface_resize(application_surface, width, height)
@@ -121,7 +125,7 @@ function DisplayService(_controller, config = {}): Service() constructor {
         this.windowHeight = this.getHeight()
       }
     } catch (exception) {
-      Logger.error("[ResizeEvent]", exception.message)
+      Logger.error("ResizeEvent", exception.message)
     }
     return this
   }
