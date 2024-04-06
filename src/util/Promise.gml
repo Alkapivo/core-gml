@@ -24,13 +24,13 @@ function Promise(config = null) constructor {
 
   ///@private
   ///@type {?Callable}
-  onSuccess = Core.isType(config, "onSuccess", Callable)
+  onSuccess = Core.isType(Struct.get(config, "onSuccess"), Callable)
     ? method(this, config.onSuccess)
     : function(data) { return data }
   
   ///@private
   ///@type {?Callable}
-  onFailure = Core.isType(config, "onFailure", Callable)
+  onFailure = Core.isType(Struct.get(config, "onFailure"), Callable)
     ? method(this, config.onFailure)
     : function(data) { return data }
   
