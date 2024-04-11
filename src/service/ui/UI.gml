@@ -35,7 +35,7 @@ function UI(config = {}) constructor {
     : null
 
   ///@private
-  ///@type {?Collection}
+  ///@type {Collection}
   items = new Map(String, UIItem)
 
   ///@type {Margin}
@@ -319,9 +319,19 @@ function UI(config = {}) constructor {
   addUIComponents = Struct.contains(config, "addUIComponents")
     ? Assert.isType(method(this, config.addUIComponents), Callable)
     : function(components, layout, config = null) {
+    
     static factoryComponent = function(component, index, acc) {
-      static add = function(item, index, context) {
-        context.add(item, item.name)
+      static add = function(item, index, acc) {
+        if (item.type == UITextField) {
+          var gmtf = item.textField
+          if (Optional.is(acc.gmtf)) {
+            acc.gmtf.set_next(gmtf)
+            gmtf.set_previous(acc.gmtf)
+          }
+          acc.gmtf = gmtf
+        }
+
+        acc.context.add(item, item.name)
         if (Optional.is(item.updateArea())) {
           item.updateArea()
         }
@@ -329,7 +339,7 @@ function UI(config = {}) constructor {
 
       acc.layout = component
         .toUIItems(acc.layout)
-        .forEach(add, acc.context)
+        .forEach(add, acc)
         .getLast().layout.context
     }
 
@@ -341,6 +351,7 @@ function UI(config = {}) constructor {
         {
           layout: layout,
           context: context,
+          gmtf: null
         },
         false
       )
