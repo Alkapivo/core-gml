@@ -117,6 +117,7 @@ function DisplayService(_controller, config = {}): Service() constructor {
     var width = max(this.minWidth, _width)
     var height = max(this.minHeight, _height)
     try {
+      Logger.debug("DisplayService", $"Resize from {this.previousWidth}x{this.previousHeight} to {width}x{height}")
       display_set_gui_size(width, height)
       window_set_size(width, height)
       surface_resize(application_surface, width, height)
@@ -151,16 +152,15 @@ function DisplayService(_controller, config = {}): Service() constructor {
       if (this.timer.update().finished) {
         var width = window_get_width()
         var height = window_get_height()
-        Logger.debug("DisplayService", $"Resize from {this.previousWidth}x{this.previousHeight} to {width}x{height}.")
-        this.resize(width, height)
-        this.timer.reset()
-        this.state = "resized"
-        this.previousWidth = window_get_width()
-        this.previousHeight = window_get_height()
+        if (width > 0 && height > 0) {
+          this.resize(width, height)
+          this.timer.reset()
+          this.state = "resized"
+        }
       }
     }
 
-    if (this.state == "idle") {
+    if (this.state == "idle" || this.state == "resized") {
       this.previousWidth = window_get_width()
       this.previousHeight = window_get_height()
     }
