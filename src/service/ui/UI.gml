@@ -209,22 +209,23 @@ function UI(config = {}) constructor {
           if (this.updateTimer.update().finished) {
             this.updateArea()
 
-            if (Optional.is(this.updateItems)) {
-              this.updateItems()
-            }
-
             if (Optional.is(this.updateCustom)) {
               this.updateCustom()
+            }
+
+            if (Optional.is(this.updateItems)) {
+              this.updateItems()
             }
           }
         } else {
           this.updateArea()
-          if (Optional.is(this.updateItems)) {
-            this.updateItems()
-          }
 
           if (Optional.is(this.updateCustom)) {
             this.updateCustom()
+          }
+          
+          if (Optional.is(this.updateItems)) {
+            this.updateItems()
           }
         }
       }
@@ -323,12 +324,12 @@ function UI(config = {}) constructor {
     static factoryComponent = function(component, index, acc) {
       static add = function(item, index, acc) {
         if (item.type == UITextField) {
-          var gmtf = item.textField
-          if (Optional.is(acc.gmtf)) {
-            acc.gmtf.set_next(gmtf)
-            gmtf.set_previous(acc.gmtf)
+          var textField = item.textField
+          if (Optional.is(acc.textField)) {
+            acc.textField.setNext(textField)
+            textField.setPrevious(acc.textField)
           }
-          acc.gmtf = gmtf
+          acc.textField = textField
         }
 
         acc.context.add(item, item.name)
@@ -351,7 +352,7 @@ function UI(config = {}) constructor {
         {
           layout: layout,
           context: context,
-          gmtf: null
+          textField: null
         },
         false
       )
@@ -516,11 +517,16 @@ function _UIUtil() constructor {
         this.area.setWidth(max(this.layout.width(), this.textField.style.w_min))
         this.area.setHeight(this.layout.height())
 
+        var _w = this.textField.style.w
+        var _h = this.textField.style.h
         this.textField.style.w = this.area.getWidth()
         if (!this.textField.style.v_grow) {
           this.textField.style.h = this.area.getHeight()
         }
-        this.textField.update_style()
+
+        if (this.textField.style.w != _w || this.textField.style.h != _h) {
+          this.textField.update_style()
+        }
       }
     },
     "applyCollectionLayout": function() {
