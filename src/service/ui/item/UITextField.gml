@@ -90,12 +90,16 @@ function UITextField(name, json = null) {
           }
           this.textField.style.c_text_unfocused.a = 0.5
           this.textField.style.c_text_focused.a = 0.5
+          this.textField.enabled = false
         } else {
           this.textField.style.c_text_unfocused.a = 1.0
           this.textField.style.c_text_focused.a = 1.0
+          this.textField.enabled = true
         }
       }
-      
+
+      var _w = this.textField.style.w
+      var _h = this.textField.style.h
       this.textField.style.w = this.area.getWidth()
       if (this.textField.style.v_grow) {
         this.area.setHeight(this.textField.style.h)
@@ -106,7 +110,10 @@ function UITextField(name, json = null) {
       } else {
         this.textField.style.h = this.area.getHeight()
       }
-      this.textField.update_style()
+
+      if (this.textField.style.w != _w || this.textField.style.h != _h) {
+        this.textField.update_style()
+      }
       
       if (Optional.is(this.context.surface)) {
         this.textField.update(this.context.area.getX(), this.context.area.getY())
