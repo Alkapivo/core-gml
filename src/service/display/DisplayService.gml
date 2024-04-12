@@ -137,6 +137,10 @@ function DisplayService(_controller, config = {}): Service() constructor {
         || context.previousHeight != display_get_gui_height()
     }
 
+    if (this.state == "resized") {
+      this.state = "idle"
+    }
+
     if (this.state == "idle") {
       this.state = isResizeRequired(this)
         ? "required"
@@ -150,7 +154,9 @@ function DisplayService(_controller, config = {}): Service() constructor {
         Logger.debug("DisplayService", $"Resize from {this.previousWidth}x{this.previousHeight} to {width}x{height}.")
         this.resize(width, height)
         this.timer.reset()
-        this.state = "idle"
+        this.state = "resized"
+        this.previousWidth = window_get_width()
+        this.previousHeight = window_get_height()
       }
     }
 
