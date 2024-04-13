@@ -92,6 +92,7 @@ function NumberTransformer(json = null): Transformer(json) constructor {
 
   ///@type {Number}
   increase = Assert.isType(Struct.getDefault(json, "increase", 0), Number)
+  
   ///@override
   ///@return {NumberTransformer}
   update = function() {

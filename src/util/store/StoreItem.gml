@@ -27,20 +27,13 @@ function StoreItem(_name, json) constructor {
   ///@param {any} value
   ///@return {StoreItem}
   set = method(this, Assert.isType(Struct.getDefault(json, "set", function(value) {
-    //try {
-      var _value = Assert.isType(this.passthrough(value), this.type)
-      this.validate(_value)
-      this.value = _value
-      this.subscribers.forEach(function(subscriber, index, value) {
-        try {
-          subscriber.callback(value, subscriber.data)
-        } catch (exception) {
-          Logger.error("StoreItem", $"'{this.name}' forEach thrown an exception at index {index}. {exception.message}")
-        }
-      }, _value)
-    //} catch (exception) {
-    //  Logger.error("StoreItem", $"'{this.name}' set fatal error: {exception.message}")
-    //}
+    var _value = Assert.isType(this.passthrough(value), this.type)
+    this.validate(_value)
+    this.value = _value
+    this.subscribers.forEach(function(subscriber, index, value) {
+      subscriber.callback(value, subscriber.data)
+    }, _value)
+    
     return this
   }), Callable))
 
