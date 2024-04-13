@@ -19,7 +19,8 @@ global.__shaders = new Map(String, Struct, {
     "uniforms": {
       "iTime": "FLOAT",
       "iResolution": "VECTOR2",
-      "iIterations": "FLOAT"
+      "iIterations": "FLOAT",
+      "iTint": "VECTOR3"
     }
   },
   "shader_70s_melt": {
@@ -43,7 +44,8 @@ global.__shaders = new Map(String, Struct, {
       "iTime": "FLOAT",
       "iIterations": "FLOAT",
       "sizeA": "FLOAT",
-      "sizeB": "FLOAT"
+      "sizeB": "FLOAT",
+      "iTint": "VECTOR3"
     }
   },
   "shader_abberation": {
