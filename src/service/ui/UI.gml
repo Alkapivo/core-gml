@@ -802,25 +802,25 @@ function _UIUtil() constructor {
   mouseEventTemplates = new Map(String, Callable, {
     "scrollableOnMouseWheelUpX": function() {
       return function(event) {
-        this.offset.y = clamp(this.offset.x + this.state.getDefault("offset-x", 20), 
+        this.offset.y = clamp(this.offset.x + this.state.getDefault("offset-x", 34), 
           -1 * this.offsetMax.x, 0)
       }
     },
     "scrollableOnMouseWheelDownX": function() {
       return function(event) {
-        this.offset.y = clamp(this.offset.x - this.state.getDefault("offset-x", 20), 
+        this.offset.y = clamp(this.offset.x - this.state.getDefault("offset-x", 34), 
           -1 * this.offsetMax.x, 0)
       }
     },
     "scrollableOnMouseWheelUpY": function() {
       return function(event) {
-        this.offset.y = clamp(this.offset.y + this.state.getDefault("offset-y", 20), 
+        this.offset.y = clamp(this.offset.y + this.state.getDefault("offset-y", 34), 
           -1 * this.offsetMax.y, 0)
       }
     },
     "scrollableOnMouseWheelDownY": function() {
       return function(event) {
-        this.offset.y = clamp(this.offset.y - this.state.getDefault("offset-y", 20), 
+        this.offset.y = clamp(this.offset.y - this.state.getDefault("offset-y", 34), 
           -1 * this.offsetMax.y, 0)
       }
     },
