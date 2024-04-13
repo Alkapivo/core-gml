@@ -128,8 +128,8 @@ function ParticleTemplate(_name, json) constructor {
     {
       wiggle: 0.0,
       increase: 0.0,
-      minValue: 0.0,
-      maxValue: 0.0,
+      minValue: 1.0,
+      maxValue: 1.0,
     },
     false
   )
@@ -186,8 +186,8 @@ function ParticleTemplate(_name, json) constructor {
   life = Struct.appendRecursiveUnique(
     Struct.get(json, "life"),
     {
-      minValue: 80.0,
-      maxValue: 120.0,
+      minValue: 0.0,
+      maxValue: 100.0,
     },
     false
   )
