@@ -40,12 +40,12 @@ void main()
 	col *= brightness;
     
   // Add border
-  float vigAmt = 5.0;
+  float vigAmt = 10.0;
   float vignette = (1.-vigAmt*(uv.y-.5)*(uv.y-.5))*(1.-vigAmt*(uv.x-.5)*(uv.x-.5));
 	float extrusion = (col.x + col.y + col.z) / 4.0;
   extrusion *= 1.5;
   extrusion *= vignette;
-    
-	gl_FragColor = vec4(col, v_vColour.a * extrusion);
+  
+	gl_FragColor = vec4(col.r, col.g, col.b, min(v_vColour.a, v_vColour.a * extrusion));
   //gl_FragColor = v_vColour * texture2D( gm_BaseTexture, v_vTexcoord );
 }
