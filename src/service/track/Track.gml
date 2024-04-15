@@ -227,6 +227,9 @@ function TrackChannel(json, config = null) constructor {
     .getDefault(json, "events", []), TrackEvent, parseEvent, config)
     .sort(compareEvents)
 
+  ///@type {Boolean}
+  muted = false
+
   ///@private
   ///@type {Number}
   time = 0.0
@@ -325,7 +328,7 @@ function TrackChannel(json, config = null) constructor {
       }
       this.time = timestamp
 
-      if (events.size() == 0) {
+      if (this.muted || events.size() == 0) {
         return this
       }
 
