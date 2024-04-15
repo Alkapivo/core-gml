@@ -7,6 +7,21 @@
 function Map(_keyType = any, _valueType = any, _container = null, config = { validate: false }) constructor {
 
   ///@private
+  _acc = null
+
+  ///@private
+  ///@type {?Callable}
+  _callback = null
+
+  ///@private
+  ///@param {any} key
+  ///@param {any} value
+  _forEachWrapper = function(key, value) {
+    this._callback(value, key, this._acc)
+  }
+
+
+  ///@private
   ///@param {Map} map
   ///@throws {AssertException}
   static validateContainer = function(map) {
@@ -148,12 +163,6 @@ function Map(_keyType = any, _valueType = any, _container = null, config = { val
       }
     }
     return this
-  }
-
-  _acc = null
-  _callback = null
-  _forEachWrapper = function(key, value) {
-    this._callback(value, key, this._acc)
   }
 
   ///@override

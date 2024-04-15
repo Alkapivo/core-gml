@@ -20,6 +20,21 @@ function Array(_type = any, _container = null) constructor {
   ///@type {?Stack<Number>}
   gc = null
 
+  ///@private
+  ///@type {any}
+  _acc = null
+
+  ///@private
+  ///@type {?Callable}
+  _callback = null
+
+  ///@private
+  ///@param {Number} index
+  ///@param {any} value
+  _forEachWrapper = function(value, index) {
+    this._callback(value, index, this._acc)
+  }
+
   ///@override
   ///@return {Number}
   static size = function() {
@@ -107,14 +122,11 @@ function Array(_type = any, _container = null) constructor {
   ///@param {any} [acc]
   ///@return {Array}
   static forEach = function(callback, acc = null) {
-    var size = this.size()
-    for (var index = 0; index < size; index++) {
-      var item = this.container[index]
-      var result = callback(item, index, acc)
-      if (result == BREAK_LOOP) {
-        break
-      }
-    }
+    this._callback = callback
+    this._acc = acc
+    array_foreach(this.getContainer(), this._forEachWrapper)
+    this._callback = null
+    this._acc = null
     return this
   }
 
@@ -323,6 +335,22 @@ function Array(_type = any, _container = null) constructor {
     return GMArray.toStruct(this.container, keyCallback, acc, valueCallback)
   }
 
+  ///@param {Number} from
+  ///@param {Number} to
+  ///@return {Array}
+  static move = function(from, to) {
+    var size = this.size()
+    if (from < 0 || from >= size)
+      || (to < 0 || to >= size) {
+      return this
+    }
+    
+    var value = this.get(from)
+    array_delete(this.getContainer(), from, 1)
+    array_insert(this.getContainer(), to, value)
+    return this
+  }
+
   ///@return {Array}
   static enableGC = function() {
     this.gc = !Core.isType(this.gc, Stack) ? new Stack(Number) : this.gc
@@ -358,8 +386,22 @@ function Array(_type = any, _container = null) constructor {
 
 ///@static
 function _GMArray() constructor {
-
   
+  ///@private
+  ///@type {any}
+  _acc = null
+
+  ///@private
+  ///@type {?Callable}
+  _callback = null
+
+  ///@private
+  ///@param {Number} index
+  ///@param {any} value
+  _forEachWrapper = function(value, index) {
+    this._callback(value, index, this._acc)
+  }
+
   ///@param {GMArray} arr
   ///@return {Number}
   static size = function(arr) {
@@ -409,14 +451,11 @@ function _GMArray() constructor {
   ///@param {any} [acc]
   ///@return {GMArray}
   static forEach = function(arr, callback, acc = null) {
-    var size = this.size(arr)
-    for (var index = 0; index < size; index++) {
-      var item = arr[index]
-      var result = callback(item, index, acc)
-      if (result == BREAK_LOOP) {
-        break
-      }
-    }
+    this._callback = callback
+    this._acc = acc
+    array_foreach(arr, this._forEachWrapper)
+    this._callback = null
+    this._acc = null
     return arr
   }
 
