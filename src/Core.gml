@@ -50,7 +50,7 @@ function _Core() constructor {
       switch (type) {
         case any: return true
         case Boolean: return result == "bool" || result == "number"
-        case Callable: return result == "method" || result == "ref" 
+        case Callable: return (result == "method" || result == "ref" || result == "number") 
           && is_callable(object)
         case Collection: return result == "struct" && (is_instanceof(object, Collection) 
           || is_instanceof(object, Array) 
