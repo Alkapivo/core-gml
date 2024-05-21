@@ -13,6 +13,10 @@ function Transformer(json = null) constructor {
   ///@type {Boolean}
   finished = false
 
+  ///@override
+  ///@type {Boolean}
+  overrideValue = Struct.get(json, "overrideValue") == true
+
   ///@return {any}
   get = function() {
     return this.value
@@ -81,7 +85,7 @@ function NumberTransformer(json = null): Transformer(json) constructor {
   value = Assert.isType(Struct.getDefault(json, "value", 0), Number)
 
   ///@override
-  ///@type {Color}
+  ///@type {Number}
   startValue = this.value
 
   ///@type {Number}
@@ -282,7 +286,7 @@ function Vector4Transformer(json = {}): Transformer(json) constructor {
 
 
 ///@param {Struct} [json]
-function ResolutionTransformer(json = {}): Transformer(json) constructor {
+function _ResolutionTransformer(json = {}): Transformer(json) constructor {
 
   ///@type {NumberTransformer}
   scale = new NumberTransformer(Struct.getDefault(json, "scale", { value: 1 }))
@@ -302,4 +306,28 @@ function ResolutionTransformer(json = {}): Transformer(json) constructor {
     this.value.y = GuiHeight() / this.scale.value
     return this
   }
+}
+
+///@param {Struct} [json]
+function ResolutionTransformer(json = {}): Transformer(json) constructor {
+
+  ///@override
+  ///@type {Vector2}
+  value = new Vector2(GuiWidth(), GuiHeight())
+
+  ///@override
+  ///@return {Vector2}
+  update = function() {
+    if (this.overrideValue) {
+      return this
+    }
+    
+    this.value.x = GuiWidth()
+    this.value.y = GuiHeight() 
+    return this
+  }
+
+  ///@override
+  ///@type {Boolean}
+  overrideValue = Struct.getDefault(json, "overrideValue", true)
 }
