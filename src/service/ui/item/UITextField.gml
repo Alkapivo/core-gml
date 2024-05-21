@@ -28,7 +28,11 @@ function UITextField(name, json = null) {
   ///@description append default store callback
   if (Struct.contains(json, "store")) {
     Struct.set(json, "store", Struct.append({
-      callback: function(value, data) { data.textField.setText(value) },
+      callback: function(value, data) {
+        if (global.GMTF_DATA.active != data.textField) {
+          data.textField.setText(value)
+        }
+      },
     }, Struct.getDefault(json, "store", {})))
   }
 
