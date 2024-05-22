@@ -191,6 +191,15 @@ global.__shaders = {
       "iResolution": "VECTOR2",
       "iTime": "FLOAT"
     }
+  },
+  "shader_cubular": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iResolution": "VECTOR3",
+      "iTime": "FLOAT",
+      "size": "FLOAT",
+      "amount": "FLOAT"
+    }
   }
 }
 #macro SHADERS global.__shaders
