@@ -169,6 +169,13 @@ global.__shaders = {
       "speed": "FLOAT",
       "time": "FLOAT"
     }
+  },
+  "shader_cineshader_lava": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iResolution": "VECTOR3",
+      "iTime": "FLOAT"
+    }
   }
 }
 #macro SHADERS global.__shaders
