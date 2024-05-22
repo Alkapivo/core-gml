@@ -155,12 +155,6 @@ global.__shaders = {
   "shader_thermal": {
     "type": "GLSL_ES"
   },
-  "shader_upscaling_bicubic": {
-    "type": "GLSL_ES"
-  },
-  "shader_upscaling_hq4x": {
-    "type": "GLSL_ES"
-  },
   "shader_wave": {
     "type": "GLSL_ES",
     "uniforms": {
@@ -171,6 +165,13 @@ global.__shaders = {
     }
   },
   "shader_cineshader_lava": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iResolution": "VECTOR3",
+      "iTime": "FLOAT"
+    }
+  },
+  "shader_broken_time_portal": {
     "type": "GLSL_ES",
     "uniforms": {
       "iResolution": "VECTOR3",
