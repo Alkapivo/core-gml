@@ -177,6 +177,20 @@ global.__shaders = {
       "iResolution": "VECTOR3",
       "iTime": "FLOAT"
     }
+  },
+  "shader_base_warp_fbm": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iResolution": "VECTOR3",
+      "iTime": "FLOAT"
+    }
+  },
+  "shader_dive_to_cloud": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iResolution": "VECTOR2",
+      "iTime": "FLOAT"
+    }
   }
 }
 #macro SHADERS global.__shaders

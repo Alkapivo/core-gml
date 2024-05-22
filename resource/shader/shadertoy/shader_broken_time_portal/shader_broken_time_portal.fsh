@@ -10,72 +10,72 @@
 varying vec2 v_vTexcoord;
 varying vec4 v_vColour;
 
-uniform vec3      iResolution;           // viewport resolution (in pixels)
-uniform float     iTime;                 // shader playback time (in seconds)
+uniform vec3 iResolution; // viewport resolution (in pixels)
+uniform float iTime; // shader playback time (in seconds)
 //uniform sampler2D iChannel0..3;          // input channel. XX = 2D/Cube
 
 #define time (iTime)*0.12
 #define tau 6.2831853
 
 mat2 makem2(in float theta) {
-  float c = cos(theta);
-  float s = sin(theta);
-  return mat2(c,-s,s,c);
+    float c = cos(theta);
+    float s = sin(theta);
+    return mat2(c,-s,s,c);
 }
 
 float noise(in vec2 x) {
-  return texture2D(gm_BaseTexture, v_vTexcoord).x; //return texture(iChannel0, x*.01).x;}
+    return texture2D(gm_BaseTexture, v_vTexcoord).x; //return texture(iChannel0, x*.01).x;}
 }
-  
-float fbm(in vec2 p) {	
-	float z=2.;
-	float rz = 0.;
-	vec2 bp = p;
-	for (float i  =1.0; i < 6.0; i++) {
-		rz += abs((noise(p) - 0.5) * 2.0) / z;
-		z = z * 2.0;
-		p = p * 2.0;
-	}
-  
-	return rz;
+
+float fbm(in vec2 p) {
+    float z=2.;
+    float rz = 0.;
+    vec2 bp = p;
+    for (float i  =1.0; i < 6.0; i++) {
+        rz += abs((noise(p) - 0.5) * 2.0) / z;
+        z = z * 2.0;
+        p = p * 2.0;
+    }
+    
+    return rz;
 }
 
 float dualfbm(in vec2 p) {
-  //get two rotated fbm calls and displace the domain
-	vec2 p2 = p * 0.7;
-	vec2 basis = vec2(fbm(p2 - time * 1.6), fbm(p2 + time * 1.7));
-	basis = (basis - 0.5) * 0.2;
-	p += basis;
-	
-	//coloring
-	return fbm(p * makem2(time * 0.2));
+    //get two rotated fbm calls and displace the domain
+    vec2 p2 = p * 0.7;
+    vec2 basis = vec2(fbm(p2 - time * 1.6), fbm(p2 + time * 1.7));
+    basis = (basis - 0.5) * 0.2;
+    p += basis;
+    
+    //coloring
+    return fbm(p * makem2(time * 0.2));
 }
 
 float circ(vec2 p) {
-	float r = length(p);
-	r = log(sqrt(r));
-	return abs(mod(r * 4.0, tau) - 3.14) * 3.0 +.2;
+    float r = length(p);
+    r = log(sqrt(r));
+    return abs(mod(r * 4.0, tau) - 3.14) * 3.0 +.2;
 }
 
 void main() {
-	//setup system
-	vec2 p = v_vTexcoord.xy / iResolution.xy - 0.5;
-	p.x *= iResolution.x / iResolution.y;
-  float len = length(p);
-	p*=4.0;
-  
-  float rz = dualfbm(p);
-  float artifacts_radious_fade = pow(max(1.0, 6.5 * len), 0.2);
-  rz = artifacts_radious_fade * rz + (1.0 - artifacts_radious_fade) * dualfbm(p + 5.0 * sin(time)); // Add flaoting things around portal
-  float my_time = time + 0.08 * rz;
+    //setup system
+    vec2 p = v_vTexcoord.xy / iResolution.xy - 0.5;
+    p.x *= iResolution.x / iResolution.y;
+    float len = length(p);
+    p*=4.0;
     
-	//rings
-	p /= exp(mod((my_time * 10. + rz), 3.38159)); // offset from PI to make the ripple effect at the start  
-	rz *= pow(abs((0.1 - circ(p))), 0.9);
-	
-	//final color
-	vec3 col = 0.4 * vec3(0.2, 0.1, 0.4) / rz;
-	col = pow(abs(col), vec3(0.99));
-  gl_FragColor = vec4(col, v_vColour.a);
+    float rz = dualfbm(p);
+    float artifacts_radious_fade = pow(max(1.0, 6.5 * len), 0.2);
+    rz = artifacts_radious_fade * rz + (1.0 - artifacts_radious_fade) * dualfbm(p + 5.0 * sin(time)); // Add flaoting things around portal
+    float my_time = time + 0.08 * rz;
+    
+    //rings
+    p /= exp(mod((my_time * 10. + rz), 3.38159)); // offset from PI to make the ripple effect at the start  
+    rz *= pow(abs((0.1 - circ(p))), 0.9);
+    
+    //final color
+    vec3 col = 0.4 * vec3(0.2, 0.1, 0.4) / rz;
+    col = pow(abs(col), vec3(0.99));
+    gl_FragColor = vec4(col, v_vColour.a);
 }
 

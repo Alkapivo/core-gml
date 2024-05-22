@@ -4,6 +4,9 @@
 varying vec2 v_vTexcoord;
 varying vec4 v_vColour;
 
+uniform vec3 iResolution;
+uniform float iTime;
+
 float colormap_red(float x) {
     if(x < 0.0) {
         return 54.0 / 255.0;
@@ -95,6 +98,6 @@ float pattern(in vec2 p) {
 
 void main() {
     vec2 uv = v_vTexcoord / iResolution.x;
-    float shade = pattern(uv);
+    float shade = pattern(uv) * v_vColour.a;
     gl_FragColor = vec4(colormap(shade).rgb, shade);
 }
