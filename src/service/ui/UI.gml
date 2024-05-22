@@ -75,22 +75,20 @@ function UI(config = {}) constructor {
     ? Assert.isType(config.surface, Surface)
     : null
 
-  ///@private
-  ///@type {Boolean}
-  renderSurfaceTick = false
-
-  var _surfaceTick = Core.getProperty("core.ui-service.surface-optimalization", 5)
+  var _surfaceTick = Core.getProperty("core.ui-service.surface-optimalization", 3)
   ///@private
   ///@type {Struct}
   surfaceTick = {
     value: irandom(_surfaceTick),
     maxValue: _surfaceTick,
+    delta: 0,
     get: function() {
       this.value += 1
+      this.delta += DeltaTime.deltaTime
       if (this.value > this.maxValue) {
         this.value = 0
+        this.delta = 0
       }
-
       return this.value == this.maxValue
     },
     skip: function() {
@@ -117,7 +115,7 @@ function UI(config = {}) constructor {
   updateItems = Struct.contains(config, "updateItems")
     ? Assert.isType(method(this, config.updateItems), Callable)
     : function() {
-      var updateItemArea = !this.renderSurfaceTick
+      var updateItemArea = this.surfaceTick.skip()
       if (Optional.is(this.updateTimer)) {
         updateItemArea = this.updateTimer.finished
       }
@@ -257,30 +255,22 @@ function UI(config = {}) constructor {
   renderSurface = Struct.contains(config, "renderSurface")
     ? Assert.isType(method(this, config.renderSurface), Callable)
     : function() {
-      this.renderSurfaceTick = !this.renderSurfaceTick
-      if (!this.renderSurfaceTick) {
-        return
-      }
 
       var color = this.state.get("background-color")
       GPU.render.clear(Core.isType(color, GMColor) 
         ? ColorUtil.fromGMColor(color) 
         : ColorUtil.BLACK_TRANSPARENT)
 
-      var deltaTime = DeltaTime.deltaTime
-
-      ///@hack
-      ///@description 2 *, because `renderSurfaceTick`
-      DeltaTime.deltaTime = 2 * deltaTime 
-
       var areaX = this.area.x
       var areaY = this.area.y
+      var delta = DeltaTime.deltaTime
+      DeltaTime.deltaTime += this.surfaceTick.delta
       this.area.x = this.offset.x
       this.area.y = this.offset.y
       this.items.forEach(this.renderItem, this.area)
       this.area.x = areaX
       this.area.y = areaY
-      DeltaTime.deltaTime = deltaTime
+      DeltaTime.deltaTime = delta
     }
 
   ///@param {UIItem} item
@@ -757,11 +747,6 @@ function _UIUtil() constructor {
             this.surface.render(this.area.getX(), this.area.getY())
             return
           }
-  
-          var deltaTime = DeltaTime.deltaTime
-    
-          ///@hack
-          DeltaTime.deltaTime = this.surfaceTick.maxValue * deltaTime 
           
           GPU.set.surface(this.surface)
           var color = this.state.get("background-color")
@@ -771,16 +756,17 @@ function _UIUtil() constructor {
           
           var areaX = this.area.x
           var areaY = this.area.y
+          var delta = DeltaTime.deltaTime
+          DeltaTime.deltaTime += this.surfaceTick.delta
           this.area.x = this.offset.x
           this.area.y = this.offset.y
           this.items.forEach(this.renderItem, this.area)
           this.area.x = areaX
           this.area.y = areaY
-  
+          DeltaTime.deltaTime = delta
   
           GPU.reset.surface()
           this.surface.render(this.area.getX(), this.area.getY())
-          DeltaTime.deltaTime = deltaTime
         }
         : function() {
           var color = this.state.get("background-color")
@@ -803,8 +789,18 @@ function _UIUtil() constructor {
           this.surface = new Surface()
         }
 
-        this.surface.update(round(this.area.getWidth()), round(this.area.getHeight()))
-          .renderOn(this.renderSurface)
+        this.surface.update(this.area.getWidth(), this.area.getHeight())
+        if (!this.surfaceTick.get() && !this.surface.updated) {
+          GPU.set.blendEnable(false)
+          this.surface.render(this.area.getX(), this.area.getY())
+          GPU.set.blendEnable(true)
+          if (this.enableScrollbarY) {
+            this.scrollbarY.render(this)
+          }
+          return
+        }
+
+        this.surface.renderOn(this.renderSurface)
         GPU.set.blendEnable(false)
         this.surface.render(this.area.getX(), this.area.getY())
         GPU.set.blendEnable(true)
@@ -816,17 +812,25 @@ function _UIUtil() constructor {
     },
     "renderDefaultScrollableBlend": function() {
       return function() {
-       if (!Optional.is(this.surface)) {
-         this.surface = new Surface()
-       }
+        if (!Optional.is(this.surface)) {
+          this.surface = new Surface()
+        }
 
-       this.surface.update(round(this.area.getWidth()), round(this.area.getHeight()))
-         .renderOn(this.renderSurface)
-       this.surface.render(this.area.getX(), this.area.getY())
+        this.surface.update(this.area.getWidth(), this.area.getHeight())
+        if (!this.surfaceTick.get() && !this.surface.updated) {
+          this.surface.render(this.area.getX(), this.area.getY())
+          if (this.enableScrollbarY) {
+            this.scrollbarY.render(this)
+          }
+          return
+        }
 
-       if (this.enableScrollbarY) {
-         this.scrollbarY.render(this)
-       }
+        this.surface.renderOn(this.renderSurface)
+        this.surface.render(this.area.getX(), this.area.getY())
+
+        if (this.enableScrollbarY) {
+          this.scrollbarY.render(this)
+        }
      }
    },
     "renderItemDefault": function() {
