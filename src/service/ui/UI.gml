@@ -79,6 +79,26 @@ function UI(config = {}) constructor {
   ///@type {Boolean}
   renderSurfaceTick = false
 
+  var _surfaceTick = Core.getProperty("core.ui-service.surface-optimalization", 5)
+  ///@private
+  ///@type {Struct}
+  surfaceTick = {
+    value: irandom(_surfaceTick),
+    maxValue: _surfaceTick,
+    get: function() {
+      this.value += 1
+      if (this.value > this.maxValue) {
+        this.value = 0
+      }
+
+      return this.value == this.maxValue
+    },
+    skip: function() {
+      this.value = this.maxValue - 1
+      return this
+    }
+  }
+
   updateArea = Struct.contains(config, "updateArea")
     ? Assert.isType(method(this, config.updateArea), Callable)
     : null
@@ -271,12 +291,9 @@ function UI(config = {}) constructor {
     Callable))
 
   ///@return {UI}
-  render = Struct.contains(config, "render")
-    ? Assert.isType(method(this, config.render), Callable)
-    : function() {
-      this.items.forEach(this.renderItem, this.area)
-      return this
-    }
+  render = method(this, Core.isType(Struct.get(config, "render"), Callable)
+    ? config.render
+    : Callable.run(UIUtil.renderTemplates.get("renderDefault")))
 
   ///@type {Map<String, Callable>}
   freeOperations = Struct.contains(config, "freeOperations")
@@ -729,20 +746,56 @@ function _UIUtil() constructor {
   ///@type {Map<String, Callable>}
   renderTemplates = new Map(String, Callable, {
     "renderDefault": function() {
-      return function() {
-        var color = this.state.get("background-color")
-        if (Core.isType(color, GMColor)) {
-          GPU.render.rectangle(
-            this.area.x, this.area.y, 
-            this.area.x + this.area.getWidth(), this.area.y + this.area.getHeight(), 
-            false,
-            color, color, color, color, 
-            this.state.get("background-alpha")
-          )
+      return Core.getProperty("core.ui-service.use-surface-optimalization", false)
+        ? function() {
+          if (this.surface == null) {
+            this.surface = new Surface(this.area.getWidth(), this.area.getHeight())
+          }
+
+          this.surface.update(this.area.getWidth(), this.area.getHeight())
+          if (!this.surfaceTick.get() && !this.surface.updated) {
+            this.surface.render(this.area.getX(), this.area.getY())
+            return
+          }
+  
+          var deltaTime = DeltaTime.deltaTime
+    
+          ///@hack
+          DeltaTime.deltaTime = this.surfaceTick.maxValue * deltaTime 
+          
+          GPU.set.surface(this.surface)
+          var color = this.state.get("background-color")
+          if (color != null) {
+            draw_clear(color)
+          }
+          
+          var areaX = this.area.x
+          var areaY = this.area.y
+          this.area.x = this.offset.x
+          this.area.y = this.offset.y
+          this.items.forEach(this.renderItem, this.area)
+          this.area.x = areaX
+          this.area.y = areaY
+  
+  
+          GPU.reset.surface()
+          this.surface.render(this.area.getX(), this.area.getY())
+          DeltaTime.deltaTime = deltaTime
         }
-        
-        this.items.forEach(this.renderItem, this.area)
-      }
+        : function() {
+          var color = this.state.get("background-color")
+          if (Core.isType(color, GMColor)) {
+            GPU.render.rectangle(
+              this.area.x, this.area.y, 
+              this.area.x + this.area.getWidth(), this.area.y + this.area.getHeight(), 
+              false,
+              color, color, color, color, 
+              this.state.get("background-alpha")
+            )
+          }
+          
+          this.items.forEach(this.renderItem, this.area)
+        }
     },
     "renderDefaultScrollable": function() {
        return function() {
