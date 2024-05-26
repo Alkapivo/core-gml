@@ -69,8 +69,8 @@ function EventPump(_context, _dispatchers, config = {}) constructor {
     return event.promise
   }
 
-  ///@private
   ///@param {Event|Number} entry
+  ///@return {EventPump}
   execute = function(entry) {
     static resolveEvent = function(context, event) {
       if (context.enableLogger) {
@@ -106,6 +106,8 @@ function EventPump(_context, _dispatchers, config = {}) constructor {
     } else {
       resolveEvent(this, event)
     }
+
+    return this
   }
 
   ///@return {EventPump}
