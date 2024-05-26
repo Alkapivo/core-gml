@@ -52,6 +52,9 @@ function UITextField(name, json = null) {
       ? Assert.isType(json.enable, Struct)
       : null,
 
+    ///@type {Boolean}
+    enableColorWrite: Core.getProperty("core.ui-service.use-surface-optimalization", false),
+
     ///@param {any} value
     updateValue: new BindIntent(Assert.isType(Struct.getDefault(json, "updateValue", function(value) {
       this.value = value
@@ -143,11 +146,18 @@ function UITextField(name, json = null) {
       if (Optional.is(this.preRender)) {
         this.preRender()
       }
-      
+
+      var config = gpu_get_colorwriteenable()
+      if (this.enableColorWrite) {
+        gpu_set_colorwriteenable(true, true, true, false)
+      }
+
       this.textField.draw(
         this.context.area.getX() + this.area.getX(),
         this.context.area.getY() + this.area.getY() 
       )
+      
+      gpu_set_colorwriteenable(config[0], config[1], config[2], config[3])
       return this
     }),
   }, false))
