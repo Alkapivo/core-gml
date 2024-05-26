@@ -200,6 +200,14 @@ global.__shaders = {
       "size": "FLOAT",
       "amount": "FLOAT"
     }
+  },
+  "shader_sincos_3d": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iResolution": "VECTOR3",
+      "iTime": "FLOAT",
+      "iMouse": "VECTOR4"
+    }
   }
 }
 #macro SHADERS global.__shaders
