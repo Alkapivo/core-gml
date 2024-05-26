@@ -48,7 +48,7 @@ void main() {
 	float depth = 0.0;
 	vec3 p;
 	
-	for(int i = 0; i < 64; i++) {
+	for(int i = 0; i < 8; i++) {
 		p = rayOri + rayDir * depth;
 		float dist = map(p);
     depth += dist;
