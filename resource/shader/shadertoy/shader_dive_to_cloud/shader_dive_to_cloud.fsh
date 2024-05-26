@@ -93,5 +93,5 @@ void main() {
     
     col = mix(col, sum.rgb, sum.a);
     
-    gl_FragColor = vec4(col, v_vColour.a);
+    gl_FragColor = vec4(col, texture2D(gm_BaseTexture, v_vTexcoord).a * v_vColour.a);
 }
