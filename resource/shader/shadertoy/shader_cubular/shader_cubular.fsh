@@ -5,6 +5,7 @@ varying vec4 v_vColour;
 
 uniform vec3 iResolution;
 uniform float iTime;
+uniform vec3 iTint; // vec3(.3,0.,0.85)
 uniform float size;
 uniform float amount;
 
@@ -34,9 +35,17 @@ void main() {
     // Time varying pixel color
     float s = SDFhex(uv);
     float c = fract(s-iTime*.5);
-    vec3 col = vec3(g(vec3(.48,0.,1.),vec3(.3,0.,0.85),sqrt(c)));
+    vec3 col = vec3(g(vec3(.48,0.,1.),iTint,sqrt(c)));
     //if (s>r) col = vec3(0.);
-    
+    vec4 textureColor = texture2D(gm_BaseTexture, v_vTexcoord);
+    //col.r *= 0.33;
+    //col.g *= clamp(textureColor.g + 0.33, 0.0, 1.0);
+    //col.b *= clamp(textureColor.b + 0.33, 0.0, 1.0);
     // Output to screen
-    gl_FragColor = vec4(col,v_vColour.a);
+    gl_FragColor = vec4(
+        col.x + textureColor.x, 
+        col.y + textureColor.y, 
+        col.z + textureColor.z, 
+        textureColor.a * v_vColour.a
+    );
 }

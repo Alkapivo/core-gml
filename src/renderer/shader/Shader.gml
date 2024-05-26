@@ -201,6 +201,7 @@ global.__shaders = {
     "uniforms": {
       "iResolution": "VECTOR3",
       "iTime": "FLOAT",
+      "iTint": "VECTOR3",
       "size": "FLOAT",
       "amount": "FLOAT"
     }
