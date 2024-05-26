@@ -6,6 +6,7 @@ varying vec4 v_vColour;
 
 uniform vec3 iResolution;
 uniform float iTime;
+uniform float iSize;
 
 float colormap_red(float x) {
     if(x < 0.0) {
@@ -44,7 +45,12 @@ float colormap_blue(float x) {
 }
 
 vec4 colormap(float x) {
-    return vec4(colormap_red(x), colormap_green(x), colormap_blue(x), 1.0);
+    vec4 color = texture2D(gm_BaseTexture, vec2(
+        v_vTexcoord.x + (colormap_red(x) * iSize), 
+        v_vTexcoord.y + (colormap_green(x) * iSize)));
+    color.b *= colormap_blue(x);
+    color.a *= v_vColour.a;
+    return color;
 }
 
 // https://iquilezles.org/articles/warp
@@ -97,7 +103,5 @@ float pattern(in vec2 p) {
 }
 
 void main() {
-    vec2 uv = v_vTexcoord / iResolution.x;
-    float shade = pattern(uv) * v_vColour.a;
-    gl_FragColor = vec4(colormap(shade).rgb, shade);
+    gl_FragColor = colormap(pattern(v_vTexcoord / iResolution.x));
 }

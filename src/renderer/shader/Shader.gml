@@ -185,7 +185,8 @@ global.__shaders = {
     "type": "GLSL_ES",
     "uniforms": {
       "iResolution": "VECTOR3",
-      "iTime": "FLOAT"
+      "iTime": "FLOAT",
+      "iSize": "FLOAT"
     }
   },
   "shader_dive_to_cloud": {
