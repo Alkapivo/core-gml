@@ -13,13 +13,13 @@ vec3 skytop = vec3(0.05, 0.2, 0.5);
 
 vec3 light = normalize(vec3(0.1, 0.25, 0.9));
 
-vec2 cloudrange = vec2(0.0, 10000.0);
+vec2 cloudrange = vec2(-30000.0, 30000.0);
 
 mat3 m = mat3(0.00, 1.60, 1.20, -1.60, 0.72, -0.96, -1.20, -0.96, 1.28);
 
 // hash function              
 float hash(float n) {
-    return fract(cos(n) * 114514.1919);
+    return fract(cos(n) * 420.80085);
 }
 
 // 3d noise function
@@ -64,17 +64,19 @@ void main() {
     vec3 right = normalize(cross(front, vec3(0.0, 1.0, 0.0)));
     vec3 up = normalize(cross(right, front));
     vec3 fragAt = normalize(uv.x * right + uv.y * up + front);
-    
+
     // clouds
     vec4 sum = vec4(0, 0, 0, 0);
-    for (float depth = 0.0; depth < 100000.0; depth += 200.0) {
+    for (float depth = 0.0; depth < 100000.0; depth += 20000.0)
+    {
         vec3 ray = campos + fragAt * depth;
-        if (cloudrange.x < ray.y && ray.y < cloudrange.y) {
-            float alpha = smoothstep(0.5, 1.0, fbm(ray * 0.00025));
+        //if (cloudrange.x < ray.y && ray.y < cloudrange.y)
+        //{
+            float alpha = smoothstep(0.1, 2.0, fbm(ray * 0.00013));
             vec3 localcolor = mix(vec3(1.1, 1.05, 1.0), vec3(0.3, 0.3, 0.2), alpha);
             alpha = (1.0 - sum.a) * alpha;
             sum += vec4(localcolor * alpha, alpha);
-        }
+        //}
     }
     
     float alpha = smoothstep(0.7, 1.0, sum.a);
