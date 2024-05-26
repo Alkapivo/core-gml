@@ -26,7 +26,7 @@ void main() {
          c = vec3(0), k = c, p;
     if (iMouse.z < 1.) m = -vec2(t/20.-pi_2, 0);
     mat2 v = A(m.y), h = A(m.x); // pitch & yaw
-    for (; i++<50.;) // raymarch
+    for (; i++<25.;) // raymarch
     {
         p = o+u*d;
         p.yz *= v;
@@ -41,5 +41,8 @@ void main() {
     }
     c = max(cos(d*pi2) - s*sqrt(d) - k, 0.);
     c.gb += .1;
-    gl_FragColor = vec4(c*.4 + c.brg*.6 + c*c, v_vColour.a);
+
+    vec4 tColor = texture2D(gm_BaseTexture, v_vTexcoord);
+
+    gl_FragColor = vec4(c*.4 + c.brg*.6 + c*c, tColor.a * v_vColour.a);
 }
