@@ -13,9 +13,13 @@ varying vec4 v_vColour;
 uniform vec3 iResolution; // viewport resolution (in pixels)
 uniform float iTime; // shader playback time (in seconds)
 //uniform sampler2D iChannel0..3;          // input channel. XX = 2D/Cube
+uniform float iTreshold;
+uniform float iSize;
+uniform vec3 iTint; //vec3(0.2, 0.1, 0.4)
 
-#define time (iTime)*0.12
-#define tau 6.2831853
+#define time (iTime)
+#define pi 3.1415926535897932384626433832795
+#define tau pi * 2.0
 
 mat2 makem2(in float theta) {
     float c = cos(theta);
@@ -24,7 +28,7 @@ mat2 makem2(in float theta) {
 }
 
 float noise(in vec2 x) {
-    return texture2D(gm_BaseTexture, v_vTexcoord).x; //return texture(iChannel0, x*.01).x;}
+    return texture2D(gm_BaseTexture, v_vTexcoord + (x * 0.03)).x; //return texture(iChannel0, x*.01).x;
 }
 
 float fbm(in vec2 p) {
@@ -62,20 +66,19 @@ void main() {
     vec2 p = v_vTexcoord.xy / iResolution.xy - 0.5;
     p.x *= iResolution.x / iResolution.y;
     float len = length(p);
-    p*=4.0;
+    p*=iSize;
     
     float rz = dualfbm(p);
     float artifacts_radious_fade = pow(max(1.0, 6.5 * len), 0.2);
-    rz = artifacts_radious_fade * rz + (1.0 - artifacts_radious_fade) * dualfbm(p + 5.0 * sin(time)); // Add flaoting things around portal
+    rz = artifacts_radious_fade * rz + (1.0 - artifacts_radious_fade) * dualfbm(p + 5.0 * sin(time)); // Add floating things around portal
     float my_time = time + 0.08 * rz;
     
     //rings
-    p /= exp(mod((my_time * 10. + rz), 3.38159)); // offset from PI to make the ripple effect at the start  
+    p /= exp(mod((my_time + rz), pi));  
     rz *= pow(abs((0.1 - circ(p))), 0.9);
     
     //final color
-    vec3 col = 0.4 * vec3(0.2, 0.1, 0.4) / rz;
+    vec3 col = 0.4 * iTint / rz;
     col = pow(abs(col), vec3(0.99));
-    gl_FragColor = vec4(col, v_vColour.a);
+    gl_FragColor = vec4(col, ((col.r + col.g + col.b + (iTreshold * 3.0)) / 3.0) * v_vColour.a);
 }
-

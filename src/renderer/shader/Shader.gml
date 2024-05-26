@@ -175,7 +175,10 @@ global.__shaders = {
     "type": "GLSL_ES",
     "uniforms": {
       "iResolution": "VECTOR3",
-      "iTime": "FLOAT"
+      "iTime": "FLOAT",
+      "iTreshold": "FLOAT",
+      "iSize": "FLOAT",
+      "iTint": "VECTOR3"
     }
   },
   "shader_base_warp_fbm": {
