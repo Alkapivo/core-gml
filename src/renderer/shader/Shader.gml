@@ -211,7 +211,9 @@ global.__shaders = {
     "uniforms": {
       "iResolution": "VECTOR3",
       "iTime": "FLOAT",
-      "iMouse": "VECTOR4"
+      "iMouse": "VECTOR4",
+      "lineThickness": "FLOAT",
+      "pointRadius": "FLOAT"
     }
   }
 }

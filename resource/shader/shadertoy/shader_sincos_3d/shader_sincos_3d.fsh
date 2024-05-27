@@ -6,14 +6,16 @@ varying vec4 v_vColour;
 uniform vec3 iResolution;
 uniform vec4 iMouse;
 uniform float iTime;
+uniform float lineThickness; // 0.1
+uniform float pointRadius; // 0.3
 
 #define A(angle) mat2(cos(angle), -sin(angle), sin(angle), cos(angle))  // rotate
 #define W(v) length(vec3(p.yz-v(p.x+vec2(0, pi_2)+t), 0))-lt  // wave
 #define P(v) length(p-vec3(0, v(t), v(t+pi_2)))-pt  // point
 
 void main() {
-    float lt = .1, // line thickness
-          pt = .3, // point thickness
+    float lt = lineThickness, 
+          pt = pointRadius, 
           pi = 3.1416,
           pi2 = pi*2.,
           pi_2 = pi/2.,
@@ -42,7 +44,12 @@ void main() {
     c = max(cos(d*pi2) - s*sqrt(d) - k, 0.);
     c.gb += .1;
 
+    if ((c.r < 0.15) && (c.g < 0.15) && (c.b < 0.15)) {
+        discard;
+    }
+
     vec4 tColor = texture2D(gm_BaseTexture, v_vTexcoord);
 
-    gl_FragColor = vec4(c*.4 + c.brg*.6 + c*c, tColor.a * v_vColour.a);
+    //gl_FragColor = vec4(tColor.rgb * c*.4 + c.brg*.6 + c*c, tColor.a * v_vColour.a);
+    gl_FragColor = vec4(c, tColor.a * v_vColour.a);
 }
