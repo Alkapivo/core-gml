@@ -50,7 +50,7 @@ function Texture(_asset, config = null) constructor {
   ///@param {Number} [angle]
   ///@param {Color} [blend]
   ///@return {Texture}
-  static render = method(this, function(x, y, frame = 0, scaleX = 1, scaleY = 1, alpha = 1, angle = 0, blend = c_white) {
+  static render = function(x, y, frame = 0, scaleX = 1, scaleY = 1, alpha = 1, angle = 0, blend = c_white) {
     draw_sprite_ext(
       this.asset, frame, 
       x, y, 
@@ -58,7 +58,7 @@ function Texture(_asset, config = null) constructor {
       angle, blend, alpha
     )
     return this
-  })
+  }
 }
 
 
