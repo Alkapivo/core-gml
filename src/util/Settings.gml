@@ -151,4 +151,16 @@ function Settings(_path) constructor {
     FileUtil.writeFileSync(new File({ path: this.path, data: JSON.stringify(json, { pretty: true }) }))
     return this
   }
+
+  ///@param {String} name
+  ///@return {Struct}
+  generateSettingsSubscriber = function(name) {
+    return { 
+      name: name,
+      callback: function(value) {
+        Visu.settings.setValue(this.name, value).save()
+      },
+    }
+  }
+
 }
