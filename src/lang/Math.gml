@@ -328,6 +328,12 @@ function _Math() constructor {
   areNumbersEqual = function(a, b, epsilon = 0.0) {
     return a >= b - epsilon && a <= b + epsilon
   }
+
+  ///@param {any} value
+  ///@return {Boolean}
+  isNaN = function(value) {
+    return is_nan(value)
+  }
 }
 global.__Math = new _Math()
 #macro Math global.__Math

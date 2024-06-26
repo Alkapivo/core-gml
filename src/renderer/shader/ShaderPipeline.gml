@@ -124,6 +124,7 @@ function ShaderPipeline(config = {}): Service() constructor {
   templates = Struct.contains(config, "templates")
      ? Assert.isType(config.templates, Map)
      : new Map(String, ShaderTemplate)
+  this.templates.set("shader-default", new ShaderTemplate("shader-default", { shader: "shader_revert" }))
 
   ///@type {EventPump}
   dispatcher = new EventPump(this, new Map(String, Callable, {
