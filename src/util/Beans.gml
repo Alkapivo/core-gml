@@ -49,13 +49,13 @@ function _Beans() constructor {
     if (this.beans.contains(name)) {
       var bean = this.beans.get(name)
       if (!Core.isType(bean, Bean)) {
-        Logger.error("Beans", $"Found non-bean entity in beans?: {name}")
+        Logger.warn("Beans", $"Found non-bean entity in beans?: {name}")
         this.beans.remove(name)
         return false
       }
 
       if (bean.get() == null) {
-        Logger.error("Beans", $"Found corrupted bean: {name}")
+        Logger.warn("Beans", $"Found corrupted bean: {name}")
         this.beans.remove(name)
         return false
       }
