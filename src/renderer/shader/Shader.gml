@@ -6,6 +6,13 @@
 ///@static
 ///@type {Struct}
 global.__shaders = {
+  "shader_nog_betere_2": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iTime": "FLOAT",
+      "iResolution": "VECTOR2"
+    }
+  },
   "shader_art": {
     "type": "GLSL_ES",
     "uniforms": {
