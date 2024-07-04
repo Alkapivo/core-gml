@@ -225,6 +225,14 @@ function _Core() constructor {
     return Core.properties.getDefault(key, defaultValue)
   }
 
+  ///@param {String} key
+  ///@param {any} value
+  ///@return {Core}
+  static setProperty = function(key, value) {
+    Core.properties.set(key, value)
+    return this
+  }
+
   ///@param {Boolean} value
   ///@return {Core}
   static debugOverlay = function(value) {
