@@ -124,7 +124,6 @@ function ShaderPipeline(config = {}): Service() constructor {
   templates = Struct.contains(config, "templates")
      ? Assert.isType(config.templates, Map)
      : new Map(String, ShaderTemplate)
-  this.templates.set("shader-default", new ShaderTemplate("shader-default", { shader: "shader_revert" }))
 
   ///@type {EventPump}
   dispatcher = new EventPump(this, new Map(String, Callable, {
@@ -183,6 +182,12 @@ function ShaderPipeline(config = {}): Service() constructor {
         })
         
       this.executor.add(task)
+    },
+    "clear-shaders": function(event) {
+      this.executor.tasks.clear()
+    },
+    "reset-templates": function(event) {
+      this.templates.clear().set("shader-default", new ShaderTemplate("shader-default", { shader: "shader_revert" }))
     },
   }))
 
@@ -247,4 +252,6 @@ function ShaderPipeline(config = {}): Service() constructor {
     }
     return this
   }
+
+  this.send(new Event("reset-templates"))
 }

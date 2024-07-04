@@ -84,9 +84,9 @@ function Settings(_path) constructor {
   }
 
   ///@param {String} name
-  ///@param {any} defaultValue
+  ///@param {any} [defaultValue]
   ///@return {any}
-  getValue = function(name, defaultValue) {
+  getValue = function(name, defaultValue = null) {
     var settingEntry = container.get(name)
     return Core.isType(settingEntry, SettingEntry)
       ? settingEntry.get()
@@ -158,6 +158,9 @@ function Settings(_path) constructor {
     return { 
       name: name,
       callback: function(value) {
+        if (Visu.settings.getValue(this.name) == value) {
+          return
+        }
         Visu.settings.setValue(this.name, value).save()
       },
     }
