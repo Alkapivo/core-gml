@@ -10,7 +10,9 @@ global.__shaders = {
     "type": "GLSL_ES",
     "uniforms": {
       "iTime": "FLOAT",
-      "iResolution": "VECTOR2"
+      "iResolution": "VECTOR2",
+      "iColor": "VECTOR3",
+      "iMix": "FLOAT"
     }
   },
   "shader_art": {
