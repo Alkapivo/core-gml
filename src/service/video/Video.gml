@@ -167,7 +167,7 @@ function Video(json) constructor {
   ///@return {Video}
   open = function() {
     this.close()
-    video_open(this.path)
+    video_open($"{working_directory}{this.path}")
     this.setLoop(this.loop)
     return this
   }
