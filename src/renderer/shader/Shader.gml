@@ -224,6 +224,100 @@ global.__shaders = {
       "lineThickness": "FLOAT",
       "pointRadius": "FLOAT"
     }
+  },
+  "shader_lighting_with_glow": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iTime": "FLOAT",
+      "iResolution": "VECTOR2"
+    }
+  },
+  "shader_discoteq_2": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iTime": "FLOAT",
+      "iResolution": "VECTOR2"
+    }
+  },
+  "shader_ui_noise_halo": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iTime": "FLOAT",
+      "iResolution": "VECTOR2"
+    }
+  },
+  "shader_colors_embody": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iTime": "FLOAT",
+      "iResolution": "VECTOR2"
+    }
+  },
+  "shader_grid_space": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iTime": "FLOAT",
+      "iResolution": "VECTOR2"
+    }
+  },
+  "shader_002_blue": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iTime": "FLOAT",
+      "iResolution": "VECTOR2",
+      "iIterations": "FLOAT",
+      "iSize": "FLOAT",
+      "iPhase": "FLOAT",
+      "iTreshold": "FLOAT",
+      "iDistance": "FLOAT",
+      "iTint": "VECTOR3"
+    }
+  },
+  "shader_monster": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iTime": "FLOAT",
+      "iResolution": "VECTOR2",
+      "iTint": "VECTOR3",
+      "iSize": "FLOAT"
+    }
+  },
+  "shader_clouds_2d": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iTime": "FLOAT",
+      "iResolution": "VECTOR2"
+    }
+  },
+  "shader_flame": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iTime": "FLOAT",
+      "iResolution": "VECTOR2",
+      "iPosition": "VECTOR3",
+      "iIterations": "FLOAT"
+    }
+  },
+  "shader_whirlpool": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iTime": "FLOAT",
+      "iResolution": "VECTOR2",
+      "iIterations": "FLOAT",
+      "iSize": "FLOAT",
+      "iFactor": "FLOAT"
+    }
+  },
+  "shader_warp_speed_2": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iTime": "FLOAT",
+      "iResolution": "VECTOR2",
+      "iIterations": "FLOAT",
+      "iSize": "VECTOR2",
+      "iFactor": "FLOAT",
+      "iSeed": "VECTOR3"
+    }
   }
 }
 #macro SHADERS global.__shaders
