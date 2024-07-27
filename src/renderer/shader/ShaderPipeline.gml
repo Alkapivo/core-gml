@@ -28,15 +28,18 @@ function ShaderPipelineTaskTemplate(_name, json) constructor {
 
   var jsonProperties = Struct.get(json, "properties")
   if (Core.isType(jsonProperties, Struct)) {
-    this.properties = Struct.toMap(jsonProperties, String, Transformer).map(function (struct, name, shader) {
-      var uniform = this.shader.uniforms.get(name)
-      Assert.isType(uniform, ShaderUniform, "uniform")
-      var prototype = ShaderPipelineTaskTransformerType.get(uniform.type)
-      Assert.isEnum(prototype, ShaderPipelineTaskTransformerType)
-      var transformer = new prototype(struct)
-      Assert.isType(transformer, prototype, "transformer")
-      return transformer
-    }, this.shader)
+    this.properties = Struct.toMap(
+      jsonProperties,
+      String,
+      Transformer,
+      function(struct, name, shader) { 
+        var uniform = Assert.isType(shader.uniforms.get(name), ShaderUniform)
+        var prototype = Assert.isEnum(ShaderPipelineTaskTransformerType.get(uniform.type), ShaderPipelineTaskTransformerType)
+        var transformer = Assert.isType(new prototype(struct), prototype)
+        return transformer
+      },
+      this.shader
+    )
   }
   Assert.isType(this.properties, Map, "properties")
 }

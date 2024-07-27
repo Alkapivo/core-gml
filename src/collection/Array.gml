@@ -423,6 +423,44 @@ function _GMArray() constructor {
     return arr
   }
 
+  ///@override
+  ///@param {GMArray} arr
+  ///@return {GMArray}
+  static clear = function(arr) {
+    array_delete(arr, 0, this.size(arr))
+    return arr
+  }
+
+  ///@param {GMArray} arr
+  ///@param {Callable} callback
+  ///@param {any} [acc]
+  ///@return {any}
+  static find = function(arr, callback, acc = null) {
+    var size = this.size(arr)
+    for (var index = 0; index < size; index++) {
+      var item = arr[index]
+      if (callback(item, index, acc)) {
+        return item
+      }
+    }
+    return null
+  }
+
+  ///@param {GMArray} arr
+  ///@param {any} value
+  ///@param {any} [acc]
+  ///@return {?Number}
+  static findIndex = function(arr, callback, acc = null) {
+    var size = this.size(arr)
+    for (var index = 0; index < size; index++) {
+      var item = arr[index]
+      if (callback(item, index, acc)) {
+        return index
+      }
+    }
+    return null
+  }
+
   ///@param {GMArray} arr
   ///@param {Number} index
   ///@return {GMArray}

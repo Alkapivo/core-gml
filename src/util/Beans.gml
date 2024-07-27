@@ -96,7 +96,7 @@ function _Beans() constructor {
   ///@param {String} name
   static remove = function(name) {
     var bean = this.beans.get(name)
-    Core.dereference(bean, $"Bean `{name}` dereferenced successfully")
+    //Core.dereference(bean, $"Bean `{name}` dereferenced successfully")
     this.beans.remove(name)
   }
 
@@ -133,5 +133,7 @@ global.__Beans = null
 #macro Beans global.__Beans
 
 function initBeans() {
-  global.__Beans = new _Beans()
+  if (global.__Beans == null) {
+    global.__Beans = new _Beans()
+  }
 }

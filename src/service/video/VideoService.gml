@@ -94,7 +94,7 @@ function VideoService(config = {}): Service() constructor {
             }
           }
         }))
-        .setTimeout(3.0)
+        .setTimeout(this.timeout)
         .whenUpdate(this.factoryTaskUpdate())
       
       this.executor.tasks.forEach(this.rejectExistingTask)

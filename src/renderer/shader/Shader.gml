@@ -253,11 +253,16 @@ function Shader(_asset, json) constructor {
 
   ///@type {Map<String, ShaderUniform>}
   uniforms = Struct
-    .toMap(Struct.getDefault(json, "uniforms", {}), String, ShaderUniform)
-    .map(function(type, name, shader) {
-      var prototype = ShaderUniformType.get(type)
-      return Assert.isType(new prototype(shader, name, type), ShaderUniform)
-    }, this.asset)
+    .toMap(
+      Struct.getDefault(json, "uniforms", {}), 
+      String, 
+      ShaderUniform,
+      function(type, name, asset) {
+        var prototype = ShaderUniformType.get(type)
+        return Assert.isType(new prototype(asset, name, type), ShaderUniform)
+      },
+      this.asset
+    )
 }
 
 
