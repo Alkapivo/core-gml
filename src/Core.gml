@@ -15,6 +15,8 @@ show_debug_message("init Core.gml")
 #macro Matrix "Matrix"
 #macro NonNull "NonNull"
 #macro GMCamera "GMCamera"
+#macro GMTileset "GMTileset"
+#macro GMScene "GMScene"
 
 ///@static
 function _Core() constructor {
@@ -40,6 +42,9 @@ function _Core() constructor {
 
   ///@type {?Map<String, any>}
   properties = null
+
+  ///@type {?Map<String, any>}
+  typeParsers = null
 
   ///@param {any} object
   ///@param {any} type
@@ -67,9 +72,11 @@ function _Core() constructor {
         case GMObject: return result == "ref"
         case GMShader: return result == "ref" && shader_is_compiled(object)
         case GMShaderUniform: return (result == "number" || result == "ref") && object != -1
+        case GMScene: return result == "ref" && asset_get_type(object) == asset_room
         case GMSound: return (result == "number" || result == "ref") && audio_exists(object)
         case GMSurface: return result == "ref" && surface_exists(object)
         case GMVideoSurface: return result == "ref" && surface_exists(object)
+        case GMTileset: return result == "ref"
         case GMTexture: return (result == "ref" || result == "number") && sprite_exists(object)
         ///@todo bug, ref will be returned only when gamemaker is initalizing
         case NonNull: return object != null
@@ -258,6 +265,24 @@ function _Core() constructor {
       default: return RuntimeType.UNKNOWN
     }
   }
+
+  ///@param {Type} type
+  ///@return {Callable}
+  static fetchTypeParser = function(type) {
+    ///@param {any} value
+    ///@return {any}
+    static passthrough = function(value) { 
+      return value
+    }
+
+    if (!Core.isType(Core.typeParsers, Map)) {
+      Logger.debug("Core", "Create typeParsers map")
+      Core.typeParsers = new Map()
+    }
+
+    var parser = Core.typeParsers.get(type)
+    return Core.isType(parser, Callable) ? parser : passthrough
+  }
 }
 global.__Core = new _Core()
 #macro Core global.__Core
@@ -384,3 +409,21 @@ function CLIParamParser(json) constructor {
     return this
   }
 }
+
+global.__SceneContext = {
+  intent: null,
+  getIntent: function() {
+    return this.intent
+  },
+  setIntent: function(intent) {
+    this.intent = intent
+    return this
+  },
+  open: function(name, intent = null) {
+    var scene = Assert.isType(asset_get_index(name), GMScene)
+    this.setIntent(intent)
+    room_goto(scene)
+    return this
+  }
+}
+#macro SceneContext global.__SceneContext
