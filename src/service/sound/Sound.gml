@@ -97,7 +97,7 @@ function Sound(_asset, config = {}) constructor {
   ///@return {Sound}
   load = function(position = 0.0) {
     ///@todo report bug, cannot play and pause sound in one step if .ogg was loaded externally
-    this.play().rewind(position).pause()
+    this.play().setVolume(0).rewind(position).pause().setVolume(1)
     return this
   }
 
@@ -118,7 +118,6 @@ function Sound(_asset, config = {}) constructor {
   ///@private
   ///@type {?GMSound}
   soundId = null
-  this.load(Struct.getDefault(config, "timestamp", 0.0))
 
   ///@return {Number}
   getPosition = function() {
@@ -150,6 +149,8 @@ function Sound(_asset, config = {}) constructor {
       ? audio_sound_get_gain(this.soundId) 
       : 0.0
   }
+
+  this.load(Struct.getDefault(config, "timestamp", 0.0))
 }
 
 function _SoundUtil() constructor {
