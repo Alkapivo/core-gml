@@ -36,7 +36,7 @@ function Sound(_asset, config = {}) constructor {
 
   ///@private
   ///@type
-  asset = _asset
+  asset = Assert.isType(_asset, GMSound)
 
   ///@type {String}
   name = Assert.isType(Struct.contains(config, "name") 
@@ -92,15 +92,6 @@ function Sound(_asset, config = {}) constructor {
     return this
   }
 
-  ///@private
-  ///@param {Number} [position]
-  ///@return {Sound}
-  load = function(position = 0.0) {
-    ///@todo report bug, cannot play and pause sound in one step if .ogg was loaded externally
-    this.play().setVolume(0).rewind(position).pause().setVolume(1)
-    return this
-  }
-
   ///@return {Boolean}
   isLoaded = function() {
     return Core.isType(this.soundId, GMSound) && audio_is_playing(this.soundId)
@@ -128,9 +119,7 @@ function Sound(_asset, config = {}) constructor {
 
   ///@return {Number}
   getLength = function() {
-    return Core.isType(this.soundId, GMSound)
-      ? audio_sound_length(this.soundId)
-      : 0.0
+    return audio_sound_length(this.asset)
   }
 
   ///@type {Number} volume
@@ -149,8 +138,6 @@ function Sound(_asset, config = {}) constructor {
       ? audio_sound_get_gain(this.soundId) 
       : 0.0
   }
-
-  this.load(Struct.getDefault(config, "timestamp", 0.0))
 }
 
 function _SoundUtil() constructor {
