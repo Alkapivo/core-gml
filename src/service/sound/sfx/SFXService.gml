@@ -47,7 +47,7 @@ function SFXService(): Service() constructor {
   ///@return {SFXService}
   play = function(name) {
     var sfx = this.get(name)
-    if (Optional.is(sfx)) {
+    if (Optional.is(sfx) && !sfx.dispatched) {
       sfx.play()
     }
 

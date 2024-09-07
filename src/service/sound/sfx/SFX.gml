@@ -53,8 +53,15 @@ function SFX(_name, _limit = null) constructor {
     gc: this.gc,
   }
 
+  ///@private
+  dispatched = false
+
   ///@return {SFX}
   static play = function() {
+    if (this.dispatched) {
+      return
+    }
+
     if (Optional.is(this.limit) && this.queue.size() >= this.limit) {
       this.queue.pop().sound.stop()
     }
@@ -62,6 +69,7 @@ function SFX(_name, _limit = null) constructor {
     var sound = SoundUtil.fetch(this.name)
     if (Core.isType(sound, Sound)) {
       this.queue.push(new SFXContext(sound))
+      this.dispatched = true
     }
 
     return this
@@ -113,6 +121,7 @@ function SFX(_name, _limit = null) constructor {
       }
     }
 
+    this.dispatched = false
     this.acc.volume = volume
     this.queue.container.forEach(updateSFX, this.acc)
 
