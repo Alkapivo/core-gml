@@ -87,7 +87,7 @@ function ParticleService(_controller, config = {}): Service() constructor {
     })
 
   ///@param {String} name
-  ///@return {?CoinTemplate}
+  ///@return {?TextureTemplate}
   getTemplate = function(name) {
     var template = this.templates.get(name)
     return template == null
