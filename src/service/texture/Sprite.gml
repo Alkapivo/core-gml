@@ -169,6 +169,25 @@ function Sprite(_texture, config = {}) constructor {
     return this
   }
 
+  ///@param {Number} x
+  ///@param {Number} y
+  ///@return {Sprite}
+  renderTiled = function(x, y) {
+    draw_sprite_tiled_ext(this.texture.asset, this.frame, x, y, this.scaleX, this.scaleY, 
+      this.blend, this.alpha)
+    
+    if (!this.animate) {
+      return this
+    }
+
+    this.frame += DeltaTime.apply(this.speed / GAME_FPS)
+    if (this.frame > this.texture.frames) {
+      this.frame = this.frame - (this.texture.frames 
+        * floor(this.frame / this.texture.frames))
+    }
+    return this
+  }
+
   ///@param {Number} width
   ///@param {Number} height
   ///@return {Sprite}
