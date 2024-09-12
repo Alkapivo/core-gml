@@ -39,6 +39,9 @@ function Sprite(_texture, config = {}) constructor {
   ///@type {Boolean}
   animate = Struct.getDefault(config, "animate", this.texture.frames > 1)
 
+  ///@type {Boolean}
+  randomFrame = Struct.getDefault(config, "randomFrame", false)
+
   ///@return {String}
   getName = function() {
     return this.texture.name
@@ -94,6 +97,11 @@ function Sprite(_texture, config = {}) constructor {
     return this.animate
   }
 
+  ///@return {Boolean}
+  getRandomFrame = function() {
+    return this.randomFrame
+  }
+
   ///@param {Number} frame
   ///@return {Sprite}
   setFrame = function(frame) {
@@ -147,6 +155,17 @@ function Sprite(_texture, config = {}) constructor {
   ///@return {Sprite}
   setAnimate = function(animate) {
     this.animate = animate
+    return this
+  }
+
+  ///@param {Boolean} randomFrame
+  ///@return {Sprite}
+  setRandomFrame = function(randomFrame) {
+    this.randomFrame = randomFrame
+    if (this.randomFrame) {
+      this.setFrame(irandom(this.texture.frames))
+    }
+    
     return this
   }
   
@@ -237,6 +256,7 @@ function Sprite(_texture, config = {}) constructor {
       angle: this.getAngle(),
       blend: ColorUtil.fromGMColor(this.getBlend()).toHex(),
       animate: this.getAnimate(),
+      randomFrame: this.getRandomFrame(),
     }
 
     ///@description Shrink json size
@@ -272,9 +292,17 @@ function Sprite(_texture, config = {}) constructor {
       if (json.animate == true) {
         Struct.remove(json, "animate")
       }
+
+      if (json.randomFrame == false) {
+        Struct.remove(json, "randomFrame")
+      }
     }
     
     return json
+  }
+
+  if (this.randomFrame) {
+    this.setFrame(irandom(this.texture.frames))
   }
 }
 
@@ -289,15 +317,13 @@ function _SpriteUtil() constructor {
     try {
       var json = JSON.clone(_json)
       var texture = Assert.isType(TextureUtil.parse(json.name, json), Texture)
-      if (Struct.contains(json, "frame")) {
-        json.frame = clamp(
-          json.frame == "random" 
-            ? random(texture.frames - 1.0) 
-            : NumberUtil.parse(json.frame, 0.0), 
-          0.0, 
-          texture.frames - 1.0
-        )
-      }
+      Struct.set(json, "frame", clamp(
+        (Struct.get(json, "randomFrame") == true
+          ? random(texture.frames - 1.0) 
+          : NumberUtil.parse(Struct.get(json, "frame"), 0.0)), 
+        0.0, 
+        texture.frames - 1.0
+      ))
 
       if (Struct.contains(json, "blend")) {
         json.blend = ColorUtil
