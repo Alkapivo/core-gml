@@ -30,6 +30,18 @@ function SFXService(): Service() constructor {
     return this
   }
 
+  ///@return {Number}
+  getVolume = function() {
+    return this.volume
+  }
+
+  ///@param {Number} volume
+  ///@return {SFXService}
+  setVolume = function(volume) {
+    this.volume = clamp(volume, 0.0, 1.0)
+    return this.update()
+  }
+
   ///@param {String} name
   ///@return {SFXService}
   remove = function(name) {
@@ -61,6 +73,7 @@ function SFXService(): Service() constructor {
     }
 
     this.sfxs.forEach(updateSFX, this.volume)
+    return this
   }
 
   ///@return {SFXService}

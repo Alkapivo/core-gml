@@ -24,6 +24,8 @@ global.__GPU_DEFAULT_FONT_BOLD = null
 function _BlendMode(): Enum() constructor {
   ADD = bm_add
   NORMAL = bm_normal
+  SUBTRACT = bm_subtract
+  REVERSE_SUBTRACT = bm_reverse_subtract
 }
 global.__BlendMode = new _BlendMode()
 #macro BlendMode global.__BlendMode
