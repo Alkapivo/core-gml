@@ -147,7 +147,7 @@ function DebugOSTimer(_name, _size = 60) constructor {
 
   ///@return {Number} time in ms (there are 1000 miliseconds per second)
   getValue = function() {
-    return this.value / this.size
+    return this.size > 0 ? this.value / this.size : 0.0
   }
 
   ///@return {String}
