@@ -293,6 +293,6 @@ global.__GPU = new _GPU()
 function initGPU() {
   GPU_DEFAULT_LINE_TEXTURE = new Texture(texture_grid_line_default)
   GPU_DEFAULT_LINE_TEXTURE_CORNER = new Texture(texture_grid_line_corner_default)
-  GPU_DEFAULT_FONT = new Font(font_consolas_10_regular)
+  GPU_DEFAULT_FONT = new Font(font_consolas_12_regular)
   GPU_DEFAULT_FONT_BOLD = new Font(font_consolas_12_bold)
 }
