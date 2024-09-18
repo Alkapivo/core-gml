@@ -886,8 +886,8 @@ function _UIUtil() constructor {
         var _x = event.data.x - this.area.getX()
         var _y = event.data.y - this.area.getY()
         var collide = this.scrollbarY.align == HAlign.LEFT
-          ? (_x <= this.scrollbarY.width)
-          : (_x >= this.area.getWidth() - this.scrollbarY.width)
+          ? (_x <= 0)
+          : (_x >= this.area.getWidth())
         var scrollbarY = Struct.get(this, "scrollbarY")
         if (collide) || (Struct.get(scrollbarY, "isDragEvent") == true) {
           var ratio = _y / this.area.getHeight() 
