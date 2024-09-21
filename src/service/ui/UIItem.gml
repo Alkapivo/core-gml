@@ -39,6 +39,11 @@ function UIItem(_name, config = {}) constructor {
   ///@params {Boolean}
   isHoverOver = false
 
+  ///@type {Number}
+  backgroundAlpha = Core.isType(Struct.get(config, "backgroundAlpha"), Number)
+    ? config.backgroundAlpha
+    : 1.0
+  
   ///@type {Event}
   hoverEvent = new Event("MouseHoverOut", { x: 0, y: 0 })
 
@@ -163,15 +168,30 @@ function _UIItemUtils() constructor {
         var margin = Struct.get(this, "backgroundMargin")
         if (Core.isType(margin, Margin)) {
           GPU.render.rectangle(
-            beginX + margin.left, 
-            beginY + margin.top, 
-            endX - margin.right, 
-            endY - margin.bottom, 
-            false, 
-            this.backgroundColor
+            beginX + margin.left,
+            beginY + margin.top,
+            endX - margin.right,
+            endY - margin.bottom,
+            false,
+            this.backgroundColor,
+            this.backgroundColor,
+            this.backgroundColor,
+            this.backgroundColor,
+            this.backgroundAlpha
           )
         } else {
-          GPU.render.rectangle(beginX, beginY, endX, endY, false, this.backgroundColor)
+          GPU.render.rectangle(
+            beginX,
+            beginY,
+            endX,
+            endY,
+            false,
+            this.backgroundColor,
+            this.backgroundColor,
+            this.backgroundColor,
+            this.backgroundColor,
+            this.backgroundAlpha
+          )
         }
       }
     },

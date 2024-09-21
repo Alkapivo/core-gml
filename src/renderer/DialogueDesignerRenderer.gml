@@ -3,7 +3,7 @@
 function DialogueRenderer() constructor {
 
   ///@type {Font}
-  font = Assert.isType(FontUtil.parse({ name: "font_inter_24_regular" }), Font)
+  font = Assert.isType(FontUtil.parse({ name: "font_kodeo_mono_18_regular" }), Font)
 
   ///@type {?Struct}
   context = null
@@ -35,10 +35,10 @@ function DialogueRenderer() constructor {
 
   layout = new UILayout({
     name: "dialog",
-    width: function() { return clamp(GuiWidth(), 640, 1280) },
-    height: function() { return 180 },
+    width: function() { return clamp(GuiWidth(), 800, 1280) },
+    height: function() { return 360 },
     x: function() { return (GuiWidth() - this.width()) / 2.0 },
-    y: function() { return GuiHeight() - this.height() },
+    y: function() { return GuiHeight() - this.height() - 96 },
     nodes: {
       avatar: {
         name: "dialog-avatar",
@@ -145,7 +145,7 @@ function DialogueRenderer() constructor {
     return parsed
   }
 
-  bazyl = SpriteUtil.parse({ name: "texture_bazyl" })
+  bazyl = SpriteUtil.parse({ name: "texture_baron" })
   bazylTheta = 0.0
 
   ///@param {Struct} parsed
@@ -210,7 +210,7 @@ function DialogueRenderer() constructor {
       }
     }
   
-    var font = FontUtil.parse({ name: "font_inter_24_regular" })
+    var font = FontUtil.parse({ name: "font_kodeo_mono_28_regular" })
     draw_set_font(font.asset)
 
     this.bazylTheta += choose(0.05, 0.1, 0.1, 0.15)
@@ -281,7 +281,7 @@ function DialogueRenderer() constructor {
       if (this.context.text.finished && Core.isType(this.context.choices, Array)) {
         this.context.choices.forEach(function(choice, index, acc) {
 
-          var _x = acc.layout.x() + (acc.layout.width() / 1.6)
+          var _x = acc.layout.x() + (acc.layout.width() / 2)
           var width = GuiWidth() - _x
           var height = 48
           var margin = 12

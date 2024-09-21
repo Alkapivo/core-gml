@@ -257,9 +257,14 @@ function UI(config = {}) constructor {
     : function() {
 
       var color = this.state.get("background-color")
-      GPU.render.clear(Core.isType(color, GMColor) 
-        ? ColorUtil.fromGMColor(color) 
-        : ColorUtil.BLACK_TRANSPARENT)
+      var alpha = this.state.get("background-alpha")
+      //GPU.render.clear(Core.isType(color, GMColor) 
+      //  ? ColorUtil.fromGMColor(color) 
+      //  : ColorUtil.BLACK_TRANSPARENT)
+      draw_clear_alpha(
+        (Core.isType(color, GMColor) ? color : c_black),
+        (Core.isType(alpha, Number) ? alpha : 0.0)
+      )
 
       var areaX = this.area.x
       var areaY = this.area.y
@@ -468,11 +473,18 @@ function _UIUtil() constructor {
         var areaY = this.area.getY()
         var areaWidth = this.area.getWidth()
         var areaHeight = this.area.getHeight()
+        var isKeyboardEvent = this.state.getDefault("isKeyboardEvent", false)
         if (point_in_rectangle(mouseX, mouseY, areaX, areaY, areaX + areaWidth, areaY + areaHeight)) {
+          if (isKeyboardEvent && !MouseUtil.hasMoved()) {
+            return
+          }
+          this.state.set("isKeyboardEvent", false)
+          
           var previousElement = this.collection.findByIndex(Struct.inject(this, "selectedIndex", 0))
           if (Optional.is(previousElement)) {
             previousElement.items.forEach(function(item) {
               if (!Struct.contains(item, "colorHoverOut")) {
+                item.backgroundColor = null
                 return
               }
               item.backgroundColor = ColorUtil.fromHex(item.colorHoverOut).toGMColor()
@@ -490,11 +502,12 @@ function _UIUtil() constructor {
             })
           }
         } else {
-          if (Optional.is(Struct.get(this, "selectedIndex"))) {
+          if (Optional.is(Struct.get(this, "selectedIndex")) && !isKeyboardEvent) {
             var element = this.collection.findByIndex(this.selectedIndex)
             if (Optional.is(element)) {
               element.items.forEach(function(item) {
                 if (!Struct.contains(item, "colorHoverOut")) {
+                  item.backgroundColor = null
                   return
                 }
                 item.backgroundColor = ColorUtil.fromHex(item.colorHoverOut).toGMColor()
@@ -750,8 +763,9 @@ function _UIUtil() constructor {
           
           GPU.set.surface(this.surface)
           var color = this.state.get("background-color")
+          var alpha = this.state.getDefault("background-alpha", 1.0)
           if (color != null) {
-            draw_clear(color)
+            draw_clear_alpha(color, alpha)
           }
           
           var areaX = this.area.x

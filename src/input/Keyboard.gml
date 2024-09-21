@@ -50,7 +50,7 @@ global.__KeyboardKeyType = new _KeyboardKeyType()
 function KeyboardKey(key) constructor {
 
   ///@type {GMKeyboardKey}
-  gmKey = KeyboardKeyType.contains(key) ? key : ord(Assert.isType(key, String))
+  gmKey = KeyboardKeyType.contains(key) || Core.isType(key, Number) ? key : ord(Assert.isType(key, String))
 
   ///@type {Boolean}
   on = false
@@ -70,6 +70,14 @@ function Keyboard(json) constructor {
   keys = Struct.map(json, function(key) {
     return new KeyboardKey(key)
   })
+
+  ///@param {String} name
+  ///@param {Number|String} key
+  ///@return {Keyboard}
+  setKey = function(name, key) {
+    Struct.set(this.keys, name, new KeyboardKey(key))
+    return this
+  }
 
   ///@return {Keyboard}
   update = function() {

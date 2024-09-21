@@ -14,6 +14,7 @@ global.__DDNodeType = new _DDNodeType()
 function _DDActionType(): Enum() constructor {
   QUIT = "QUIT"
   LOAD_VISU_TRACK = "LOAD_VISU_TRACK"
+  GAME_END = "GAME_END"
 }
 global.__DDActionType = new _DDActionType()
 #macro DDActionType global.__DDActionType
@@ -233,6 +234,9 @@ function DDAction(json) constructor {
           manifest: FileUtil.get(this.data.path),
           autoplay: true,
         }))
+        break
+      case DDActionType.GAME_END:
+        game_end()
         break
       default: throw new Exception($"Invalid DDActionType {this.action}")
     }
