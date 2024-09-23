@@ -483,11 +483,9 @@ function _UIUtil() constructor {
           var previousElement = this.collection.findByIndex(Struct.inject(this, "selectedIndex", 0))
           if (Optional.is(previousElement)) {
             previousElement.items.forEach(function(item) {
-              if (!Struct.contains(item, "colorHoverOut")) {
-                item.backgroundColor = null
-                return
-              }
-              item.backgroundColor = ColorUtil.fromHex(item.colorHoverOut).toGMColor()
+              item.backgroundColor = Struct.contains(item, "colorHoverOut")
+                ? ColorUtil.fromHex(item.colorHoverOut).toGMColor()
+                : item.backgroundColor
             })
           }
 
@@ -495,10 +493,9 @@ function _UIUtil() constructor {
           var currentElement = this.collection.findByIndex(this.selectedIndex)
           if (Optional.is(currentElement)) {
             currentElement.items.forEach(function(item) {
-              if (!Struct.contains(item, "colorHoverOver")) {
-                return
-              }
-              item.backgroundColor = ColorUtil.fromHex(item.colorHoverOver).toGMColor()
+              item.backgroundColor = Struct.contains(item, "colorHoverOver")
+                ? ColorUtil.fromHex(item.colorHoverOver).toGMColor()
+                : item.backgroundColor
             })
           }
         } else {
@@ -506,11 +503,9 @@ function _UIUtil() constructor {
             var element = this.collection.findByIndex(this.selectedIndex)
             if (Optional.is(element)) {
               element.items.forEach(function(item) {
-                if (!Struct.contains(item, "colorHoverOut")) {
-                  item.backgroundColor = null
-                  return
-                }
-                item.backgroundColor = ColorUtil.fromHex(item.colorHoverOut).toGMColor()
+                item.backgroundColor = Struct.contains(item, "colorHoverOut")
+                  ? ColorUtil.fromHex(item.colorHoverOut).toGMColor()
+                  : item.backgroundColor
               })
             }
             this.selectedIndex = null

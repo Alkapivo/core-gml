@@ -39,6 +39,11 @@ function UIItem(_name, config = {}) constructor {
   ///@params {Boolean}
   isHoverOver = false
 
+  ///@type {?GMColor}
+  backgroundColor = Core.isType(Struct.get(config, "backgroundColor"), String)
+    ? Assert.isType(ColorUtil.fromHex(config.backgroundColor).toGMColor(), GMColor)
+    : null
+
   ///@type {Number}
   backgroundAlpha = Core.isType(Struct.get(config, "backgroundAlpha"), Number)
     ? config.backgroundAlpha
