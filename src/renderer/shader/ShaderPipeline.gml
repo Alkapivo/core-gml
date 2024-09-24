@@ -143,6 +143,29 @@ function ShaderPipeline(config = {}): Service() constructor {
         return new ShaderPipelineTaskProperty(uniforms.get(name), property)
       }
 
+      var limit = Visu.settings.getValue("visu.graphics.shaders-limit")
+      var size = this.executor.tasks.size()
+      var fullfilled = 0
+      if (size >= limit) {
+        for (var index = 0; index < size; index++) {
+          var oldTask = this.executor.tasks.get(index)
+          if (oldTask.status != TaskStatus.FULLFILLED) {
+            oldTask.fullfill()
+            fullfilled++
+          }
+
+          if (size - fullfilled < limit) {
+            Logger.debug("ShaderPipeline", $"Reduced task to match limit {limit}")
+            break
+          }
+        }
+      }
+
+      if (size - fullfilled >= limit) {
+        Logger.warn("ShaderPipeline", $"Unable to match the limit {limit}")
+        return
+      }
+
       var templateName = Assert.isType(Struct.get(event.data, "template"), String)
       var json = Assert.isType(this.getTemplate(templateName), ShaderTemplate)
       var duration = Assert.isType(Struct.get(event.data, "duration"), Number)
