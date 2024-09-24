@@ -326,7 +326,7 @@ global.__shaders = {
       "iFactor": "FLOAT",
       "iSeed": "VECTOR3"
     }
-  }
+  },
 }
 #macro SHADERS global.__shaders
 
