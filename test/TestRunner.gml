@@ -142,7 +142,7 @@ function TestRunner() constructor {
       try {
         this.saveReport()
       } catch (ex) {
-        Logger.error(BeanTestRunner, $"Unable to save test results: {exception.message}")
+        Logger.error(BeanTestRunner, $"Unable to save test results: {ex.message}")
       }
 
       this.shutdown()
