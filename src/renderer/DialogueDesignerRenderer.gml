@@ -10,7 +10,7 @@ function DialogueRenderer() constructor {
 
   ///@return {DialogueRenderer}
   update = function() {
-    var dialog = Beans.get(BeanDialogueService).dialog
+    var dialog = Beans.get(BeanDialogueDesignerService).dialog
     if (!Core.isType(dialog, DDDialogue)) {
       this.context = null
       return this
@@ -192,7 +192,7 @@ function DialogueRenderer() constructor {
           }
           break
         case "no-wait":
-          Beans.get(BeanDialogueService).dialog.select()
+          Beans.get(BeanDialogueDesignerService).dialog.select()
           if (parsed.pointer + 1 >= parsed.text.size()) {
             parsed.finished = true
           } else {
@@ -253,7 +253,7 @@ function DialogueRenderer() constructor {
     if (Core.isType(this.context, Struct)) {
       this.renderDialogue(this.context.text)
 
-      var dialog = Beans.get(BeanDialogueService).dialog
+      var dialog = Beans.get(BeanDialogueDesignerService).dialog
       if (this.context.text.finished 
         && !this.context.text.anykeyConsumed 
         && Core.isType(dialog, DDDialogue)) {
@@ -292,7 +292,7 @@ function DialogueRenderer() constructor {
             : c_white
 
           if (hoverColor == c_yellow && mouse_check_button_pressed(mb_left)) {
-            Beans.get(BeanDialogueService).dialog.select(index)
+            Beans.get(BeanDialogueDesignerService).dialog.select(index)
           }
 
           GPU.render.text(
