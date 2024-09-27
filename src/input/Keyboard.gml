@@ -36,14 +36,68 @@ function _KeyboardKeyType(): Enum() constructor {
   BACKSPACE = vk_backspace
   HOME = vk_home
   INSERT = vk_insert
+  DELETE = vk_delete
   END = vk_end
   PLUS = 187
   MINUS = 189
   NUM_PLUS = vk_add
   NUM_MINUS = vk_subtract
+  PAGE_UP = 33
+  PAGE_DOWN = 34
 }
 global.__KeyboardKeyType = new _KeyboardKeyType()
 #macro KeyboardKeyType global.__KeyboardKeyType
+
+
+///@type {Struct}
+global.__KeyboardSpecialKeys = {
+  keys: {
+    "_92": "WIN_KEY",
+    "_12": "NUM 5",
+    "_19": "PAUSE",
+    "_20": "CAPS_LOCK",
+    "_91": "WIN_KEY",
+    "_93": "CONTEXT_MENU",
+    "_96": "NUM 0",
+    "_97": "NUM 1",
+    "_98": "NUM 2",
+    "_99": "NUM 3",
+    "_100": "NUM 4",
+    "_101": "NUM 5",
+    "_102": "NUM 6",
+    "_103": "NUM 7",
+    "_104": "NUM 8",
+    "_105": "NUM 9",
+    "_106": "NUM *",
+    "_107": "NUM +",
+    "_109": "NUM -",
+    "_110": "NUM .",
+    "_111": "NUM /",
+    "_144": "NUMLOCK",
+    "_173": "MUTE",
+    "_174": "VOLUME_DOWN",
+    "_175": "VOLUME_UP",
+    "_186": ";",
+    "_187": "=",
+    "_188": ",",
+    "_189": "-",
+    "_190": ".",
+    "_191": "/",
+    "_192": "`",
+    "_219": "[",
+    "_220": "\\",
+    "_221": "]",
+    "_222": "'",
+    "_223": "`",
+  },
+  contains: function(keyCode) {
+    return Struct.contains(this.keys, $"_{keyCode}")
+  }, 
+  get: function(keyCode) {
+    return Struct.get(this.keys, $"_{keyCode}")
+  },
+}
+#macro KeyboardSpecialKeys global.__KeyboardSpecialKeys
 
 
 ///@param {KeyboardKeyType|String} key
@@ -66,6 +120,7 @@ function KeyboardKey(key) constructor {
 ///@param {Struct} json
 function Keyboard(json) constructor {
   
+
   ///@type {Struct}
   keys = Struct.map(json, function(key) {
     return new KeyboardKey(key)
