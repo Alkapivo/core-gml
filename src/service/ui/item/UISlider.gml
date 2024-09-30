@@ -83,7 +83,7 @@ function UISliderHorizontal(name, json = null) {
       }
 
       if (Core.isType(this.enable, Struct)) {
-        var factor = Struct.get(this.enable, "value") == false ? 0.5 : 1.0
+        var factor = Struct.get(this.enable, "value") == Struct.inject(this.enable, "negate", false) ? 0.5 : 1.0
         if (Core.isType(this.pointer, Sprite)) {
           this.pointer.setAlpha(factor
             * Struct.inject(this.enable, "pointer-alpha", this.pointer.getAlpha()))
@@ -129,7 +129,7 @@ function UISliderHorizontal(name, json = null) {
     
     ///@param {Event} event
     onMouseReleasedLeft: Assert.isType(Struct.getDefault(json, "onMouseReleasedLeft", function(event) {
-      if (Struct.get(this.enable, "value") == false) {
+      if (Struct.get(this.enable, "value") == Struct.inject(this.enable, "negate", false)) {
         return
       }
 
@@ -141,7 +141,7 @@ function UISliderHorizontal(name, json = null) {
 
     ///@param {Event} event
     onMouseDragLeft: Assert.isType(Struct.getDefault(json, "onMouseDragLeft", function(event) {
-      if (Struct.get(this.enable, "value") == false) {
+      if (Struct.get(this.enable, "value") == Struct.inject(this.enable, "negate", false)) {
         return
       }
 

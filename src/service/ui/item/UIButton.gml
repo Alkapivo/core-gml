@@ -43,7 +43,14 @@ function UIButton(name, json = null) {
         this.preRender()
       }
 
+      var _backgroundAlpha = this.backgroundAlpha
+      if (Optional.is(this.enable)) {
+        this.backgroundAlpha = this.enable.value == Struct.inject(this.enable, "negate", false) 
+          ? _backgroundAlpha * 0.5 
+          : _backgroundAlpha
+      }
       this.renderBackgroundColor()
+      this.backgroundAlpha = _backgroundAlpha
 
       if (this.sprite != null) {
         var alpha = this.sprite.getAlpha()

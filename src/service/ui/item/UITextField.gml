@@ -91,7 +91,7 @@ function UITextField(name, json = null) {
       }
 
       if (Optional.is(this.enable)) {
-        if (Struct.get(this.enable, "value") == false) {
+        if (Struct.get(this.enable, "value") == Struct.inject(this.enable, "negate", false)) {
           if (this.textField.isFocused()) {
             this.textField.unfocus()
           }

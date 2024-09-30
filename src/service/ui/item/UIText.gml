@@ -31,7 +31,7 @@ function UIText(name, json = null) {
       this.renderBackgroundColor()
 
       if (Core.isType(this.enable, Struct)) {
-        this.label.alpha = (Struct.get(this.enable, "value") == false ? 0.5 : 1.0)
+        this.label.alpha = (Struct.get(this.enable, "value") == Struct.inject(this.enable, "negate", false) ? 0.5 : 1.0)
           * Struct.inject(this.enable, "alpha", this.label.alpha)
       }
 
