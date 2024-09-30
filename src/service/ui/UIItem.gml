@@ -221,7 +221,9 @@ function _UIItemUtils() constructor {
         if (!Core.isType(item, StoreItem)) {
           return
         }
-        Struct.set(this.enable, "value", item.get())
+
+        Struct.set(this.enable, "value", Struct.get(this.enable, "negate") 
+          ? !item.get() : item.get())
       }
     },
   })
