@@ -26,9 +26,29 @@ function _BlendMode(): Enum() constructor {
   NORMAL = bm_normal
   SUBTRACT = bm_subtract
   REVERSE_SUBTRACT = bm_reverse_subtract
+  MIN = bm_min
+  MAX = bm_max
 }
 global.__BlendMode = new _BlendMode()
 #macro BlendMode global.__BlendMode
+
+
+///@enum
+function _BlendModeExt(): Enum() constructor {
+  ZERO = bm_zero
+  ONE = bm_one
+  SRC_COLOUR = bm_src_colour
+  INV_SRC_COLOUR = bm_inv_src_colour
+  SRC_ALPHA = bm_src_alpha
+  INV_SRC_ALPHA = bm_inv_src_alpha
+  DEST_ALPHA = bm_dest_alpha
+  INV_DEST_ALPHA = bm_inv_dest_alpha
+  DEST_COLOUR = bm_dest_colour
+  INV_DEST_COLOUR = bm_inv_dest_colour
+  SRC_ALPHA_SAT = bm_src_alpha_sat
+}
+global.__BlendModeExt = new _BlendModeExt()
+#macro BlendModeExt global.__BlendModeExt
 
 
 ///@enum
@@ -210,6 +230,14 @@ function _GPU() constructor {
     ///@return {GPU}
     blendMode: function(mode) {
       gpu_set_blendmode(mode)
+      return GPU
+    },
+
+    ///@param {BlendModeExt} source
+    ///@param {BlendModeExt} target
+    ///@return {GPU}
+    blendModeExt: function(source, target) {
+      gpu_set_blendmode_ext(source, target)
       return GPU
     },
 
