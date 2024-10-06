@@ -52,6 +52,18 @@ global.__BlendModeExt = new _BlendModeExt()
 
 
 ///@enum
+function _BlendEquation(): Enum() constructor {
+  ADD = bm_eq_add
+  SUBTRACT = bm_eq_subtract
+  REVERSE_SUBTRACT = bm_eq_reverse_subtract
+  MIN = bm_eq_min
+  MAX = bm_eq_max
+}
+global.__BlendEquation = new _BlendEquation()
+#macro BlendEquation global.__BlendEquation
+
+
+///@enum
 function _VAlign(): Enum() constructor {
   TOP = fa_top
   CENTER = fa_middle
@@ -241,6 +253,13 @@ function _GPU() constructor {
       return GPU
     },
 
+    ///@param {BlendEquation} equation
+    ///@return {GPU}
+    blendEquation: function(equation) {
+      gpu_set_blendequation(equation)
+      return GPU
+    },
+
     ///@param {Boolean} enable
     ///@return {GPU}
     blendEnable: function(enable) {
@@ -311,6 +330,12 @@ function _GPU() constructor {
     ///@return {GPU}
     blendMode: function() {
       gpu_set_blendmode(BlendMode.NORMAL)
+      return GPU
+    },
+
+    ///@return {GPU}
+    blendEquation: function() {
+      gpu_set_blendequation(BlendEquation.ADD)
       return GPU
     },
   }

@@ -232,6 +232,10 @@ global.__EVENT_DISPATCHERS = {
       var blendModeTarget = Core.isEnum(Struct.get(event.data, "blendModeTarget"), BlendModeExt) 
         ? event.data.blendModeTarget
         : BlendModeExt.INV_SRC_ALPHA
+
+      var blendEquation = Core.isEnum(Struct.get(event.data, "blendEquation"), BlendEquation) 
+        ? event.data.blendEquation
+        : BlendEquation.ADD
       
       var task = new Task(event.name)
         .setState(new Map(String, any, {
@@ -241,6 +245,7 @@ global.__EVENT_DISPATCHERS = {
           alpha: originalAlpha,
           blendModeSource: blendModeSource,
           blendModeTarget: blendModeTarget,
+          blendEquation: blendEquation,
           fadeInSpeed: fadeInSpeed,
           fadeOutSpeed: fadeOutSpeed,
           speed: _speed,
@@ -361,6 +366,10 @@ global.__EVENT_DISPATCHERS = {
         ? event.data.blendModeTarget
         : BlendModeExt.INV_SRC_ALPHA
 
+      var blendEquation = Core.isEnum(Struct.get(event.data, "blendEquation"), BlendEquation) 
+        ? event.data.blendEquation
+        : BlendEquation.ADD
+      
       var color = Assert.isType(event.data.color, Color)
       var originalAlpha = color.alpha
       var type = Assert.isType(event.data.type, String)
@@ -372,6 +381,7 @@ global.__EVENT_DISPATCHERS = {
           alpha: originalAlpha,
           blendModeSource: blendModeSource,
           blendModeTarget: blendModeTarget,
+          blendEquation: blendEquation,
           fadeInSpeed: fadeInSpeed,
           fadeOutSpeed: fadeOutSpeed,
           type: type,
