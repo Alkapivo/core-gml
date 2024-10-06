@@ -280,6 +280,7 @@ function TrackChannel(json, config = null) constructor {
           break
         }
         if (index == this.events.size() - 1) {
+          Logger.warn("Track", $"TrackEvent wasn't found. channel: '{this.name}'")
           return this
         }
       }
