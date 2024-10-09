@@ -37,7 +37,11 @@ global.__shaders = {
       "iTime": "FLOAT",
       "iResolution": "VECTOR2",
       "iIterations": "FLOAT",
-      "iTint": "VECTOR3"
+      "iTint": "VECTOR3",
+      "iWidth": "FLOAT",
+      "iHeight": "FLOAT",
+      "iDepth": "FLOAT",
+      "iFactor": "FLOAT"
     }
   },
   "shader_70s_melt": {
