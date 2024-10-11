@@ -4,7 +4,7 @@
 varying vec2 vTexcoord;
 varying vec4 vColor;
 
-uniform vec3 iResolution;
+uniform vec2 iResolution;
 uniform float iTime;
 uniform float iIterations; // 20.8
 uniform float iSize; // 0.5
@@ -174,11 +174,11 @@ void main() {
   }
   
   vec4 textureColor = texture2D(gm_BaseTexture, vTexcoord);
-  vec4 pixel = mix(vec4((finalColor * color) * (100.0) + d * 5.0, 1.0), textureColor, 0.17);
+  vec4 pixel = mix(vec4((finalColor * color) * (100.0) + d * 5.0, 1.0), textureColor, 0.24);
   gl_FragColor = vec4(
     pixel.x, 
     pixel.y, 
     pixel.z, 
-    textureColor.a * vColor.a * ((pixel.x + pixel.y + pixel.z) / 1.33)
+    textureColor.a * vColor.a * ((pixel.x + pixel.y + pixel.z) / 5.0)
   );
 }
