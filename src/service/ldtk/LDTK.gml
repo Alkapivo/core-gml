@@ -73,7 +73,6 @@ function LDTKWorld(json) constructor {
             }
 
             var factory = acc.world.entities.get(entity.type)
-            Core.print("entity.type", entity.type)
             if (!Core.isType(Struct.get(acc.levelState, "dynamic"), Struct)) {
               factory(acc.layerId, entity)
             } else {
