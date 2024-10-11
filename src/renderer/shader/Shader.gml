@@ -48,7 +48,8 @@ global.__shaders = {
     "type": "GLSL_ES",
     "uniforms": {
       "iTime": "FLOAT",
-      "iResolution": "VECTOR2"
+      "iResolution": "VECTOR2",
+      "iFactor": "FLOAT"
     }
   },
   "shader_warp": {
