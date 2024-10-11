@@ -1,5 +1,6 @@
 ///@description Based on shader created by supah in 2023-08-23
 ///             https://www.shadertoy.com/view/DtXfDr
+
 varying vec2 vTexcoord;
 varying vec4 vColor;
 
@@ -18,7 +19,7 @@ vec4 Line(vec2 uv, float speed, float height, vec3 col) {
 void main() {
   vec2 uv = (vTexcoord - 0.5 * iResolution.xy) / iResolution.y;
   vec4 textureColor = texture2D(gm_BaseTexture, vTexcoord);
-  vec4 pixel = vec4 (0.0);
+  vec4 pixel = vec4(0.0);
   for (float i = 0.0; i <= 5.0; i += 1.0) {
     float t = i / 5.0;
     pixel += Line(uv, 1.0 + t, 4.0 + t, vec3(0.2 + t * 0.7, 0.2 + t * 0.4, 0.3));

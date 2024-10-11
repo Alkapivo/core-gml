@@ -90,6 +90,6 @@ void main() {
     pixel.x, 
     pixel.y, 
     pixel.z, 
-    textureColor.a * vColor.a * ((pixel.x + pixel.y + pixel.z) / 1.33)
+    textureColor.a * vColor.a * ((pixel.x + pixel.y + pixel.z) / 1.3)
   );
 }
