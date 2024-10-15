@@ -28,6 +28,13 @@ function Bean(_name, _prototype, _instance) constructor {
       ? Core.getIfType(GMObjectUtil.get(this.instance, "__context"), this.prototype)
       : null
   }
+
+  ///@return {Bean}
+  free = function() {
+    GMObjectUtil.free(this.instance)
+    this.instance = null
+    return this
+  }
 }
 
 
@@ -57,13 +64,13 @@ function _Beans() constructor {
       var bean = this.beans.get(name)
       if (!Core.isType(bean, Bean)) {
         Logger.warn("Beans", $"Found non-bean entity: {name}")
-        this.beans.remove(name)
+        this.remove(name)
         return false
       }
 
       if (bean.get() == null) {
         Logger.warn("Beans", $"Found corrupted bean: {name}")
-        this.beans.remove(name)
+        this.kill(name)
         return false
       }
 
@@ -125,10 +132,25 @@ function _Beans() constructor {
     return this
   }
 
+  ///@param {String}
+  ///@return {Beans}
+  static kill = function(name) {
+    var bean = this.beans.get(name)
+    if (Core.isType(bean, Bean)) {
+      Logger.info("Beans", $"Kill bean: {name}\n", bean)
+      bean.free()
+      this.remove(name)
+    }
+
+    return this
+  }
+
   ///@param {String} name
+  ///@return {Beans}
   static remove = function(name) {
     Logger.info("Beans", $"Remove bean: {name}")
     this.beans.remove(name)
+    return this
   }
 
   ///@private
