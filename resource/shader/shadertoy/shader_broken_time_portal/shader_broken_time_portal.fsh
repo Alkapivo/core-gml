@@ -70,10 +70,7 @@ void main() {
   rz *= pow(abs((0.1 - circ(p))), 0.9);
   
   //final color
-  vec3 col = iTint / rz;
-  col = pow(abs(col), vec3(0.50));
-  vec4 textureColor = texture2D(gm_BaseTexture, vTexcoord);
-  vec3 pixel = mix(col, textureColor.rgb, 0.5);
-  float alpha = max(pixel.x / iTint.r, max(pixel.y / iTint.g, pixel.z / iTint.b)) * vColor.a * textureColor.a;
-  gl_FragColor = vec4(pixel.x, pixel.y, pixel.z, alpha);
+  vec3 pixel = clamp(pow(abs(iTint / rz), vec3(0.99)), 0.0, 1.0);
+  gl_FragColor = vec4(pixel, max(pixel.r, max(pixel.g, pixel.b)) 
+    * texture2D(gm_BaseTexture, vTexcoord).a * vColor.a);
 }
