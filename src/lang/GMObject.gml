@@ -45,7 +45,9 @@ function _GMObjectUtil() constructor {
       gmObject: "__free",
       factoryWrapper: function() {
         return function() {
-          this.__context.free()
+          if (Core.isType(Struct.get(this.__context, "free"), Callable)) {
+            this.__context.free()
+          }
         }
       }
     },
