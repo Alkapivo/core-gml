@@ -73,6 +73,20 @@ function Timer(_duration, config = {}) constructor {
     return this.finished ? 1.0 : clamp(this.time / this.duration, 0.0, 1.0)
   }
 
+  ///@param {Number} amount
+  ///@return {Timer}
+  setAmount = function(amount) {
+    this.amount = amount
+    return this
+  }
+
+  ///@param {Number} duration
+  ///@return {Timer}
+  setDuration = function(duration) {
+    this.duration = duration
+    return this
+  }
+
   ///@return {Timer}
   reset = function() {
     this.time = 0
