@@ -22,26 +22,34 @@ function _Scene() constructor {
 
   ///@param {String} name
   ///@param {any} [intent]
+  ///@throws {AssertException}
   ///@return {Scene}
   open = function(name, intent = null) {
-    var scene = Assert.isType(asset_get_index(name), GMScene)
+    var scene = Assert.isType(this.getScene(name), GMScene)
     this.setIntent(intent)
     room_goto(scene)
     return this
   }
 
   ///@param {String} name
+  ///@return {?GMScene}
+  getScene = function(name) {
+    return Core.getIfType(asset_get_index(name), GMScene)
+  }
+
+  ///@param {String} name
   ///@return {?GMLayer}
   getLayer = function(name) {
     var layerId = layer_get_id(name)
-    return layerId != -1 ? layerId : null
+    return Core.isType(layerId, GMLayer) ? layerId : null
   }
 
   ///@param {String} name
   ///@param {Number} [defaultDepth]
-  ///@return {GMLayer}
+  ///@return {?GMLayer}
   factoryLayer = function(name, defaultDepth = 0.0) {
-    return layer_create(Core.getIfType(defaultDepth, Number, 0.0), name)
+    var layerId = layer_create(Core.getIfType(defaultDepth, Number, 0.0), name)
+    return Core.isType(layerId, GMLayer) ? layerId : null
   }
 
   ///@param {String} name
@@ -49,7 +57,7 @@ function _Scene() constructor {
   ///@return {GMLayer}
   fetchLayer = function(name, defaultDepth = 0.0) {
     var layerId = this.getLayer(name)
-    return layerId != -1 ? layerId : this.factoryLayer(name, defaultDepth)
+    return layerId != null ? layerId : this.factoryLayer(name, defaultDepth)
   }
 }
 global.__Scene = new _Scene()

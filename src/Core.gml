@@ -19,6 +19,7 @@ show_debug_message("init Core.gml")
 #macro GMTileset "GMTileset"
 #macro GMScene "GMScene"
 #macro GMObjectType "GMObjectType"
+#macro GMLayer "GMLayer"
 #macro any "any"
 
 
@@ -91,6 +92,7 @@ function _Core() constructor {
         case GMColor: return result == "number"
         case GMFont: return result == "ref" && font_exists(object)
         case GMKeyboardKey: return typeof(object) == "number"
+        case GMLayer: return result == "ref" && object != -1
         case GMMouseButton: return MouseButtonType.contains(object)
         case GMObject: return result == "ref" && instance_exists(object)
         case GMObjectType: return result == "ref" && object_exists(object)
