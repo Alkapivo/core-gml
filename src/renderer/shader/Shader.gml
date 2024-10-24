@@ -264,7 +264,9 @@ global.__shaders = {
     "type": "GLSL_ES",
     "uniforms": {
       "iTime": "FLOAT",
-      "iResolution": "VECTOR2"
+      "iResolution": "VECTOR2",
+      "iSize": "FLOAT",
+      "iDistance": "FLOAT"
     }
   },
   "shader_grid_space": {
