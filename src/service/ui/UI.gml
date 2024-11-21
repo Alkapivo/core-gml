@@ -792,6 +792,22 @@ function _UIUtil() constructor {
           this.items.forEach(this.renderItem, this.area)
         }
     },
+    "renderDefaultNoSurface": function() {
+      return function() {
+        var color = this.state.get("background-color")
+        if (Core.isType(color, GMColor)) {
+          GPU.render.rectangle(
+            this.area.x, this.area.y, 
+            this.area.x + this.area.getWidth(), this.area.y + this.area.getHeight(), 
+            false,
+            color, color, color, color, 
+            this.state.get("background-alpha")
+          )
+        }
+        
+        this.items.forEach(this.renderItem, this.area)
+      }
+    },
     "renderDefaultScrollable": function() {
        return function() {
         if (!Optional.is(this.surface)) {
