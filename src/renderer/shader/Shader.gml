@@ -2,6 +2,7 @@
 
 #macro GMShader "GMShader"
 
+
 ///@todo load from file
 ///@static
 ///@type {Struct}
@@ -192,7 +193,9 @@ global.__shaders = {
     "type": "GLSL_ES",
     "uniforms": {
       "iResolution": "VECTOR3",
-      "iTime": "FLOAT"
+      "iTime": "FLOAT",
+      "iTreshold": "FLOAT",
+      "iSize": "VECTOR3"
     }
   },
   "shader_broken_time_portal": {
@@ -231,6 +234,16 @@ global.__shaders = {
     }
   },
   "shader_sincos_3d": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iResolution": "VECTOR3",
+      "iTime": "FLOAT",
+      "iMouse": "VECTOR4",
+      "lineThickness": "FLOAT",
+      "pointRadius": "FLOAT"
+    }
+  },
+  "shader_sincos_3d_wasm": {
     "type": "GLSL_ES",
     "uniforms": {
       "iResolution": "VECTOR3",
@@ -291,6 +304,19 @@ global.__shaders = {
       "iTint": "VECTOR3"
     }
   },
+  "shader_002_blue_wasm": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iTime": "FLOAT",
+      "iResolution": "VECTOR2",
+      "iIterations": "FLOAT",
+      "iSize": "FLOAT",
+      "iPhase": "FLOAT",
+      "iTreshold": "FLOAT",
+      "iDistance": "FLOAT",
+      "iTint": "VECTOR3"
+    }
+  },
   "shader_monster": {
     "type": "GLSL_ES",
     "uniforms": {
@@ -316,7 +342,26 @@ global.__shaders = {
       "iIterations": "FLOAT"
     }
   },
+  "shader_flame_wasm": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iTime": "FLOAT",
+      "iResolution": "VECTOR2",
+      "iPosition": "VECTOR3",
+      "iIterations": "FLOAT"
+    }
+  },
   "shader_whirlpool": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iTime": "FLOAT",
+      "iResolution": "VECTOR2",
+      "iIterations": "FLOAT",
+      "iSize": "FLOAT",
+      "iFactor": "FLOAT"
+    }
+  },
+  "shader_whirlpool_wasm": {
     "type": "GLSL_ES",
     "uniforms": {
       "iTime": "FLOAT",
@@ -337,16 +382,48 @@ global.__shaders = {
       "iSeed": "VECTOR3"
     }
   },
+  "shader_warp_speed_2_wasm": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iTime": "FLOAT",
+      "iResolution": "VECTOR2",
+      "iIterations": "FLOAT",
+      "iSize": "VECTOR2",
+      "iFactor": "FLOAT",
+      "iSeed": "VECTOR3"
+    }
+  },
   "shader_star_nest": {
     "type": "GLSL_ES",
     "uniforms": {
       "iTime": "FLOAT",
       "iResolution": "VECTOR2",
-      "iAngle": "FLOAT"
+      "iAngle": "FLOAT",
+      "iZoom": "FLOAT",
+      "iTile": "FLOAT",
+      "iSpeed": "FLOAT",
+      "iBrightness": "FLOAT",
+      "iDarkmatter": "FLOAT",
+      "iDistfading": "FLOAT",
+      "iSaturation": "FLOAT"
     }
   },
 }
 #macro SHADERS global.__shaders
+
+
+///@static
+///@type {Struct}
+global.__shadersWASM = {
+  "shader_002_blue": "shader_002_blue_wasm",
+  "shader_art": "shader_art_wasm",
+  "shader_flame": "shader_flame_wasm",
+  "shader_sincos_3d": "shader_sincos_3d_wasm",
+  "shader_warp_speed_2": "shader_warp_speed_2_wasm",
+  "shader_whirlpool": "shader_whirlpool_wasm",
+}
+#macro SHADERS_WASM global.__shadersWASM
+
 
 ///@enum
 function _ShaderType(): Enum() constructor {
@@ -396,7 +473,9 @@ function _ShaderUtil() constructor {
   ///@param {String} _name
   ///@return {?Shader}
   static fetch = function(_name) {
-    var name = Core.getRuntimeType() == RuntimeType.GXGAMES && _name == "shader_art" ? "shader_art_wasm" : _name
+    var name = Core.getRuntimeType() == RuntimeType.GXGAMES
+      ? (Struct.contains(SHADERS_WASM, _name) ? Struct.get(SHADERS_WASM, _name) : _name)
+      : _name
     var asset = asset_get_index(name)
     if (asset == -1) {
       Logger.warn("ShaderUtil", String.template("{0} does not exist: { \"name\": \"{1}\" }", GMShader, name))

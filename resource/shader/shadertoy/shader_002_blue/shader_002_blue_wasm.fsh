@@ -93,7 +93,11 @@ void main() {
   float ac = 0.0;
   float d = 0.0;
 
-  for (float i = 0.0; i < iIterations; i += 1.0) {
+  for (float i = 0.0; i < 50.0; i += 1.0) {
+    if (i > iIterations) {
+      break;
+    }
+    
     rayPos = cameraOrigin + rayDirection * depth;
     d = getDistance(rayPos, p);
     if (abs(d) < iTreshold) {

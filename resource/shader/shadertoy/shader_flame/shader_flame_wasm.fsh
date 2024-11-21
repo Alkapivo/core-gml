@@ -40,7 +40,11 @@ vec4 raymarch(vec3 org, vec3 dir) {
   float eps = 0.02;
 	vec3  p = org;
 	bool glowed = false;
-  for (float i = 0.0; i < iIterations; i += 1.0) {
+  for (float i = 0.0; i < 64.0; i += 1.0) {
+    if (i > iIterations) {
+      break;
+    }
+    
     d = scene(p) + eps;
     p += d * dir;
     if (d > eps) {
