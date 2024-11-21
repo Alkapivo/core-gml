@@ -2,6 +2,44 @@
 
 #macro GMShader "GMShader"
 
+///@enum
+function _FancyBlendModes(): Enum() constructor {
+  NORMAL = 0
+  ADD = 1
+  SUB = 2
+  DARKEN = 3
+  LIGHTEN = 4
+  MULTIPLY = 5
+  LINEAR_BURN = 6
+  SCREEN = 7
+  DIFFERENCE = 8
+  EXCLUSION = 9
+  COLOR_BURN = 10
+  COLOR_DODGE = 11
+  OVERLAY = 12
+  SOFT_LIGHT = 13
+  LINEAR_DODGE = 14
+  HARD_LIGHT = 15
+  VIVID_LIGHT = 16
+  LINEAR_LIGHT = 17
+  PIN_LIGHT = 18
+  HUE = 19
+  SATURATION = 20
+  LUMINOSITY = 21
+  COLOR = 22
+  DARKER_COLOR = 23
+  LIGHTER_COLOR = 24
+  AVERAGE = 25
+  REFLECT = 26
+  GLOW = 27
+  HARD_MIX = 28
+  NEGATION = 29
+  PHOENIX = 30
+  SUBSTRACT = 31
+}
+global.__FancyBlendModes = new _FancyBlendModes()
+#macro FancyBlendModes global.__FancyBlendModes
+
 
 ///@todo load from file
 ///@static
