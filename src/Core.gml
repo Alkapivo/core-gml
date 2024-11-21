@@ -104,6 +104,7 @@ function _Core() constructor {
         case GMVideoSurface: return result == "ref" && surface_exists(object)
         case GMTileset: return result == "ref"
         case GMTexture: return (result == "ref" || result == "number") && sprite_exists(object)
+        case GMAudioGroupID: return result == "ref"
         ///@todo bug, ref will be returned only when gamemaker is initalizing
         case NonNull: return object != null
         case Number: return result == "number" || result == "int64"
