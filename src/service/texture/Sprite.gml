@@ -19,7 +19,7 @@ function Sprite(_texture, config = {}) constructor {
   frame = Struct.getDefault(config, "frame", 0)
 
   ///@type {Number}
-  speed = Struct.getDefault(config, "speed", texture.speed)
+  speed = Struct.getIfType(config, "speed", Number, texture.speed)
 
   ///@type {Number}
   scaleX = Struct.getDefault(config, "scaleX", 1.0)
