@@ -6,29 +6,28 @@
 function Event(_name, _data = null, _promise = null) constructor {
 
   ///@type {String}
-  name = Assert.isType(_name, String)
+  name = Assert.isType(_name, String, "Event.name must be type of String")
 
   ///@type {any}
-  data = null
+  data = _data
   
   ///@type {?Promise}
-  promise = null
+  promise = Core.isType(_promise, Promise) ? _promise : null
 
   ///@param {any} data
   ///@return {Event}
-  setData = function(data) {
+  static setData = function(data) {
     this.data = data
     return this
   }
-  this.setData(_data)
 
   ///@param {?Promise} promise
   ///@return {Event}
-  setPromise = function(promise = null) {
-    this.promise = Assert.isType(promise, Optional.of(Promise))
+  static setPromise = function(promise = null) {
+    this.promise = Assert.isType(promise, Optional.of(Promise), 
+      "Event.promise must be type of ?Promise")
     return this
   }
-  this.setPromise(_promise)
 }
 
 ///@static
