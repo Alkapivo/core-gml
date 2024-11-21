@@ -5,6 +5,7 @@ function _Cursor(): Enum() constructor {
   DEFAULT = cr_default
   RESIZE_HORIZONTAL = cr_size_we
   RESIZE_VERTICAL = cr_size_ns
+  NONE = cr_none
 }
 global.__Cursor = new _Cursor()
 #macro Cursor global.__Cursor
