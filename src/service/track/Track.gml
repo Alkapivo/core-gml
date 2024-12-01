@@ -196,37 +196,11 @@ function Track(json, config = null) constructor {
 ///@param {?Struct} [config]
 function TrackChannel(json, config = null) constructor {
 
-  ///@private
-  ///@param {Event}
-  ///@param {Number} index
-  ///@param {?Struct} [config]
-  ///@return {TrackEvent}
-  parseEvent = Core.isType(Struct.get(config, "parseEvent"), Callable)
-    ? method(this, config.parseEvent)
-    : function(event, index, config = null) {
-        return new TrackEvent(event, config)
-      }
-  
-  ///@private
-  ///@param {TrackEvent} a
-  ///@param {TrackEvent} b
-  ///@return {Boolean}
-  compareEvents = Core.isType(Struct.get(config, "compareEvents"), Callable)
-    ? method(this, config.compareEvents)
-    : function(a, b) { 
-        return a.timestamp <= b.timestamp
-      }
-
   ///@type {String}
   name = Assert.isType(Struct.get(json, "name"), String)
 
   ///@type {Number}
   index = Assert.isType(Struct.get(json, "index"), Number)
-
-  ///@type {Array<TrackEvent>}
-  events = GMArray.toArray(Struct
-    .getDefault(json, "events", []), TrackEvent, parseEvent, config)
-    .sort(compareEvents)
 
   ///@type {Boolean}
   muted = false
@@ -243,51 +217,123 @@ function TrackChannel(json, config = null) constructor {
   ///@type {Number}
   MAX_EXECUTION_PER_FRAME = 99
 
+  ///@private
+  ///@param {Event}
+  ///@param {Number} index
+  ///@param {?Struct} [config]
+  ///@return {TrackEvent}
+  parseEvent = Optional.is(Struct.getIfType(config, "parseEvent", Callable))
+    ? method(this, config.parseEvent)
+    : function(event, index, config = null) {
+      ///@description migration
+      if (Core.getProperty("visu.editor.migrate", false)) {
+        var icon = Struct.get(event.data, "icon")
+        switch (Struct.get(event, "callable")) {
+          case VEBrushType.SHADER_SPAWN:
+            event.callable = VEBrushType.EFFECT_SHADER
+            event.data = migrateShaderSpawnEvent(event.data)
+            break
+          case VEBrushType.VIEW_OLD_GLITCH:
+            event.callable = VEBrushType.EFFECT_GLITCH
+            event.data = migrateViewOldGlitchEvent(event.data)
+            break
+          case VEBrushType.GRID_OLD_PARTICLE:
+            event.callable = VEBrushType.EFFECT_PARTICLE
+            event.data = migrateGridOldParticleEvent(event.data)
+            break
+          case VEBrushType.SHADER_CONFIG:
+            event.callable = VEBrushType.EFFECT_CONFIG
+            event.data = migrateShaderConfigEvent(event.data)
+            break
+          case VEBrushType.SHROOM_SPAWN:
+            event.callable = VEBrushType.ENTITY_SHROOM
+            event.data = migrateShroomSpawnEvent(event.data)
+            break
+          case VEBrushType.GRID_OLD_COIN:
+            event.callable = VEBrushType.ENTITY_COIN
+            event.data = migrateGridOldCoinEvent(event.data)
+            break
+          case VEBrushType.GRID_OLD_PLAYER:
+            event.callable = VEBrushType.ENTITY_PLAYER
+            event.data = migrateGridOldPlayerEvent(event.data)
+            break
+        }
+        Struct.set(event.data, "icon", icon)
+      }
+      
+      return new TrackEvent(event, config)
+    }
+  
+  ///@private
+  ///@param {TrackEvent} a
+  ///@param {TrackEvent} b
+  ///@return {Boolean}
+  compareEvents = Optional.is(Struct.getIfType(config, "compareEvents", Callable))
+    ? method(this, config.compareEvents)
+    : function(a, b) {
+      return a.timestamp <= b.timestamp
+    }
+
+  ///@private
+  ///@type {Array<TrackEvent>}
+  events = GMArray.toArray(Struct
+    .getDefault(json, "events", []), TrackEvent, this.parseEvent, config)
+    .sort(compareEvents)
+
   ///@param {TrackEvent} event
   ///@return {TrackChannel}
-  add = method(this, Assert.isType(Struct
-    .getDefault(config, "add", function(event) {
-      for (var index = 0; index < events.size(); index++) {
-        if (event.timestamp < events.get(index).timestamp) {
+  add = Optional.is(Struct.getIfType(config, "add", Callable))
+    ? method(this, config.add)
+    : function(event) {
+      var size = this.events.size()
+      for (var index = 0; index < size; index++) {
+        if (event.timestamp < this.events.get(index).timestamp) {
           break
         }
       }
-      var lastExecutedEvent = this.pointer != null ? events.get(this.pointer) : null
-      events.add(event, index)
+      
+      var lastExecutedEvent = this.pointer != null ? this.events.get(this.pointer) : null
+      this.events.add(event, index)
       if (lastExecutedEvent == null) {
         return this
       }
 
-      for (var index = 0; index < events.size(); index++) {
-        if (events.get(index) == lastExecutedEvent) {
+      size = this.events.size()
+      for (var index = 0; index < size; index++) {
+        if (this.events.get(index) == lastExecutedEvent) {
           this.pointer = index
           break
         }
       }
+
       return this
-    }), Callable))
+    }
 
   ///@param {TrackEvent} event
   ///@return {TrackChannel}
-  remove = method(this, Assert.isType(Struct
-    .getDefault(config, "remove", function(event) {
+  remove = Optional.is(Struct.getIfType(config, "remove", Callable))
+    ? method(this, config.remove)
+    : function(event) {
       if (this.events.size() == 0) {
         return this
       }
 
-      for (var index = 0; index < events.size(); index++) {
+      var size = this.events.size()
+      for (var index = 0; index < size; index++) {
         if (this.events.get(index) == event) {
           break
         }
+
         if (index == this.events.size() - 1) {
-          Logger.warn("Track", $"TrackEvent wasn't found. channel: '{this.name}'")
+          Logger.warn("TrackChannel", $"TrackEvent wasn't found. channel: '{this.name}'")
           return this
         }
       }
+
       var lastExecutedEvent = this.pointer != null ? this.events.get(this.pointer) : null
       var trackEvent = this.events.get(index)
       this.events.remove(index)
-      Logger.debug("Track", $"TrackEvent removed: channel: '{this.name}', timestamp: {trackEvent.timestamp}, callable: '{trackEvent.callableName}'")
+      Logger.debug("TrackChannel", $"TrackEvent removed: channel: '{this.name}', timestamp: {trackEvent.timestamp}, callable: '{trackEvent.callableName}'")
       if (this.pointer == null) {
         return this
       }
@@ -295,7 +341,8 @@ function TrackChannel(json, config = null) constructor {
       if (lastExecutedEvent == event) {
         this.pointer = this.pointer == 0 ? null : this.pointer - 1
       } else {
-        for (var index = 0; index < this.events.size(); index++) {
+        size = this.events.size()
+        for (var index = 0; index < size; index++) {
           if (this.events.get(index) == lastExecutedEvent) {
             this.pointer = index
             break
@@ -303,28 +350,32 @@ function TrackChannel(json, config = null) constructor {
         }
       }
       return this
-    }), Callable))
+    }
 
   ///@param {Number} timestamp
   ///@return {TrackChannel}
-  rewind = method(this, Assert.isType(Struct
-    .getDefault(config, "rewind", function(timestamp) {
+  rewind = Optional.is(Struct.getIfType(config, "rewind", Callable))
+    ? method(this, config.rewind)
+    : function(timestamp) {
+      var size = this.events.size()
       this.pointer = null
       this.time = timestamp
-      for (var index = 0; index < events.size(); index++) {
+      for (var index = 0; index < size; index++) {
         this.pointer = index
-        if (events.get(index).timestamp >= timestamp) {
+        if (this.events.get(index).timestamp >= timestamp) {
           this.pointer = index == 0 ? null : index - 1
           break
         }
       }
+
       return this
-    }), Callable))
+    }
 
   ///@param {Number} timestamp
   ///@return {TrackChannel}
-  update = method(this, Assert.isType(Struct
-    .getDefault(config, "update", function(timestamp) {
+  update = Optional.is(Struct.getIfType(config, "update", Callable))
+    ? method(this, config.update)
+    : function(timestamp) {
       if (this.time > timestamp) {
         this.rewind(timestamp)
       }
@@ -350,18 +401,19 @@ function TrackChannel(json, config = null) constructor {
         }
       }
       return this
-    }), Callable))
+    }
 
   ///@return {Struct}
-  serialize = method(this, Assert.isType(Struct
-    .getDefault(config, "toTemplate", function() {
+  serialize = Optional.is(Struct.getIfType(config, "serialize", Callable))
+    ? method(this, config.serialize)
+    : function() {
       return {
         "name": this.name,
         "events": this.events.map(function(event) {
           return event.serialize()
         }).getContainer(),
       }
-    }), Callable))
+    }
 }
 
 
