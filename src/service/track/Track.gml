@@ -225,43 +225,16 @@ function TrackChannel(json, config = null) constructor {
   parseEvent = Optional.is(Struct.getIfType(config, "parseEvent", Callable))
     ? method(this, config.parseEvent)
     : function(event, index, config = null) {
-      ///@description migration
-      if (Core.getProperty("visu.editor.migrate", false)) {
-        var icon = Struct.get(event.data, "icon")
-        switch (Struct.get(event, "callable")) {
-          case VEBrushType.SHADER_SPAWN:
-            event.callable = VEBrushType.EFFECT_SHADER
-            event.data = migrateShaderSpawnEvent(event.data)
-            break
-          case VEBrushType.VIEW_OLD_GLITCH:
-            event.callable = VEBrushType.EFFECT_GLITCH
-            event.data = migrateViewOldGlitchEvent(event.data)
-            break
-          case VEBrushType.GRID_OLD_PARTICLE:
-            event.callable = VEBrushType.EFFECT_PARTICLE
-            event.data = migrateGridOldParticleEvent(event.data)
-            break
-          case VEBrushType.SHADER_CONFIG:
-            event.callable = VEBrushType.EFFECT_CONFIG
-            event.data = migrateShaderConfigEvent(event.data)
-            break
-          case VEBrushType.SHROOM_SPAWN:
-            event.callable = VEBrushType.ENTITY_SHROOM
-            event.data = migrateShroomSpawnEvent(event.data)
-            break
-          case VEBrushType.GRID_OLD_COIN:
-            event.callable = VEBrushType.ENTITY_COIN
-            event.data = migrateGridOldCoinEvent(event.data)
-            break
-          case VEBrushType.GRID_OLD_PLAYER:
-            event.callable = VEBrushType.ENTITY_PLAYER
-            event.data = migrateGridOldPlayerEvent(event.data)
-            break
-        }
-        Struct.set(event.data, "icon", icon)
-      }
-      
       return new TrackEvent(event, config)
+    }
+
+  ///@private
+  ///@param {any} json
+  ///@return {Struct}
+  parseSettings = Optional.is(Struct.getIfType(config, "parseSettings", Callable))
+    ? method(this, config.parseSettings)
+    : function(json) {
+      return Core.isType(json, Struct) ? json : { }
     }
   
   ///@private
@@ -279,6 +252,9 @@ function TrackChannel(json, config = null) constructor {
   events = GMArray.toArray(Struct
     .getDefault(json, "events", []), TrackEvent, this.parseEvent, config)
     .sort(compareEvents)
+
+  ///@type {Struct}
+  settings = this.parseSettings(Struct.get(json, "settings"))
 
   ///@param {TrackEvent} event
   ///@return {TrackChannel}
@@ -394,7 +370,7 @@ function TrackChannel(json, config = null) constructor {
         var event = events.get(pointer)
         if (timestamp >= event.timestamp) {
           this.pointer = pointer
-          event.callable(event.data)
+          event.callable(event.data, this)
         } else {
           ///@todo execute events based on some dictionary
           break
@@ -412,6 +388,9 @@ function TrackChannel(json, config = null) constructor {
         "events": this.events.map(function(event) {
           return event.serialize()
         }).getContainer(),
+        "settings": Core.isType(Struct.get(this.settings, "serialize"), Struct) 
+          ? this.settings.serialize() 
+          : this.settings,
       }
     }
 }
