@@ -229,7 +229,7 @@ function TrackChannel(json, config = null) constructor {
     }
 
   ///@private
-  ///@param {any} json
+  ///@param {Struct} json
   ///@return {Struct}
   parseSettings = Optional.is(Struct.getIfType(config, "parseSettings", Callable))
     ? method(this, config.parseSettings)
