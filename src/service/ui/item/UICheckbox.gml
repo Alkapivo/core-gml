@@ -91,6 +91,15 @@ function UICheckbox(name, json = null) {
       if (Optional.is(this.updateValue)) {
         this.updateValue(this.value == true ? false : true)
       }
+
+      if (Core.isType(this.context, UI) 
+          && Optional.is(this.context.updateTimer)) {
+        this.context.updateTimer.time = clamp(
+          this.context.updateTimer.time,
+          this.context.updateTimer.duration * 0.9,
+          this.context.updateTimer.duration
+        )
+      }
     }), Callable),
   }, false))
 }
