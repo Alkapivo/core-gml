@@ -43,25 +43,32 @@ function UIButton(name, json = null) {
         this.preRender()
       }
 
+      var enableFactor = (Struct.get(this.enable, "value") == false ? 0.5 : 1.0)
+      var _backgroundAlpha = this.backgroundAlpha
+      this.backgroundAlpha *= enableFactor
       this.renderBackgroundColor()
+      this.backgroundAlpha = _backgroundAlpha
 
       if (this.sprite != null) {
-        var alpha = this.sprite.getAlpha()
+        var spriteAlpha = this.sprite.getAlpha()
         this.sprite
-          .setAlpha(alpha * (Struct.get(this.enable, "value") == false ? 0.5 : 1.0))
+          .setAlpha(spriteAlpha * enableFactor)
           .scaleToFillStretched(this.area.getWidth(), this.area.getHeight())
           .render(
             this.context.area.getX() + this.area.getX(),
             this.context.area.getY() + this.area.getY())
-          .setAlpha(alpha)
+          .setAlpha(spriteAlpha)
       }
 
       if (this.label != null) {
+        var labelAlpha = this.label.alpha
+        this.label.alpha *= enableFactor
         this.label.render(
           // todo VALIGN HALIGN
           this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2),
           this.context.area.getY() + this.area.getY() + (this.area.getHeight() / 2)
         )
+        this.label.alpha = labelAlpha
       }
       return this
     }),
@@ -79,6 +86,15 @@ function UIButton(name, json = null) {
 
       if (Optional.is(this.callback)) {
         this.callback()
+      }
+
+      if (Core.isType(this.context, UI) 
+          && Optional.is(this.context.updateTimer)) {
+        this.context.updateTimer.time = clamp(
+          this.context.updateTimer.time,
+          this.context.updateTimer.duration * 0.9,
+          this.context.updateTimer.duration
+        )
       }
     }), Callable),
   }, false))
