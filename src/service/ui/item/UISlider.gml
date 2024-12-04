@@ -50,6 +50,12 @@ function UISliderHorizontal(name, json = null) {
     ///@type {?Struct}
     enable: Struct.contains(json, "enable") ? Assert.isType(json.enable, Struct) : null,
 
+    ///@type {Callable}
+    getClipboard: Struct.getIfType(json, "getClipboard", Callable, MouseUtil.getClipboard),
+
+    ///@type {Callable}
+    setClipboard: Struct.getIfType(json, "setClipboard", Callable, MouseUtil.setClipboard),
+
     ///@param {Number} mouseX
     updateValue: new BindIntent(Assert.isType(Struct.getDefault(json, "updateValue", function(mouseX) {
       var position = clamp((this.context.area.getX() + mouseX - this.context.area.getX() - this.area.getX()) / this.area.getWidth(), 0.0, 1.0)
@@ -115,7 +121,7 @@ function UISliderHorizontal(name, json = null) {
 
     ///@return {UIItem}
     render: Struct.getDefault(json, "render", function() {
-      var promise = MouseUtil.getClipboard()
+      var promise = this.getClipboard()
       if (Struct.get(Struct.get(promise, "state"), "context") == this) {
         var offsetX = Core.isType(Struct.get(this.context, "layout"), UILayout)
           ? this.context.layout.x() 
@@ -160,7 +166,7 @@ function UISliderHorizontal(name, json = null) {
       }
 
       var context = this
-      MouseUtil.setClipboard(new Promise()
+      this.setClipboard(new Promise()
         .setState({
           context: context,
           callback: context.callback,
