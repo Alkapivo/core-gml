@@ -27,7 +27,7 @@ function StoreItem(_name, json) constructor {
   ///@param {any} value
   ///@return {StoreItem}
   set = method(this, Assert.isType(Struct.getDefault(json, "set", function(value) {
-    var _value = Assert.isType(this.passthrough(value), this.type)
+    var _value = Assert.isType(this.passthrough(value), this.type, $"Store item name: {this.name}")
     this.validate(_value)
     this.value = _value
     this.subscribers.forEach(function(subscriber, index, value) {

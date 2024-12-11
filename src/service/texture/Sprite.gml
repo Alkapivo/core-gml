@@ -105,7 +105,8 @@ function Sprite(_texture, config = {}) constructor {
   ///@param {Number} frame
   ///@return {Sprite}
   setFrame = function(frame) {
-    this.frame = clamp(frame, 0, this.texture.frames - (this.texture.frames > 0 ? 1 : 0))
+    //this.frame = clamp(frame, 0, this.texture.frames - (this.texture.frames > 0 ? 1 : 0))
+    this.frame = clamp(frame, 0, this.texture.frames)
     return this
   }
 
@@ -163,7 +164,7 @@ function Sprite(_texture, config = {}) constructor {
   setRandomFrame = function(randomFrame) {
     this.randomFrame = randomFrame
     if (this.randomFrame) {
-      this.setFrame(irandom(this.texture.frames))
+      //this.setFrame(irandom(this.texture.frames))
     }
     
     return this
@@ -173,17 +174,15 @@ function Sprite(_texture, config = {}) constructor {
   ///@param {Number} y
   ///@return {Sprite}
   render = function(x, y) {
-    draw_sprite_ext(this.texture.asset, this.frame, x, y, this.scaleX, this.scaleY, 
-      this.angle, this.blend, this.alpha)
+    draw_sprite_ext(this.texture.asset, this.frame, x, y, this.scaleX, this.scaleY, this.angle, this.blend, this.alpha)
     
     if (!this.animate) {
       return this
     }
 
-    this.frame += DeltaTime.apply(this.speed / GAME_FPS)
+    this.frame += DeltaTime.apply(this.speed) / GAME_FPS
     if (this.frame > this.texture.frames) {
-      this.frame = this.frame - (this.texture.frames 
-        * floor(this.frame / this.texture.frames))
+      this.frame = this.frame - (this.texture.frames * floor(this.frame / this.texture.frames))
     }
     return this
   }

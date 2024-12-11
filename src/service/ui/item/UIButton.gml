@@ -66,7 +66,9 @@ function UIButton(name, json = null) {
         this.label.render(
           // todo VALIGN HALIGN
           this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2),
-          this.context.area.getY() + this.area.getY() + (this.area.getHeight() / 2)
+          this.context.area.getY() + this.area.getY() + (this.area.getHeight() / 2),
+          this.area.getWidth(),
+          this.area.getHeight()
         )
         this.label.alpha = labelAlpha
       }

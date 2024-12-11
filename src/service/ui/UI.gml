@@ -122,6 +122,8 @@ function UI(config = {}) constructor {
       this.items.forEach(this.updateItem, updateItemArea)
     }
 
+  hoverItem = null
+
   ///@param {Event} event
   ///@return {Boolean}
   dispatch = Struct.contains(config, "dispatch")
@@ -173,9 +175,23 @@ function UI(config = {}) constructor {
 
       var dispatcher = item.fetchEventPump(event)
       if (event.name == "MouseHoverOver" && Optional.is(dispatcher)) {
+        
+
+        if (this.hoverItem != null && this.hoverItem != item) {
+          this.hoverItem = item
+          if (this.updateTimer != null) {
+            this.updateTimer.time = clamp(this.updateTimer.time, this.updateTimer.duration * 0.9, this.updateTimer.duration * 2.0)
+          }  
+        }
+        
         if (item.isHoverOver) {
           return true
         }
+
+        if (this.updateTimer != null) {
+          this.updateTimer.time = clamp(this.updateTimer.time, this.updateTimer.duration * 0.9, this.updateTimer.duration * 2.0)
+        }
+
         item.isHoverOver = true
       }
       Callable.run(dispatcher, event)

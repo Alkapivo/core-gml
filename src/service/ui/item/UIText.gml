@@ -53,7 +53,9 @@ function UIText(name, json = null) {
 
       this.label.render(
         this.context.area.getX() + this.area.getX() + offsetX,
-        this.context.area.getY() + this.area.getY() + offsetY
+        this.context.area.getY() + this.area.getY() + offsetY,
+        this.area.getWidth(),
+        this.area.getHeight()
       )
       return this
     }),

@@ -136,11 +136,20 @@ function UIItem(_name, config = {}) constructor {
   preRender = Struct.contains(config, "preRender")
     ? method(this, Assert.isType(config.preRender, Callable))
     : null
+
+  ///@type {?Callable}
+  postRender = Struct.contains(config, "postRender")
+    ? method(this, Assert.isType(config.postRender, Callable))
+    : null
   
   ///@return {UIItem}
   render = method(this, Assert.isType(Struct.getDefault(config, "render", function() {
     if (Optional.is(this.preRender)) {
       this.preRender()
+    }
+
+    if (Optional.is(this.postRender)) {
+      this.postRender()
     }
     return this
   }), Callable))

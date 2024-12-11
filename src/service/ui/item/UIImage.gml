@@ -30,23 +30,28 @@ function UIImage(name, json = null) {
     ///@override
     ///@return {UIItem}
     render: Struct.getDefault(json, "render", function() {
-      if (Optional.is(this.preRender)) {
+      if (this.preRender != null) {
         this.preRender()
       }
+
+      var enableFactor = (Struct.get(this.enable, "value") == false ? 0.5 : 1.0)
+      var _backgroundAlpha = this.backgroundAlpha
+      this.backgroundAlpha *= enableFactor
       this.renderBackgroundColor()
+      this.backgroundAlpha = _backgroundAlpha
 
       if (this.image != null) {
-        var alpha = this.image.getAlpha()
+        var imageAlpha = this.image.getAlpha()
         var scaleX = this.image.getScaleX()
         var scaleY = this.image.getScaleY()
         this.image
-          .setAlpha(alpha * (Struct.get(this.enable, "value") == false ? 0.5 : 1.0))
+          .setAlpha(imageAlpha * enableFactor)
           .scaleToFit(this.area.getWidth(), this.area.getHeight())
           .render(
             this.context.area.getX() + this.area.getX() + image.texture.offsetX * image.getScaleX() + ((this.area.getWidth() - (image.getWidth() * image.getScaleX())) / 2),
             this.context.area.getY() + this.area.getY() + image.texture.offsetY * image.getScaleY() + ((this.area.getHeight() - (image.getHeight() * image.getScaleY())) / 2)
           )
-          .setAlpha(alpha)
+          .setAlpha(imageAlpha)
           .setScaleX(scaleX)
           .setScaleY(scaleY)
 
@@ -75,11 +80,20 @@ function UIImage(name, json = null) {
       }
 
       if (this.label != null) {
+        var labelAlpha = this.label.alpha
+        this.label.alpha *= enableFactor
         this.label.render(
           // todo VALIGN HALIGN
-          this.context.area.getX() + this.area.getX() + this.area.getWidth() / 2,
-          this.context.area.getY() + this.area.getY() + this.area.getHeight() / 2
+          this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2),
+          this.context.area.getY() + this.area.getY() + (this.area.getHeight() / 2),
+          this.area.getWidth(),
+          this.area.getHeight()
         )
+        this.label.alpha = labelAlpha
+      }
+
+      if (this.postRender != null) {
+        this.postRender()
       }
       return this
     }),

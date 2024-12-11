@@ -61,10 +61,7 @@ function Timer(_duration, config = {}) constructor {
       this.callback(callbackData, this)
     }
 
-    if (this.loop != Infinity) {
-      this.loopCounter++
-    }
-    
+    this.loopCounter++
     return this
   }
 

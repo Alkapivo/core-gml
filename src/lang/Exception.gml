@@ -9,15 +9,16 @@ function Exception(_message) constructor {
   ///@private
   print = function() {
     Core.print(this.message)
-    var stackTrace = debug_get_callstack();
+    var stackTrace = debug_get_callstack(50)
     for (var index = 0; index < GMArray.size(stackTrace); index++) {
-      var line = string(stackTrace[index]);
+      var line = string(stackTrace[index])
       if (line != "0") {
         line = "\tat " + line;
         Core.print(line)
       }
     }
   }
+  
   this.print()
 }
 

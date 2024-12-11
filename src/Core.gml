@@ -202,9 +202,9 @@ function _Core() constructor {
 
   ///@return {Core}
   static printStackTrace = function() {
-    var stackTrace = debug_get_callstack();
+    var stackTrace = debug_get_callstack(50)
     for (var index = 0; index < GMArray.size(stackTrace); index++) {
-      var line = string(stackTrace[index]);
+      var line = string(stackTrace[index])
       if (line != "0") {
         line = "\tat " + line;
         Core.print(line)
@@ -308,6 +308,14 @@ function _Core() constructor {
   ///@return {any}
   static getIfType = function(value, type, defaultValue = null) {
     return Core.isType(value, type) ? value : defaultValue
+  }
+
+  ///@param {any} value
+  ///@param {Type} type
+  ///@param {any} [defaultValue]
+  ///@return {any}
+  static getIfEnum = function(value, type, defaultValue = null) {
+    return Core.isEnum(value, type) ? value : defaultValue
   }
 }
 global.__Core = new _Core()
