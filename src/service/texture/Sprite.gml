@@ -332,6 +332,7 @@ function _SpriteUtil() constructor {
       sprite = new Sprite(texture, json)
     } catch (exception) {
       Logger.error("SpriteUtil", $"'parse-sprite' fatal error: {exception.message}")
+      sprite = null
       if (Core.isType(defaultJson, Struct)) {
         Logger.error("SpriteUtil", $"'parse-sprite' use defaultJson: {JSON.stringify(defaultJson)}")
         sprite = SpriteUtil.parse(defaultJson)

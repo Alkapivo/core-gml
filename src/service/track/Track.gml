@@ -3,8 +3,10 @@
 ///@static
 ///@type {Map<String, Callable>}
 global.__DEFAULT_TRACK_EVENT_HANDLERS = new Map(String, Callable, {
-  "dummy": function(data) {
-    Core.print("Dummy track event, data:", data)
+  "dummy": {
+    run: function(data) {
+      Core.print("Dummy track event, data:", data)
+    },
   },
 })
 #macro DEFAULT_TRACK_EVENT_HANDLERS global.__DEFAULT_TRACK_EVENT_HANDLERS
@@ -403,37 +405,30 @@ function TrackEvent(json, config = null): Event("TrackEvent") constructor {
   ///@type {Number}
   timestamp = Assert.isType(Struct.get(json, "timestamp"), Number)
 
+  ///@type {String}
+  callableName = Struct.getIfType(json, "callable", String, "dummy")
+
+  var _handler = Struct.getIfType(config, "handlers", Map, DEFAULT_TRACK_EVENT_HANDLERS).get(this.callableName)
+  var _parse = Struct.getIfType(_handler, "parse", Callable, Lambda.passthrough)
+  var _serialize = Struct.getIfType(_handler, "serialize", Callable, Struct.serialize)
+  var _run = Struct.getIfType(_handler, "run", Callable, Lambda.dummy)
+
   ///@override
   ///@type {Struct}
-  data = Assert.isType(Struct.getDefault(json, "data", {}), Struct)
-
-  ///@type {String}
-  callableName = Struct.getDefault(json, "callable", "dummy")
+  data = Assert.isType(_serialize(_parse(Struct.getIfType(json, "data", Struct, { }))), Struct)
 
   ///@type {Callable}
-  callable = Assert.isType((Struct.contains(config, "handlers") 
-      ? Assert.isType(config.handlers, Map)
-      : DEFAULT_TRACK_EVENT_HANDLERS)
-    .get(this.callableName), Callable)
+  serializeData = Assert.isType(_serialize, Callable)
 
-  ///@todo refactor
+  ///@type {Callable}
+  callable = Assert.isType(_run, Callable)
+  
   ///@return {Struct}
-  serialize = method(this, Assert.isType(Struct
-    .getDefault(config, "serialize", function() {
-      var json = {
-        "timestamp": this.timestamp,
-        "callable": this.callableName,
-      }
-
-      if (Core.isType(this.data, Struct)) {
-        Struct.set(json, "data", Struct.map(this.data, function(value, key) {
-          var serialize = Struct.get(value, "serialize")
-          return Core.isType(serialize, Callable) 
-            ? value.serialize() 
-            : value
-        }))
-      }
-      
-      return json
-    }), Callable))
+  serialize = method(this, Struct.getIfType(config, "serialize", Callable, function() {
+    return {
+      "timestamp": this.timestamp,
+      "callable": this.callableName,
+      "data": this.serializeData(this.data),
+    }
+  }))
 }
