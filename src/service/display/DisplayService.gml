@@ -116,9 +116,22 @@ function DisplayService(_controller, config = {}): Service() constructor {
 
   ///@return {DisplayService}
   center = function() {
-    if (!this.getFullscreen()) {
-      window_center()
+    if (this.getFullscreen()) {
+      return this
     }
+
+    var xOffset = Core.getProperty("core.display-service.center.offset.x", 0.0)
+    var yOffset = Core.getProperty("core.display-service.center.offset.y", 0.0)
+    if (xOffset == 0.0 && yOffset == 0.0) {
+      window_center()
+      return this
+    }
+
+    window_set_position(
+      ((this.getDisplayWidth() - this.getWidth()) / 2.0) + xOffset,
+      ((this.getDisplayHeight() - this.getHeight()) / 2.0) + yOffset
+    )
+
     return this
   }
 
