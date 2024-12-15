@@ -96,7 +96,7 @@ function UICheckbox(name, json = null) {
           && Optional.is(this.context.updateTimer)) {
         this.context.updateTimer.time = clamp(
           this.context.updateTimer.time,
-          this.context.updateTimer.duration * 0.9,
+          this.context.updateTimer.duration * 0.7500,
           this.context.updateTimer.duration
         )
       }

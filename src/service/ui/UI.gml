@@ -82,6 +82,7 @@ function UI(config = {}) constructor {
     value: irandom(_surfaceTick),
     maxValue: _surfaceTick,
     delta: 0,
+    previous: false,
     get: function() {
       this.value += 1
       this.delta += DeltaTime.deltaTime
@@ -180,7 +181,7 @@ function UI(config = {}) constructor {
         if (this.hoverItem != null && this.hoverItem != item) {
           this.hoverItem = item
           if (this.updateTimer != null) {
-            this.updateTimer.time = clamp(this.updateTimer.time, this.updateTimer.duration * 0.9, this.updateTimer.duration * 2.0)
+            this.updateTimer.time = clamp(this.updateTimer.time, this.updateTimer.duration * 0.7500, this.updateTimer.duration * 2.0)
           }  
         }
         
@@ -189,7 +190,7 @@ function UI(config = {}) constructor {
         }
 
         if (this.updateTimer != null) {
-          this.updateTimer.time = clamp(this.updateTimer.time, this.updateTimer.duration * 0.9, this.updateTimer.duration * 2.0)
+          this.updateTimer.time = clamp(this.updateTimer.time, this.updateTimer.duration * 0.7500, this.updateTimer.duration * 2.0)
         }
 
         item.isHoverOver = true
@@ -285,7 +286,7 @@ function UI(config = {}) constructor {
       var areaX = this.area.x
       var areaY = this.area.y
       var delta = DeltaTime.deltaTime
-      DeltaTime.deltaTime += this.surfaceTick.delta
+      DeltaTime.deltaTime += this.updateTimer != null && this.updateTimer.finished && this.surfaceTick.previous ? 0.0 : this.surfaceTick.delta
       this.area.x = this.offset.x
       this.area.y = this.offset.y
       this.items.forEach(this.renderItem, this.area)
@@ -782,7 +783,7 @@ function _UIUtil() constructor {
           var areaX = this.area.x
           var areaY = this.area.y
           var delta = DeltaTime.deltaTime
-          DeltaTime.deltaTime += this.surfaceTick.delta
+          DeltaTime.deltaTime += this.updateTimer != null && this.updateTimer.finished && this.surfaceTick.previous ? 0.0 : this.surfaceTick.delta
           this.area.x = this.offset.x
           this.area.y = this.offset.y
           this.items.forEach(this.renderItem, this.area)
@@ -1007,6 +1008,134 @@ function _UIUtil() constructor {
       this.area.setHeight(height)
     },
   })
+
+  ///@param {UIItem} uiItem
+  ///@param {Type} type
+  ///@param {any} [defaultValue]
+  ///@return {any}
+  getIncreaseUIStoreItem = function(uiItem, type, defaultValue = null) {
+    var factor = Struct.get(uiItem, "factor")
+    if (!Core.isType(factor, Number) || !Core.isType(uiItem.store, UIStore)) {
+      return defaultValue
+    }
+
+    var item = uiItem.store.get()
+    if (!Core.isType(item, StoreItem)) {
+      return defaultValue
+    }
+
+    var value = item.get()
+    return Core.isType(value, type) ? item : defaultValue
+  }
+
+  ///@param {Struct}
+  passthrough = {
+
+    ///@return {Callable}
+    getClampedStringInteger: function() {
+      return function(value) {
+        if (!Core.isType(this.data, Vector2)) {
+          this.data = new Vector2(0.0, 1.0)
+        }
+
+        return round(clamp(NumberUtil.parse(value, this.value), this.data.x, this.data.y))
+      }
+    },
+
+    ///@return {Callable}
+    getClampedStringNumber: function() {
+      return function(value) {
+        if (!Core.isType(this.data, Vector2)) {
+          this.data = new Vector2(0.0, 1.0)
+        }
+
+        return clamp(NumberUtil.parse(value, this.value), this.data.x, this.data.y)
+      }
+    },
+
+    ///@return {Callable}
+    getNormalizedStringNumber: function() {
+      return function(value) {
+        return clamp(NumberUtil.parse(value, this.value), 0.0, 1.0)
+      }
+    },
+
+    ///@return {Callable}
+    getClampedNumberTransformer: function() {
+      return function(value) {
+        if (!Core.isType(value, NumberTransformer)) {
+          return this.value
+        }
+
+        if (!Core.isType(this.data, Vector2)) {
+          this.data = new Vector2(0.0, 1.0)
+        }
+
+        value.value = clamp(value.value, this.data.x, this.data.y)
+        value.target = clamp(value.target, this.data.x, this.data.y)
+        return value
+      }
+    },
+
+    ///@return {Callable}
+    getNormalizedNumberTransformer: function() {
+      return function(value) {
+        if (!Core.isType(value, NumberTransformer)) {
+          return this.value
+        }
+
+        value.value = clamp(value.value, 0.0, 1.0)
+        value.target = clamp(value.target, 0.0, 1.0)
+        return value
+      }
+    },
+
+    ///@return {Callable}
+    getArrayValue: function() {
+      return function(value) {
+        return this.data.contains(value) 
+          ? value 
+          : (this.data.contains(this.value) ? this.value : this.data.getFirst())
+      }
+    },
+
+    ///@return {Callable}
+    getGMArrayValue: function() {
+      return function(value) {
+        return GMArray.contains(this.data, value)
+          ? value 
+          : (GMArray.contains(this.data, this.value) ? this.value : GMArray.getFirst(this.data))
+      }
+    },
+
+    ///@return {Callable}
+    getCallbackValue: function() {
+      return function(value) {
+        var contains = this.data.callback
+        return contains(value) 
+          ? value 
+          : (contains(this.value) ? this.value : Struct.get(this.data, "defaultValue"))
+      }
+    },
+  }
+
+  ///@param {Struct}
+  serialize = {
+    getStringStruct: function() {
+      return function() {
+        return JSON.parse(this.get())
+      }
+    },
+  }
+  
+  ///@param {Struct}
+  validate = {
+    getStringStruct: function() {
+      return function(value) {
+        Assert.isType(JSON.parse(value), Struct)
+      }
+    },
+  }
 }
 global.__UIUtil = new _UIUtil()
 #macro UIUtil global.__UIUtil

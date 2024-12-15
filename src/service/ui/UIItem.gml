@@ -168,6 +168,7 @@ function UIItem(_name, config = {}) constructor {
 ///@static
 function _UIItemUtils() constructor {
 
+  ///@type {Map<String, Callable>}
   templates = new Map(String, Callable, {
     "renderBackgroundColor": function() {
       return function() {
@@ -236,6 +237,33 @@ function _UIItemUtils() constructor {
       }
     },
   })
+
+  ///@type {Struct}
+  textField = {
+
+    ///@return {Callable}
+    getUpdateJSONTextArea: function() {
+      return function() {
+        var text = this.textField.getText()
+        if (text == null || String.isEmpty(text)) {
+          return
+        }
+
+        if (Struct.get(this, "__previousText") == text) {
+          return
+        }
+        Struct.set(this, "__previousText", text)
+
+        var isValid = Optional.is(JSON.parse(text))
+        this.textField.style.c_bkg_unfocused.c = isValid
+          ? ColorUtil.fromHex(VETheme.color.primaryShadow).toGMColor()
+          : ColorUtil.fromHex(VETheme.color.denyShadow).toGMColor()
+        this.textField.style.c_bkg_focused.c = isValid
+          ? ColorUtil.fromHex(VETheme.color.accentShadow).toGMColor()
+          : ColorUtil.fromHex(VETheme.color.deny).toGMColor()
+      }
+    },
+  }
 }
 global.__UIItemUtils = new _UIItemUtils()
 #macro UIItemUtils global.__UIItemUtils
