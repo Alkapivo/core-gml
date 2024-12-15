@@ -56,6 +56,36 @@ function _ColorUtil() constructor {
 	BLACK_TRANSPARENT = new Color(0.0, 0.0, 0.0, 0.0)
 
 	///@param {String} hex
+	///@param {String} defaultValue
+	///@return {Color}
+	parse = function(hex, defaultValue = "#000000") {
+		try {
+			var hexLength = String.size(hex)
+			var hasAlpha = hexLength == 9
+			var size = hasAlpha ? 8 : 6
+			var color = array_create(size, ASCII_DIGIT_OFFSET)
+			for (var index = 0; index < size; index++) {
+				color[index] = ord(String.toUpperCase(String.getChar(hex, index + 2)))
+				color[index] = color[index] >= ASCII_CHAR_OFFSET 
+					? color[index] - ASCII_CHAR_OFFSET + 10 
+					: color[index] - ASCII_DIGIT_OFFSET
+			}
+		
+			var red = ((color[0] * 16) + color[1]) / 255
+			var green = ((color[2] * 16) + color[3]) / 255
+			var blue = ((color[4] * 16) + color[5]) / 255
+			var alpha = hasAlpha ? ((color[6] * 16) + color[7]) / 255 : 1.0
+			return new Color(red, green, blue, alpha)
+		} catch (exception) {
+      Logger.warn("ColorUtil", $"Cannot parse color from hash: {hex}\n--------------------------------------------------------------------------------\n{exception.message}\n--------------------------------------------------------------------------------\nTrying to parse using default value {defaultValue}")
+      return Core.isType(defaultValue, String)
+        ? ColorUtil.parse(defaultValue, "#000000")
+        : new Color(0.0, 0.0, 0.0, 1.0)
+		}
+	}
+
+
+	///@param {String} hex
 	///@param {?Color} defaultValue
 	///@return {Color}
 	///@throws {ParseException}
