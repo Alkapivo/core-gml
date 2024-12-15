@@ -22,7 +22,6 @@ show_debug_message("init Core.gml")
 #macro GMLayer "GMLayer"
 #macro any "any"
 
-
 ///@enum
 function _RuntimeType(): Enum() constructor {
   WINDOWS = "Windows"
@@ -153,7 +152,7 @@ function _Core() constructor {
     try {
       type = Core.hasConstructor(object) 
         ? instanceof(object) 
-        : StructgetDefault(typeofMap, typeof(object), null)
+        : Struct.getDefault(this.typeofMap, typeof(object))
     } catch (exception) { }
     return type
   }
