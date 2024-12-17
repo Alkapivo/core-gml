@@ -95,6 +95,31 @@ function Mouse(json) constructor {
     return new MouseButton(type)
   })
 
+  ///@return {Number}
+  getMouseX = function() {
+    return device_mouse_x_to_gui(0)//window_mouse_get_x()
+  }
+
+  ///@return {Number}
+  getMouseY = function() {
+    return device_mouse_y_to_gui(0)//window_mouse_get_y()
+  }
+
+  ///@return {Number}
+  getMouseDeltaX = function() {
+    return window_mouse_get_delta_x()
+  }
+
+  ///@return {Number}
+  getMouseDeltaY = function() {
+    return window_mouse_get_delta_y()
+  }
+
+  ///@return {Boolean}
+  hasMoved = function() {
+    return this.getMouseDeltaX() != 0 || this.getMouseDeltaY() != 0
+  }
+
   ///@return {Mouse}
   update = function() {
     static buttonUpdate = function(button, key, mouse) {
