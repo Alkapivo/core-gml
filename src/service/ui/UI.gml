@@ -94,8 +94,11 @@ function UI(config = {}) constructor {
     },
     skip: function() {
       this.value = this.maxValue - 1
+      if (this.value < 0) {
+        this.value = 0
+      }
       return this
-    }
+    },
   }
 
   updateArea = Struct.contains(config, "updateArea")
@@ -113,13 +116,50 @@ function UI(config = {}) constructor {
       item.update(acc)
     }
 
+  ///@private
+  ///@type {Rectangle}
+  areaWatchdog = {
+    name: this.name,
+    value: false,
+    force: false,
+    area: new Rectangle({ width: -1, height: -1 }),
+    signal: function() {
+      this.force = true
+      return this
+    },
+    get: function() {
+      return this.value || this.force
+    },
+    update: function(area) {
+      var force = this.force
+      this.force = false
+      if (this.area.getX() == area.getX()
+          && this.area.getY() == area.getY()
+          && this.area.getWidth() == area.getWidth()
+          && this.area.getHeight() == area.getHeight()) {
+        this.value = force
+      } else {
+        this.value = true
+        this.area
+          .setX(area.getX())
+          .setY(area.getY())
+          .setWidth(area.getWidth())
+          .setHeight(area.getHeight())
+      }
+
+      return this
+    },
+  }
+
+
   updateItems = Struct.contains(config, "updateItems")
     ? Assert.isType(method(this, config.updateItems), Callable)
     : function() {
-      var updateItemArea = this.surfaceTick.skip()
-      if (Optional.is(this.updateTimer)) {
-        updateItemArea = this.updateTimer.finished
-      }
+      //var updateItemArea = this.surfaceTick.skip()
+      //if (Optional.is(this.updateTimer)) {
+      //  updateItemArea = this.updateTimer.finished
+      //}
+      var updateItemArea = this.areaWatchdog.update(this.area).get()
       this.items.forEach(this.updateItem, updateItemArea)
     }
 
@@ -176,23 +216,17 @@ function UI(config = {}) constructor {
 
       var dispatcher = item.fetchEventPump(event)
       if (event.name == "MouseHoverOver" && Optional.is(dispatcher)) {
-        
-
-        if (this.hoverItem != null && this.hoverItem != item) {
-          this.hoverItem = item
-          if (this.updateTimer != null) {
-            this.updateTimer.time = clamp(this.updateTimer.time, this.updateTimer.duration * 0.7500, this.updateTimer.duration * 2.0)
-          }  
-        }
-        
         if (item.isHoverOver) {
           return true
         }
 
-        if (this.updateTimer != null) {
-          this.updateTimer.time = clamp(this.updateTimer.time, this.updateTimer.duration * 0.7500, this.updateTimer.duration * 2.0)
+        if (this.hoverItem != item) {
+          this.hoverItem = item
+          if (this.updateTimer != null) {
+            ///@updateTimerAlmost
+            this.updateTimer.time = clamp(this.updateTimer.time, this.updateTimer.duration * 0.9500, this.updateTimer.duration * 2.0)
+          }  
         }
-
         item.isHoverOver = true
       }
       Callable.run(dispatcher, event)
@@ -205,7 +239,11 @@ function UI(config = {}) constructor {
     ? Assert.isType(method(this, config.add), Callable)
     : function(item) {
       item.context = this //@todo item context constructor
+      //this.areaWatchdog.signal()
       this.items.add(item, item.name)
+      if (Optional.is(item.updateArea)) {
+        item.updateArea()
+      }
       return this
     }
 
@@ -218,6 +256,7 @@ function UI(config = {}) constructor {
       if (Optional.is(item)) {
         item.free()
       }
+      this.areaWatchdog.signal()
       this.items.remove(name)
       return this
     }
@@ -362,9 +401,9 @@ function UI(config = {}) constructor {
         }
 
         acc.context.add(item, item.name)
-        if (Optional.is(item.updateArea())) {
-          item.updateArea()
-        }
+        //if (Optional.is(item.updateArea())) {
+        //  item.updateArea()
+        //}
       }
 
       acc.layout = component
@@ -401,7 +440,7 @@ function UI(config = {}) constructor {
       align: HAlign.LEFT,
       width: 10,
       thickness: 3,
-      color: ColorUtil.fromHex(VETheme.color.primary).toGMColor(),
+      color: ColorUtil.fromHex(VETheme.color.primaryShadow).toGMColor(),
       render: function(context) {
         var x1 = 0, y1 = 0, x2 = 0, y2 = 0
         switch (this.align) {
@@ -428,7 +467,7 @@ function UI(config = {}) constructor {
         GPU.render.rectangle(x1, y1, x2, y2, false, this.color)
       }
     },
-    Struct.getDefault(config, "scrollbarY", {})
+    Struct.get(config, "scrollbarY")
   )
 
   ///@type {Boolean}
@@ -464,11 +503,12 @@ function UI(config = {}) constructor {
   if (Optional.is(this.updateArea)) {
     this.updateArea()
   }
-  this.items.forEach(function(item) {
-    if (Optional.is(item.updateArea)) {
-      item.updateArea()
-    }
-  }) 
+  this.areaWatchdog.signal()
+  //this.items.forEach(function(item) {
+  //  if (Optional.is(item.updateArea)) {
+  //    item.updateArea()
+  //  }
+  //}) 
 }
 
 
@@ -479,6 +519,10 @@ function _UIUtil() constructor {
   templates = new Map(String, Callable, {
     "removeUIItemfromUICollection": function() {
       return function() {
+        if (this.component == null) {
+          throw new Exception($"removeUIItemfromUICollection require 'component' to be initialized")
+        }
+
         this.context.collection.remove(this.component.index)
       }
     },
@@ -554,6 +598,7 @@ function _UIUtil() constructor {
         this.textField.style.w = this.area.getWidth()
         if (!this.textField.style.v_grow) {
           this.textField.style.h = this.area.getHeight()
+          this.textField.updateStyle()
         }
 
         if (this.textField.style.w != _w || this.textField.style.h != _h) {
@@ -563,6 +608,10 @@ function _UIUtil() constructor {
     },
     "applyCollectionLayout": function() {
       return function() {
+        if (this.component == null) {
+          throw new Exception($"applyCollectionLayout require 'component' to be initialized")
+        }
+
         this.layout.collection.setIndex(this.component.index)
         this.layout.collection.setSize(this.context.collection.size())
         this.area.setX(this.layout.x())
@@ -583,6 +632,10 @@ function _UIUtil() constructor {
     },
     "groupByX": function() {
       return function() {
+        if (!Optional.is(Struct.get(this, "group"))) {
+          throw new Exception($"groupByX require 'group' to be initialized")
+        }
+
         ///@todo group.align support
         ///@todo group.amount support
         ///@todo group.width() support
@@ -598,6 +651,10 @@ function _UIUtil() constructor {
     },
     "groupByXWidth": function() {
       return function() {
+        if (!Optional.is(Struct.get(this, "group"))) {
+          throw new Exception($"groupByXWidth require 'group' to be initialized")
+        }
+
         ///@todo group.align support
         ///@todo group.amount support
         ///@todo group.width() support
@@ -1117,6 +1174,21 @@ function _UIUtil() constructor {
           : (contains(this.value) ? this.value : Struct.get(this.data, "defaultValue"))
       }
     },
+  }
+
+  ///@param {UI} container
+  ///@param {any} iterator
+  ///@param {Number} cooldown
+  ///@return {UI}
+  clampUpdateTimerToCooldown = function(container, iterator, cooldown) {
+    if (!Optional.is(container.updateTimer)) {
+      return container
+    }
+
+    var timer = container.updateTimer
+    var duration = timer.duration
+    timer.time = clamp(timer.time, max(duration - (cooldown * FRAME_MS), 0.0), duration * 2.0)
+    return container
   }
 
   ///@param {Struct}

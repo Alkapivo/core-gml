@@ -25,9 +25,7 @@ function UIButton(name, json = null) {
       : null,
 
     ///@type {?Struct}
-    enable: Struct.contains(json, "enable")
-      ? Assert.isType(json.enable, Struct)
-      : null,
+    enable: Struct.getIfType(json, "enable", Struct),
 
     updateEnable: Assert.isType(Optional.is(Struct.get(json, "updateEnable"))
       ? json.updateEnable
@@ -92,6 +90,7 @@ function UIButton(name, json = null) {
 
       if (Core.isType(this.context, UI) 
           && Optional.is(this.context.updateTimer)) {
+        ///@updateTimerNow
         this.context.updateTimer.time = clamp(
           this.context.updateTimer.time,
           this.context.updateTimer.duration * 0.7500,

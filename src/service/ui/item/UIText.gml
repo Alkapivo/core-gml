@@ -16,9 +16,9 @@ function UIText(name, json = null) {
     value: Struct.contains(json, "value") ? Assert.isType(json.value, Boolean) : true,
 
     ///@type {?Struct}
-    enable: Struct.contains(json, "enable") ? Assert.isType(json.enable, Struct) : null,
+    enable: Struct.getIfType(json, "enable", Struct),
     
-    updateEnable: Assert.isType(Callable.run(UIItemUtils.templates.get("updateEnable")), Callable),
+    updateEnable: Struct.getIfType(json, "updateEnable", Callable, Callable.run(UIItemUtils.templates.get("updateEnable"))),
 
     renderBackgroundColor: new BindIntent(Callable.run(UIItemUtils.templates.get("renderBackgroundColor"))),
 

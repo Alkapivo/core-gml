@@ -17,13 +17,18 @@ function UIImage(name, json = null) {
     ///@type {?UILabel}
     label: Struct.contains(json, "label") ? new UILabel(json.label) : null,
 
+    ///@type {?Margin}
+    backgroundMargin: Struct.contains(json, "backgroundMargin")
+      ? new Margin(Struct.get(json, "backgroundMargin"))
+      : null,
+
     ///@type {?Struct}
-    enable: Struct.contains(json, "enable") ? Assert.isType(json.enable, Struct) : null,
+    enable: Struct.getIfType(json, "enable", Struct),
 
     ///@type {?String}
     origin: Struct.getIfType(json, "origin", String),
 
-    updateEnable: Assert.isType(Callable.run(UIItemUtils.templates.get("updateEnable")), Callable),
+    updateEnable: Struct.getIfType(json, "updateEnable", Callable, Callable.run(UIItemUtils.templates.get("updateEnable"))),
 
     renderBackgroundColor: new BindIntent(Callable.run(UIItemUtils.templates.get("renderBackgroundColor"))),
 

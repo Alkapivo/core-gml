@@ -350,6 +350,7 @@ function _Struct() constructor {
     ///@param {Struct} struct
     ///@param {String} key
     ///@param {?Boolean} defaultValue
+    ///@return {Boolean}
     boolean: function(struct, key, defaultValue = null) {
       return Struct.getIfType(struct, key, Boolean, defaultValue == true)
     },
@@ -357,6 +358,7 @@ function _Struct() constructor {
     ///@param {Struct} struct
     ///@param {String} key
     ///@param {?String} defaultValue
+    ///@return {Color}
     color: function(struct, key, defaultValue = null) {
       return ColorUtil.parse(Struct.get(struct, key), defaultValue)
     },

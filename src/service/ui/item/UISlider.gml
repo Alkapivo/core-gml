@@ -48,7 +48,7 @@ function UISliderHorizontal(name, json = null) {
     })),
 
     ///@type {?Struct}
-    enable: Struct.contains(json, "enable") ? Assert.isType(json.enable, Struct) : null,
+    enable: Struct.getIfType(json, "enable", Struct),
 
     ///@type {Callable}
     getClipboard: Struct.getIfType(json, "getClipboard", Callable, MouseUtil.getClipboard),
@@ -75,7 +75,7 @@ function UISliderHorizontal(name, json = null) {
     ///@param {Number} mouseX
     updatePosition: new BindIntent(Assert.isType(Struct.getDefault(json, "updatePosition", function(mouseX) { }), Callable)),
 
-    updateEnable: Assert.isType(Callable.run(UIItemUtils.templates.get("updateEnable")), Callable),
+    updateEnable: Struct.getIfType(json, "updateEnable", Callable, Callable.run(UIItemUtils.templates.get("updateEnable"))),
 
     ///@override
     ///@param {Boolean} [_updateArea]
@@ -108,9 +108,15 @@ function UISliderHorizontal(name, json = null) {
           this.pointer.setAlpha(factor
             * Struct.inject(this.enable, "pointer-alpha", this.pointer.getAlpha()))
         }
+
         if (Core.isType(this.progress, TexturedLine)) {
           this.progress.alpha = factor
             * Struct.inject(this.enable, "progress-alpha", this.progress.alpha)
+        }
+
+        if (Core.isType(this.background, TexturedLine)) {
+          this.background.alpha = factor
+            * Struct.inject(this.enable, "background-alpha", this.background.alpha)
         }
       }
 
@@ -141,6 +147,11 @@ function UISliderHorizontal(name, json = null) {
       this.background.render(fromX, fromY, fromX + widthMax, fromY)
       this.progress.render(fromX, fromY, fromX + width, fromY)
       this.pointer.render(fromX + width, fromY)
+
+      if (Optional.is(this.postRender)) {
+        this.postRender()
+      }
+      
       return this
     }),
 
@@ -161,7 +172,8 @@ function UISliderHorizontal(name, json = null) {
 
     ///@param {Event} event
     onMouseDragLeft: Assert.isType(Struct.getDefault(json, "onMouseDragLeft", function(event) {
-      if (Struct.get(this.enable, "value") == false) {
+      if (Struct.get(this.enable, "value") == false 
+          || Optional.is(this.getClipboard())) {
         return
       }
 

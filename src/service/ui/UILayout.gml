@@ -190,7 +190,7 @@ global.__UILayoutUtil = new _UILayoutUtil()
 
 
 ///@debug
-/* 
+/*
 global.____uiLayoutCounter = {
   _x: 0,
   _y: 0,
@@ -245,7 +245,7 @@ global.____uiLayoutCounter = {
   },
   print: function() {
     var d = GAME_FPS * this.timer.duration
-    Core.print($"#{string_format(this.timer.loopCounter, 3, 0)} | x: {string_format(this._x / d, 6, 0)} max: {string_format(this.xMax, 6, 0)}, y: {string_format(this._y / d, 6, 0)} max: {string_format(this.yMax, 6, 0)}, w: {string_format(this._w / d, 6, 0)} max: {string_format(this.wMax, 6, 0)}, h: {string_format(this._h / d, 6, 0)} max: {string_format(this.hMax, 6, 0)}")
+    Core.print($"#{string_format(this.timer.loopCounter, 3, 0)} | x: {string_format(this._x / d, 6, 0)} y: {string_format(this._y / d, 6, 0)}, w: {string_format(this._w / d, 6, 0)}, h: {string_format(this._h / d, 6, 0)}, xmax: {string_format(this.xMax, 6, 0)}, ymax: {string_format(this.yMax, 6, 0)}, wmax: {string_format(this.wMax, 6, 0)}, hmax: {string_format(this.hMax, 6, 0)}")
     return this
   }
 }
@@ -383,4 +383,5 @@ function UILayout(config, _context = null) constructor {
 
   Struct.appendUnique(this, config, true)
 }
+
 */

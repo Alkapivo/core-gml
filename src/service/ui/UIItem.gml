@@ -20,6 +20,9 @@ function UIItem(_name, config = {}) constructor {
   ///@type {Margin}
   margin = new Margin(Struct.get(config, "margin"))
 
+  ///@type {?Struct}
+  enable = Struct.getIfType(config, "enable", Struct)
+
   ///@type {any}
   state = Struct.get(config, "state")
 
@@ -164,7 +167,6 @@ function UIItem(_name, config = {}) constructor {
   Struct.appendUnique(this, config)
 }
 
-
 ///@static
 function _UIItemUtils() constructor {
 
@@ -236,6 +238,41 @@ function _UIItemUtils() constructor {
           ? !item.get() : item.get())
       }
     },
+    "updateEnableKeys": function() {
+      return function() {
+        if (!Optional.is(Struct.get(this, "enable")) 
+          || !Core.isType(Struct.get(this.context, "state"), Map)) {
+          return
+        }
+
+        var keys = Struct.get(this.enable, "keys")
+        if (!Core.isType(keys, GMArray)) {
+          return
+        }
+
+        var store = this.context.state.get("store")
+        if (!Core.isType(store, Store)) {
+          return
+        }
+
+        Struct.set(this.enable, "value", false)
+        for (var index = 0; index < GMArray.size(keys); index++) {
+          var entry = keys[index]
+          var item = store.get(entry.key)
+          if (!Core.isType(item, StoreItem)) {
+            return
+          }
+
+          var result = Struct.get(this.enable, "negate") 
+            ? item.get() : !item.get()
+          if (result) {
+            return
+          }
+        }
+
+        Struct.set(this.enable, "value", true)
+      }
+    },
   })
 
   ///@type {Struct}
@@ -245,22 +282,30 @@ function _UIItemUtils() constructor {
     getUpdateJSONTextArea: function() {
       return function() {
         var text = this.textField.getText()
-        if (text == null || String.isEmpty(text)) {
+        if (!Optional.is(text) 
+            || String.isEmpty(text) 
+            || Struct.get(this, "__previousText") == text) {
           return
         }
 
-        if (Struct.get(this, "__previousText") == text) {
-          return
-        }
         Struct.set(this, "__previousText", text)
+        if (!Struct.contains(this, "__colors")) {
+          Struct.set(this, "__colors", {
+            unfocusedValid: this.textField.style.c_bkg_unfocused.c,
+            unfocusedInvalid: ColorUtil.fromHex(VETheme.color.denyShadow).toGMColor(),
+            focusedValid: this.textField.style.c_bkg_focused.c,
+            focusedInvalid: ColorUtil.fromHex(VETheme.color.deny).toGMColor(),
+          })
+        }
 
         var isValid = Optional.is(JSON.parse(text))
-        this.textField.style.c_bkg_unfocused.c = isValid
-          ? ColorUtil.fromHex(VETheme.color.primaryShadow).toGMColor()
-          : ColorUtil.fromHex(VETheme.color.denyShadow).toGMColor()
-        this.textField.style.c_bkg_focused.c = isValid
-          ? ColorUtil.fromHex(VETheme.color.accentShadow).toGMColor()
-          : ColorUtil.fromHex(VETheme.color.deny).toGMColor()
+        var colors = Struct.get(this, "__colors")
+        this.textField.style.c_bkg_unfocused.c = isValid 
+          ? colors.unfocusedValid
+          : colors.unfocusedInvalid
+        this.textField.style.c_bkg_focused.c = isValid 
+          ? colors.focusedValid
+          : colors.focusedInvalid
       }
     },
   }

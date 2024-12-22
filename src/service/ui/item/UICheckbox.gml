@@ -23,9 +23,7 @@ function UICheckbox(name, json = null) {
       : null,
 
     ///@type {?Struct}
-    enable: Struct.contains(json, "enable")
-      ? Assert.isType(json.enable, Struct)
-      : null,
+    enable: Struct.getIfType(json, "enable", Struct),
 
     ///@type {Boolean}
     scaleToFillStretched: Struct.contains(json, "scaleToFillStretched")
@@ -48,7 +46,7 @@ function UICheckbox(name, json = null) {
       }
     }), Callable)),
 
-    updateEnable: Assert.isType(Callable.run(UIItemUtils.templates.get("updateEnable")), Callable),
+    updateEnable: Struct.getIfType(json, "updateEnable", Callable, Callable.run(UIItemUtils.templates.get("updateEnable"))),
 
     renderBackgroundColor: new BindIntent(Callable.run(UIItemUtils.templates.get("renderBackgroundColor"))),
 
@@ -94,6 +92,7 @@ function UICheckbox(name, json = null) {
 
       if (Core.isType(this.context, UI) 
           && Optional.is(this.context.updateTimer)) {
+        ///@updateTimerNow
         this.context.updateTimer.time = clamp(
           this.context.updateTimer.time,
           this.context.updateTimer.duration * 0.7500,

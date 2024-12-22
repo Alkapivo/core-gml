@@ -65,6 +65,8 @@ function ShaderPipelineTaskProperty(_uniform, _transformer) constructor {
 ///@param {Struct} [config]
 function ShaderPipeline(config = {}) constructor {
 
+  ///@todo refactor, there is probably a bug with serialize and how structs are merged
+  //       this code is old, one of the first tbh
   static factoryShaderPipelineTaskTemplate = function(_name, json) {
     static addToMergeQueue = function(callback, mergeQueue, name, json) {
       mergeQueue.add(name)
@@ -74,7 +76,7 @@ function ShaderPipeline(config = {}) constructor {
       }
 
       var inherit = Struct.get(json, "inherit")
-      var cyclic = mergeQueue.filter(function (template, index, current) {
+      var cyclic = mergeQueue.filter(function(template, index, current) {
         return template == current
       }, inherit)
 
@@ -98,7 +100,7 @@ function ShaderPipeline(config = {}) constructor {
         getTemplate: this.getTemplate,
       }
 
-      IntStream.forEach(acc.mergeQueue.size() - 1, 0, function (index, no, acc) {
+      IntStream.forEach(acc.mergeQueue.size() - 1, 0, function(index, no, acc) {
         var template = acc.getTemplate(acc.mergeQueue.get(index))
         if (!Core.isType(template, Struct)) {
           return
@@ -109,7 +111,7 @@ function ShaderPipeline(config = {}) constructor {
         }
 
         if (Core.isType(template.properties, Struct)) {
-          Struct.forEach(template.properties, function (property, key, acc) {
+          Struct.forEach(template.properties, function(property, key, acc) {
             Struct.set(acc.properties, key, property)
           }, acc)
         }
@@ -148,8 +150,8 @@ function ShaderPipeline(config = {}) constructor {
 
   ///@type {EventPump}
   dispatcher = new EventPump(this, new Map(String, Callable, {
-    "spawn-shader": function (event) {
-      static mapProperties = function (property, name, uniforms) {
+    "spawn-shader": function(event) {
+      static mapProperties = function(property, name, uniforms) {
         return new ShaderPipelineTaskProperty(uniforms.get(name), property)
       }
 
