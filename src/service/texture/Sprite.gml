@@ -314,6 +314,11 @@ function _SpriteUtil() constructor {
   parse = function(_json, defaultJson = null) {
     var sprite = null
     try {
+      if (!Optional.is(Struct.getIfType(_json, "name", String))
+          && Core.isType(defaultJson, Struct)) {
+        return SpriteUtil.parse(defaultJson)
+      }
+
       var json = JSON.clone(_json)
       var texture = Assert.isType(TextureUtil.parse(json.name, json), Texture)
       Struct.set(json, "frame", clamp(
