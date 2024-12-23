@@ -42,7 +42,7 @@ function MouseButton(_type) constructor {
   drop = false
 
   ///@type {Number}
-  dragTreshold = 3
+  dragTreshold = Core.getProperty("core.mouse.drag-treshold", 2)
 
   ///@type {?Vector2}
   lastPressedPosition = null

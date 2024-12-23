@@ -995,6 +995,16 @@ function _UIUtil() constructor {
         }
       }
     },
+    "onMouseHoverOverBackground": function() {
+      return function(event) {
+        this.backgroundColor = ColorUtil.fromHex(this.colorHoverOver).toGMColor()
+      }
+    },
+    "onMouseHoverOutBackground": function() {
+      return function(event) {
+        this.backgroundColor = ColorUtil.fromHex(this.colorHoverOut).toGMColor()
+      }
+    },
   })
 
   ///@type {Map<String, Callable>}
