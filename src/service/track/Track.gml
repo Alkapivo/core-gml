@@ -378,7 +378,7 @@ function TrackChannel(json, config = null) constructor {
         if (timestamp >= event.timestamp) {
           this.pointer = pointer
           //Logger.debug("Track", $"(channel: '{this.name}', timestamp: {timestamp}) dispatch event: '{event.callableName}'")
-          event.callable(event.data, this)
+          event.callable(event.parseData(event.data), this)
         } else {
           ///@todo execute events based on some dictionary
           break
@@ -408,27 +408,27 @@ function TrackChannel(json, config = null) constructor {
 ///@param {?Struct} [config]
 function TrackEvent(json, config = null): Event("TrackEvent") constructor {
 
+  ///@override
+  ///@type {Struct}
+  data = Struct.getIfType(json, "data", Struct, { })
+
   ///@type {Number}
   timestamp = Assert.isType(Struct.get(json, "timestamp"), Number)
 
   ///@type {String}
   callableName = Struct.getIfType(json, "callable", String, "dummy")
 
-  var _handler = Struct.getIfType(config, "handlers", Map, DEFAULT_TRACK_EVENT_HANDLERS).get(this.callableName)
-  var _parse = Struct.getIfType(_handler, "parse", Callable, Lambda.passthrough)
-  var _serialize = Struct.getIfType(_handler, "serialize", Callable, Struct.serialize)
-  var _run = Struct.getIfType(_handler, "run", Callable, Lambda.dummy)
-
-  ///@override
-  ///@type {Struct}
-  //data = Assert.isType(_serialize(_parse(Struct.getIfType(json, "data", Struct, { }))), Struct)
-  data = Assert.isType(_parse(Struct.getIfType(json, "data", Struct, { })), Struct)
+  var handler = Struct.getIfType(config, "handlers", Map, DEFAULT_TRACK_EVENT_HANDLERS)
+    .get(this.callableName)
 
   ///@type {Callable}
-  serializeData = Assert.isType(_serialize, Callable)
+  callable = Struct.getIfType(handler, "run", Callable, Lambda.dummy)
 
   ///@type {Callable}
-  callable = Assert.isType(_run, Callable)
+  parseData = Struct.getIfType(handler, "parse", Callable, Lambda.passthrough)
+
+  ///@type {Callable}
+  serializeData = Struct.getIfType(handler, "serialize", Callable, Struct.serialize)
   
   ///@return {Struct}
   serialize = method(this, Struct.getIfType(config, "serialize", Callable, function() {
