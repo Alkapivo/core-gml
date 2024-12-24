@@ -251,9 +251,14 @@ function TrackChannel(json, config = null) constructor {
 
   ///@private
   ///@type {Array<TrackEvent>}
-  events = GMArray.toArray(Struct
-    .getDefault(json, "events", []), TrackEvent, this.parseEvent, config)
-    .sort(compareEvents)
+  events = GMArray
+    .toArray(
+      Struct.getIfType(json, "events", GMArray, [ ]), 
+      TrackEvent, 
+      this.parseEvent,
+      Struct.set((Core.isType(config, Struct) ? config : { }),
+        "__channelName", this.name)
+    ).sort(compareEvents)
 
   ///@type {Struct}
   settings = this.parseSettings(Struct.get(json, "settings"))
@@ -372,6 +377,7 @@ function TrackChannel(json, config = null) constructor {
         var event = events.get(pointer)
         if (timestamp >= event.timestamp) {
           this.pointer = pointer
+          //Logger.debug("Track", $"(channel: '{this.name}', timestamp: {timestamp}) dispatch event: '{event.callableName}'")
           event.callable(event.data, this)
         } else {
           ///@todo execute events based on some dictionary
@@ -415,7 +421,8 @@ function TrackEvent(json, config = null): Event("TrackEvent") constructor {
 
   ///@override
   ///@type {Struct}
-  data = Assert.isType(_serialize(_parse(Struct.getIfType(json, "data", Struct, { }))), Struct)
+  //data = Assert.isType(_serialize(_parse(Struct.getIfType(json, "data", Struct, { }))), Struct)
+  data = Assert.isType(_parse(Struct.getIfType(json, "data", Struct, { })), Struct)
 
   ///@type {Callable}
   serializeData = Assert.isType(_serialize, Callable)

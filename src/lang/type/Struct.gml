@@ -538,7 +538,7 @@ function _Struct() constructor {
         ? defaultValue
         : { name: "texture_missing" }
 
-      var sprite = SpriteUtil.parse(Struct.get(struct, key), defaultValue)
+      var sprite = SpriteUtil.parse(Struct.get(struct, key), _defaultValue)
       return Core.isType(sprite, Sprite) 
         ? sprite
         : new Sprite(new Texture(texture_missing))
