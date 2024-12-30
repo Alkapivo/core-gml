@@ -202,11 +202,12 @@ function _Core() constructor {
   ///@return {Core}
   static printStackTrace = function() {
     var stackTrace = debug_get_callstack(50)
-    for (var index = 0; index < GMArray.size(stackTrace); index++) {
+    var size = GMArray.size(stackTrace)
+    for (var index = 0; index < size; index++) {
       var line = string(stackTrace[index])
       if (line != "0") {
         line = "\tat " + line;
-        Core.print(line)
+        show_debug_message(line)
       }
     }
     return Core

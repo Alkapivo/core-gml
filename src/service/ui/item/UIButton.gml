@@ -9,34 +9,37 @@ function UIButton(name, json = null) {
     ///@param {Callable}
     type: UIButton,
     
+    ///@type {?Struct}
+    enable: Struct.getIfType(json, "enable", Struct),
+
     ///@type {?Sprite}
-    sprite: Struct.contains(json, "sprite") 
-      ? Assert.isType(SpriteUtil.parse(json.sprite), Sprite)
+    sprite: Optional.is(Struct.get(json, "sprite"))
+      ? SpriteUtil.parse(json.sprite)
       : null,
     
     ///@type {?UILabel}
-    label: Struct.contains(json, "label")
+    label: Optional.is(Struct.get(json, "label"))
       ? new UILabel(json.label)
       : null,
 
     ///@type {?Margin}
-    backgroundMargin: Struct.contains(json, "backgroundMargin")
-      ? new Margin(Struct.get(json, "backgroundMargin"))
+    backgroundMargin: Optional.is(Struct.get(json, "backgroundMargin"))
+      ? new Margin(json.backgroundMargin)
       : null,
 
-    ///@type {?Struct}
-    enable: Struct.getIfType(json, "enable", Struct),
-
+    ///@override
     updateEnable: Assert.isType(Optional.is(Struct.get(json, "updateEnable"))
       ? json.updateEnable
       : Callable.run(UIItemUtils.templates.get("updateEnable")), Callable),
     
-    renderBackgroundColor: new BindIntent(Callable
-      .run(UIItemUtils.templates.get("renderBackgroundColor"))),
+    ///@private
+    renderBackgroundColor: new BindIntent(Optional.is(Struct.get(json, "renderBackgroundColor"))
+      ? json.renderBackgroundColor
+      : Callable.run(UIItemUtils.templates.get("renderBackgroundColor"))),
 
     ///@override
     ///@return {UIItem}
-    render: Struct.getDefault(json, "render", function() {
+    render: Struct.getIfType(json, "render", Callable, function() {
       if (Optional.is(this.preRender)) {
         this.preRender()
       }
@@ -74,12 +77,12 @@ function UIButton(name, json = null) {
     }),
 
     ///@type {?Callable}
-    callback: Struct.contains(json, "callback")
-      ? new BindIntent(Assert.isType(Struct.get(json, "callback"), Callable))
+    callback: Optional.is(Struct.getIfType(json, "callback", Callable))
+      ? new BindIntent(json.callback)
       : null,
     
     ///@param {Event} event
-    onMouseReleasedLeft: Assert.isType(Struct.getDefault(json, "onMouseReleasedLeft", function(event) {
+    onMouseReleasedLeft: Struct.getIfType(json, "onMouseReleasedLeft", Callable, function(event) {
       if (Struct.get(this.enable, "value") == false) {
         return
       }
@@ -97,6 +100,6 @@ function UIButton(name, json = null) {
           this.context.updateTimer.duration
         )
       }
-    }), Callable),
+    }),
   }, false))
 }

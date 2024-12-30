@@ -57,7 +57,8 @@ function UISliderHorizontal(name, json = null) {
     setClipboard: Struct.getIfType(json, "setClipboard", Callable, MouseUtil.setClipboard),
 
     ///@param {Number} mouseX
-    updateValue: new BindIntent(Assert.isType(Struct.getDefault(json, "updateValue", function(mouseX) {
+    ///@param {Number} mouseY
+    updateValue: new BindIntent(Assert.isType(Struct.getDefault(json, "updateValue", function(mouseX, mouseY) {
       var position = clamp((this.context.area.getX() + mouseX - this.context.area.getX() - this.area.getX()) / this.area.getWidth(), 0.0, 1.0)
       if (this.snapValue > 0.0) {
         position = (floor(position / this.snapValue) * this.snapValue)
@@ -73,7 +74,8 @@ function UISliderHorizontal(name, json = null) {
     }), Callable)),
 
     ///@param {Number} mouseX
-    updatePosition: new BindIntent(Assert.isType(Struct.getDefault(json, "updatePosition", function(mouseX) { }), Callable)),
+    ///@param {Number} mouseY
+    updatePosition: new BindIntent(Assert.isType(Struct.getDefault(json, "updatePosition", function(mouseX, mouseY) { }), Callable)),
 
     updateEnable: Struct.getIfType(json, "updateEnable", Callable, Callable.run(UIItemUtils.templates.get("updateEnable"))),
 
@@ -131,8 +133,11 @@ function UISliderHorizontal(name, json = null) {
       if (Struct.get(Struct.get(promise, "state"), "context") == this) {
         var offsetX = Core.isType(Struct.get(this.context, "layout"), UILayout)
           ? this.context.layout.x() 
-          : 0
-        this.updateValue(MouseUtil.getMouseX() - offsetX)
+          : 0.0
+        var offsetY = Core.isType(Struct.get(this.context, "layout"), UILayout)
+          ? this.context.layout.y() 
+          : 0.0
+        this.updateValue(MouseUtil.getMouseX() - offsetX, MouseUtil.getMouseY() - offsetY)
       }
       
       if (Optional.is(this.preRender)) {
@@ -166,8 +171,11 @@ function UISliderHorizontal(name, json = null) {
 
       var offsetX = Core.isType(Struct.get(this.context, "layout"), UILayout) 
         ? this.context.layout.x() 
-        : 0
-      this.updateValue(MouseUtil.getMouseX() - offsetX)
+        : 0.0
+      var offsetY = Core.isType(Struct.get(this.context, "layout"), UILayout)
+        ? this.context.layout.y() 
+        : 0.0
+      this.updateValue(MouseUtil.getMouseX() - offsetX, MouseUtil.getMouseY() - offsetY)
     }), Callable),
 
     ///@param {Event} event

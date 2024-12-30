@@ -382,6 +382,23 @@ function _Struct() constructor {
 
     ///@param {Struct} struct
     ///@param {String} key
+    ///@param {?Number} defaultValue
+    ///@param {?Number} clampFrom
+    ///@param {?Number} clampTo
+    ///@return {Number}
+    integer: function(struct, key, defaultValue = null, clampFrom = null, clampTo = null) {
+      var value = Struct.getIfType(struct, key, Number)
+      if (!Optional.is(value)) {
+        value = Core.isType(defaultValue, Number) ? defaultValue : 0.0
+      }
+  
+      return toInt((Core.isType(clampFrom, Number) && Core.isType(clampTo, Number))
+        ? clamp(value, clampFrom, clampTo)
+        : value)
+    },
+
+    ///@param {Struct} struct
+    ///@param {String} key
     ///@param {?String} defaultValue
     ///@return {String}
     text: function(struct, key, defaultValue = null) {
@@ -542,6 +559,26 @@ function _Struct() constructor {
       return Core.isType(sprite, Sprite) 
         ? sprite
         : new Sprite(new Texture(texture_missing))
+    },
+
+    ///@param {Struct} struct
+    ///@param {String} key
+    ///@param {Enum} type
+    ///@param {any} [defaultValue]
+    ///@return {any}
+    enumerable: function(struct, key, type, defaultValue = null) {
+      var enumKey = Struct.get(struct, key)
+      return type.containsKey(enumKey) ? type.get(enumKey) : defaultValue
+    },
+
+    ///@param {Struct} struct
+    ///@param {String} key
+    ///@param {Enum} type
+    ///@param {any} [defaultValue]
+    ///@return {any}
+    enumerableKey: function(struct, key, type, defaultValue = null) {
+      var enumKey = Struct.get(struct, key)
+      return type.containsKey(enumKey) ? enumKey : type.getKey(defaultValue)
     },
   }
 }

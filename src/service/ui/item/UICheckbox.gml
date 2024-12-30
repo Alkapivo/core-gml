@@ -62,13 +62,13 @@ function UICheckbox(name, json = null) {
       if (sprite != null) {
         var alpha = sprite.getAlpha()
         if (this.scaleToFillStretched) {
-          sprite.scaleToFillStretched(this.area.getWidth(), this.area.getHeight())
+          sprite.scaleToFillStretched(this.area.getWidth() - this.margin.left - this.margin.right, this.area.getHeight() - this.margin.top - this.margin.bottom)
         }
         sprite
           .setAlpha(alpha * (Struct.get(this.enable, "value") == false ? 0.5 : 1.0))
           .render(
-            this.context.area.getX() + this.area.getX(),
-            this.context.area.getY() + this.area.getY()
+            this.context.area.getX() + this.area.getX() + this.margin.left,
+            this.context.area.getY() + this.area.getY() + this.margin.top
           )
           .setAlpha(alpha)
       }

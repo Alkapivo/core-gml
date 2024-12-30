@@ -18,7 +18,9 @@ function UIText(name, json = null) {
     ///@type {?Struct}
     enable: Struct.getIfType(json, "enable", Struct),
     
-    updateEnable: Struct.getIfType(json, "updateEnable", Callable, Callable.run(UIItemUtils.templates.get("updateEnable"))),
+    updateEnable: Optional.is(Struct.getIfType(json, "updateEnable", Callable))
+      ? json.updateEnable
+      : Callable.run(UIItemUtils.templates.get("updateEnable")),
 
     renderBackgroundColor: new BindIntent(Callable.run(UIItemUtils.templates.get("renderBackgroundColor"))),
 

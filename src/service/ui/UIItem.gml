@@ -23,11 +23,16 @@ function UIItem(_name, config = {}) constructor {
   ///@type {?Struct}
   enable = Struct.getIfType(config, "enable", Struct)
 
+  ///@type {Boolean}
+  isHoverOver = false
+
   ///@type {any}
   state = Struct.get(config, "state")
 
   ///@type {?UIStore}
-  store = Struct.contains(config, "store") ? new UIStore(config.store, this) : null
+  store = Optional.is(Struct.get(config, "store"))
+    ? new UIStore(config.store, this) 
+    : null
 
   ///@type {Boolean}
   storeSubscribed = Core.isType(Struct.get(config, "storeSubscribed"), Boolean) 
@@ -35,22 +40,20 @@ function UIItem(_name, config = {}) constructor {
     : false
 
   ///@type {?Struct}
-  component = Optional.is(Struct.get(config, "component"))
-    ? Assert.isType(config.component, Struct)
-    : null
-
-  ///@params {Boolean}
-  isHoverOver = false
+  component = Struct.getIfType(config, "component", Struct)
 
   ///@type {?GMColor}
-  backgroundColor = Core.isType(Struct.get(config, "backgroundColor"), String)
-    ? Assert.isType(ColorUtil.fromHex(config.backgroundColor).toGMColor(), GMColor)
+  backgroundColor = Optional.is(Struct.getIfType(config, "backgroundColor", String))
+    ? Assert.isType(ColorUtil.parse(config.backgroundColor).toGMColor(), GMColor)
     : null
 
   ///@type {Number}
-  backgroundAlpha = Core.isType(Struct.get(config, "backgroundAlpha"), Number)
-    ? config.backgroundAlpha
-    : 1.0
+  backgroundAlpha = Struct.getIfType(config, "backgroundAlpha", Number, 1.0)
+
+  ///@type {?Margin}
+  backgroundMargin = Optional.is(Struct.get(config, "backgroundMargin"))
+    ? new Margin(config.backgroundMargin)
+    : null
   
   ///@type {Event}
   hoverEvent = new Event("MouseHoverOut", { x: 0, y: 0 })
