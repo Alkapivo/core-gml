@@ -73,6 +73,11 @@ function UIButton(name, json = null) {
         )
         this.label.alpha = labelAlpha
       }
+
+      if (this.postRender != null) {
+        this.postRender()
+      }
+      
       return this
     }),
 
