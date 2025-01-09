@@ -401,7 +401,7 @@ function UI(config = {}) constructor {
         }
 
         acc.context.add(item, item.name)
-        //if (Optional.is(item.updateArea())) {
+        //if (Optional.is(item.updateArea)) {
         //  item.updateArea()
         //}
       }
