@@ -40,6 +40,9 @@ function UILabel(json) constructor {
     ? json.enableColorWrite
     : Core.getProperty("core.ui-service.use-surface-optimalization", false)
 
+  ///@type {Boolean}
+  useScale = Struct.getIfType(json, "useScale", Boolean, true)
+
   ///@param {Number} x
   ///@param {Number} y
   ///@param {Number} maxWidth
@@ -76,6 +79,8 @@ function UILabel(json) constructor {
     if (scale < 1.0) {
       scale = floor((scale * 0.95) / 0.125) * 0.125
     }
+
+    scale = this.useScale ? scale : 1.0
 
     if (this.outline) {
       draw_text_transformed_colour(_x + 1, _y + 1, this.text, scale, scale, 0.0, this.outlineColor, this.outlineColor, this.outlineColor, this.outlineColor, this.alpha)
