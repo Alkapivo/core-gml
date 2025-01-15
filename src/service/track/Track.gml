@@ -377,7 +377,7 @@ function TrackChannel(json, config = null) constructor {
         var event = events.get(pointer)
         if (timestamp >= event.timestamp) {
           this.pointer = pointer
-          Logger.debug("Track", $"(channel: '{this.name}', timestamp: {timestamp}) dispatch event: '{event.callableName}'")
+          //Logger.debug("Track", $"(channel: '{this.name}', timestamp: {timestamp}) dispatch event: '{event.callableName}'")
           event.callable(event.parseData(event.data), this)
         } else {
           ///@todo execute events based on some dictionary
