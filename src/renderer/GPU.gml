@@ -107,11 +107,11 @@ function BlendConfig(config = null) constructor {
 
     if (this.previousSource != this.source
       || this.previousTarget != this.target) {
-      GPU.set.blendModeExt(this.source, this.target)
+      GPU.set.blendModeExt(this.previousSource, this.previousTarget)
     }
 
     if (this.previousEquation != this.equation) {
-      GPU.set.blendEquation(this.equation)
+      GPU.set.blendEquation(this.previousEquation)
     }
 
     this.previousSource = null
