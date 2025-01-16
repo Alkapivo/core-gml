@@ -1,4 +1,4 @@
-///@pacakge io.alkapivo.core.service.ui.item
+///@package io.alkapivo.core.service.ui.item
 
 ///@param {String} name
 ///@param {Struct} [json]

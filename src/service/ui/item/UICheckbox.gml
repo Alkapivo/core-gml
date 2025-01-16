@@ -1,4 +1,4 @@
-///@pacakge io.alkapivo.core.service.ui.item
+///@package io.alkapivo.core.service.ui.item
 
 ///@param {String} name
 ///@param {Struct} [json]
@@ -90,14 +90,8 @@ function UICheckbox(name, json = null) {
         this.updateValue(this.value == true ? false : true)
       }
 
-      if (Core.isType(this.context, UI) 
-          && Optional.is(this.context.updateTimer)) {
-        ///@updateTimerNow
-        this.context.updateTimer.time = clamp(
-          this.context.updateTimer.time,
-          this.context.updateTimer.duration * 0.7500,
-          this.context.updateTimer.duration
-        )
+      if (Optional.is(this.context)) {
+        this.context.clampUpdateTimer(0.7500)
       }
     }), Callable),
   }, false))

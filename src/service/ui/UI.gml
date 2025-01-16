@@ -222,10 +222,7 @@ function UI(config = {}) constructor {
 
         if (this.hoverItem != item) {
           this.hoverItem = item
-          if (this.updateTimer != null) {
-            ///@updateTimerAlmost
-            this.updateTimer.time = clamp(this.updateTimer.time, this.updateTimer.duration * 0.9500, this.updateTimer.duration * 2.0)
-          }  
+          this.clampUpdateTimer(0.9500)
         }
         item.isHoverOver = true
       }
@@ -380,7 +377,40 @@ function UI(config = {}) constructor {
 
     return this
   }
+
+  ///@param {UIItem} item
+  ///@param {String|Number} iterator
+  ///@param {?Struct} [data]
+  addUIItem = function(item, iterator, data = null) {
+    if (item.type == UITextField) {
+      if (Optional.is(Struct.get(data, "textField"))) {
+        data.textField.setNext(item.textField)
+        item.textField.setPrevious(data.textField)
+      }
+      Struct.set(data, "textField", item.textField)
+    }
+
+    this.add(item, item.name)
+    //if (Optional.is(item.updateArea)) {
+    //  item.updateArea()
+    //}
+
+    if (!item.storeSubscribed && Optional.is(item.store)) {
+      item.store.subscribe()
+      item.storeSubscribed = true
+    }
+  }
   
+  ///@param {UIComponent} component
+  ///@param {String|Number} iterator
+  ///@param {?Struct} [data]
+  addUIComponent = function(component, iterator, data) {
+    data.layout = component
+      .toUIItems(data.layout)
+      .forEach(this.addUIItem, data)
+      .getLast().layout.context
+  }
+
   ///@param {Array<UIComponents>} components
   ///@param {UILayout} layout
   ///@param {?Struct} [config]
@@ -388,50 +418,41 @@ function UI(config = {}) constructor {
   addUIComponents = Struct.contains(config, "addUIComponents")
     ? Assert.isType(method(this, config.addUIComponents), Callable)
     : function(components, layout, config = null) {
-    
-    static factoryComponent = function(component, index, acc) {
-      static add = function(item, index, acc) {
-        if (item.type == UITextField) {
-          var textField = item.textField
-          if (Optional.is(acc.textField)) {
-            acc.textField.setNext(textField)
-            textField.setPrevious(acc.textField)
-          }
-          acc.textField = textField
-        }
-
-        acc.context.add(item, item.name)
-        //if (Optional.is(item.updateArea)) {
-        //  item.updateArea()
-        //}
-      }
-
-      acc.layout = component
-        .toUIItems(acc.layout)
-        .forEach(add, acc)
-        .getLast().layout.context
-    }
-
-    var context = this
-    components.forEach(
-      factoryComponent, 
-      Struct.append(
-        config,
-        {
+        var context = this
+        components.forEach(this.addUIComponent, Struct.append(config, {
           layout: layout,
           context: context,
           textField: null
-        },
-        false
-      )
-    )
-    return this
-  }
+        }, false))
+
+        return this
+      }
 
   ///@type {?Timer}
   updateTimer = Core.isType(Struct.get(config, "updateTimer"), Timer)
     ? config.updateTimer 
     : null
+
+  ///@return {UI}
+  finishUpdateTimer = method(this, Struct.getIfType(config, "finishRngTimer", Callable, function() {
+    if (!Optional.is(this.updateTimer)) {
+      return this
+    }
+
+    this.updateTimer.time = this.updateTimer.duration + random(this.updateTimer.duration / 2.0)
+    return this
+  }))
+
+  ///@param {Number} [factor]
+  ///@return {UI}
+  clampUpdateTimer = method(this, Struct.getIfType(config, "clampUpdateTimer", Callable, function(factor = 1.0) {
+    if (!Optional.is(this.updateTimer)) {
+      return this
+    }
+
+    this.updateTimer.time = clamp(this.updateTimer.time, this.updateTimer.duration * factor, this.updateTimer.duration)
+    return this
+  }))
   
   ///@type {Struct}
   scrollbarY = Struct.appendRecursive(

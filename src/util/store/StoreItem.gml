@@ -16,7 +16,7 @@ function StoreItem(_name, json) constructor {
   ///@type {any}
   data = Struct.get(json, "data")
 
-  ///@NonSerializable
+  ///@type {Array<StoreItemSubscriber>}
   subscribers = new Array(StoreItemSubscriber)
 
   ///@return {any}

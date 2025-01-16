@@ -1,4 +1,4 @@
-///@pacakge io.alkapivo.core.service.ui.item
+///@package io.alkapivo.core.service.ui.item
 
 ///@static
 ///@type {Map<String, String>}
@@ -111,14 +111,7 @@ function UITextField(name, json = null) {
           this.area.setHeight(this.textField.style.h)
           if (Optional.is(this.context)) {
             this.context.areaWatchdog.signal()
-            if (Optional.is(this.context.updateTimer)) {
-              ///@updateTimerNow
-              this.context.updateTimer.time = clamp(
-                this.context.updateTimer.time,
-                this.context.updateTimer.duration * 0.9500,
-                this.context.updateTimer.duration
-              )
-            }
+            this.context.clampUpdateTimer(0.9500)
           }
         }
 

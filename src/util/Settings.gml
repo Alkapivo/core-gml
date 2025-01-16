@@ -11,7 +11,7 @@ global.__SettingTypes = new _SettingTypes()
 #macro SettingTypes global.__SettingTypes
 
 
-///@params {Struct} json
+///@param {Struct} json
 function SettingEntry(json) constructor {
 
   ///@type {String}
