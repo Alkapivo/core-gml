@@ -65,12 +65,7 @@ void main() {
   col *= exp(-depth * 0.05);
 
   vec4 textureColor = texture2D(gm_BaseTexture, v_vTexcoord);
-  float alpha = 1.0 - (depth - 0.5) / 2.0;
+  float alpha = (depth - 0.5) / 2.0;
   vec3 pixel = mix(col, textureColor.rgb, alpha);
-  gl_FragColor = vec4(
-    pixel.x, 
-    pixel.y, 
-    pixel.z, 
-    textureColor.a * v_vColour.a * ((pixel.x + pixel.y + pixel.z) / (iTreshold * alpha))
-  );
+  gl_FragColor = vec4(pixel, textureColor.a * v_vColour.a * (iTreshold * (1.0 - alpha)));
 }
