@@ -250,6 +250,10 @@ function _GPU() constructor {
     ///@param {Number} [alpha]
     ///@return {GPU}
     fillColor: function(width, height, color = c_white, alpha = 1.0) {
+      if (width == 0 || height == 0) {
+        return GPU
+      }
+
       draw_sprite_ext(texture_white, 0.0, 0, 0, width / 32.0, height / 32.0, 0.0, color, alpha)
       return GPU
     },
