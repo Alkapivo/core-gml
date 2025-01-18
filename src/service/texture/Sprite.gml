@@ -174,6 +174,10 @@ function Sprite(_texture, config = {}) constructor {
   ///@param {Number} y
   ///@return {Sprite}
   render = function(x, y) {
+    if (this.scaleX == 0 || this.scaleY == 0) {
+      return this
+    }
+    
     draw_sprite_ext(this.texture.asset, this.frame, x, y, this.scaleX, this.scaleY, this.angle, this.blend, this.alpha)
     
     if (!this.animate) {
@@ -191,6 +195,10 @@ function Sprite(_texture, config = {}) constructor {
   ///@param {Number} y
   ///@return {Sprite}
   renderTiled = function(x, y) {
+    if (this.scaleX == 0 || this.scaleY == 0) {
+      return this
+    }
+
     draw_sprite_tiled_ext(this.texture.asset, this.frame, x, y, this.scaleX, this.scaleY, 
       this.blend, this.alpha)
     
