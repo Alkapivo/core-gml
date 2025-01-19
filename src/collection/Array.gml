@@ -187,9 +187,9 @@ function Array(_type = any, _container = null) constructor {
     return found
   }
 
-  ///@param {String} delimiter
+  ///@param {String} [delimiter]
   ///@return {String}
-  static join = function(delimiter) {
+  static join = function(delimiter = ", ") {
     var size = this.size()
     var buffer = ""
     if (size > 1) {
