@@ -309,15 +309,9 @@ function UI(config = {}) constructor {
     ? Assert.isType(method(this, config.renderSurface), Callable)
     : function() {
 
-      var color = this.state.get("background-color")
-      var alpha = this.state.get("background-alpha")
-      //GPU.render.clear(Core.isType(color, GMColor) 
-      //  ? ColorUtil.fromGMColor(color) 
-      //  : ColorUtil.BLACK_TRANSPARENT)
-      draw_clear_alpha(
-        (Core.isType(color, GMColor) ? color : c_black),
-        (Core.isType(alpha, Number) ? alpha : 0.0)
-      )
+      var color = this.state.getIfType("background-color", GMColor, c_black)
+      var alpha = this.state.getIfType("background-alpha", Number, 1.0)
+      draw_clear_alpha(color, alpha)
 
       var areaX = this.area.x
       var areaY = this.area.y
@@ -853,9 +847,8 @@ function _UIUtil() constructor {
           
           GPU.set.surface(this.surface)
           var color = this.state.get("background-color")
-          var alpha = this.state.getDefault("background-alpha", 1.0)
           if (color != null) {
-            draw_clear_alpha(color, alpha)
+            draw_clear_alpha(color, this.state.getIfType("background-alpha", Number, 1.0))
           }
           
           var areaX = this.area.x
@@ -880,7 +873,7 @@ function _UIUtil() constructor {
               this.area.x + this.area.getWidth(), this.area.y + this.area.getHeight(), 
               false,
               color, color, color, color, 
-              this.state.get("background-alpha")
+              this.state.getIfType("background-alpha", Number, 1.0)
             )
           }
           
@@ -923,6 +916,34 @@ function _UIUtil() constructor {
         this.surface.renderOn(this.renderSurface)
         GPU.set.blendEnable(false)
         this.surface.render(this.area.getX(), this.area.getY())
+        GPU.set.blendEnable(true)
+
+        if (this.enableScrollbarY) {
+          this.scrollbarY.render(this)
+        }
+      }
+    },
+    "renderDefaultScrollableAlpha": function() {
+       return function() {
+        if (!Optional.is(this.surface)) {
+          this.surface = new Surface()
+        }
+
+        var alpha = this.state.getIfType("surface-alpha", Number, 1.0)
+        this.surface.update(this.area.getWidth(), this.area.getHeight())
+        if (!this.surfaceTick.get() && !this.surface.updated) {
+          GPU.set.blendEnable(alpha < 1.0)
+          this.surface.render(this.area.getX(), this.area.getY(), alpha)
+          GPU.set.blendEnable(true)
+          if (this.enableScrollbarY) {
+            this.scrollbarY.render(this)
+          }
+          return
+        }
+
+        this.surface.renderOn(this.renderSurface)
+        GPU.set.blendEnable(alpha < 1.0)
+        this.surface.render(this.area.getX(), this.area.getY(), alpha)
         GPU.set.blendEnable(true)
 
         if (this.enableScrollbarY) {
