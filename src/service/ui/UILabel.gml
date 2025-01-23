@@ -47,8 +47,9 @@ function UILabel(json) constructor {
   ///@param {Number} y
   ///@param {Number} maxWidth
   ///@param {Number} maxHeight
+  ///@param {Number} [forceScale]
   ///@return {UILabel}
-  render = function(x, y, maxWidth, maxHeight) {  
+  render = function(x, y, maxWidth, maxHeight, forceScale = 1.0) {  
     var _x = x + this.offset.x
     var _y = y + this.offset.y
     var config = gpu_get_colorwriteenable()
@@ -80,7 +81,7 @@ function UILabel(json) constructor {
       scale = floor((scale * 0.95) / 0.125) * 0.125
     }
 
-    scale = this.useScale ? scale : 1.0
+    scale = this.useScale ? scale : forceScale
 
     if (this.outline) {
       draw_text_transformed_colour(_x + 1, _y + 1, this.text, scale, scale, 0.0, this.outlineColor, this.outlineColor, this.outlineColor, this.outlineColor, this.alpha)

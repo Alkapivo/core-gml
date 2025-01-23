@@ -59,6 +59,11 @@ function UIText(name, json = null) {
         this.area.getWidth(),
         this.area.getHeight()
       )
+
+      if (this.postRender != null) {
+        this.postRender()
+      }
+      
       return this
     }),
   }, false))
