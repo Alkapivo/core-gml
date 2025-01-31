@@ -94,7 +94,9 @@ function Task(_name, config = {}) constructor {
   ///@param {?Number} tick
   ///@return {Task}
   static setTick = function(tick) {
-    this.tick = Core.isType(tick, Number) ? new Timer(tick, { loop: Infinity }) : null
+    this.tick = Core.isType(tick, Number) 
+      ? new Timer(tick, { time: tick, loop: Infinity })
+      : null
     return this
   }
   this.setTick(Struct.get(config, "tick"))
