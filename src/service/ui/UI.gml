@@ -456,6 +456,7 @@ function UI(config = {}) constructor {
       width: 10,
       thickness: 3,
       color: ColorUtil.fromHex(VETheme.color.primaryShadow).toGMColor(),
+      alpha: 1.0,
       render: function(context) {
         var x1 = 0, y1 = 0, x2 = 0, y2 = 0
         switch (this.align) {
@@ -479,7 +480,7 @@ function UI(config = {}) constructor {
 
         y1 = y1 + (beginRatio * height)
         y2 = y1 + ((height / length) * height)
-        GPU.render.rectangle(x1, y1, x2, y2, false, this.color)
+        GPU.render.rectangle(x1, y1, x2, y2, false, this.color, this.color, this.color, this.color, this.alpha)
       }
     },
     Struct.get(config, "scrollbarY")
