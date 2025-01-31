@@ -263,10 +263,16 @@ function _GPU() constructor {
       return GPU
     },
 
-    ///@param {Color} color
+    ///@param {Color|GMColor} color
+    ///@param {?Number} [alpha]
     ///@return {GPU}
-    clear: function(color) {
-      draw_clear_alpha(color.toGMColor(), color.alpha)
+    clear: function(color, alpha = null) {
+      if (Core.isType(color, GMColor)) {
+        draw_clear_alpha(color, Optional.is(alpha) ? alpha : 1.0)  
+      } else {
+        draw_clear_alpha(color.toGMColor(), Optional.is(alpha) ? alpha : color.alpha)
+      }
+      
       return GPU
     },
 
