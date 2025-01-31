@@ -493,7 +493,7 @@ function Shader(_asset, json) constructor {
   ///@type {Map<String, ShaderUniform>}
   uniforms = Struct
     .toMap(
-      Struct.getDefault(json, "uniforms", {}), 
+      Struct.getIfType(json, "uniforms", Struct, { }), 
       String, 
       ShaderUniform,
       function(type, name, asset) {
@@ -527,9 +527,8 @@ function _ShaderUtil() constructor {
 
     var config = Struct.get(SHADERS, name)
     if (!Core.isType(config, Struct)) {
-      Logger.warn("ShaderUtil", String.template("{0} was not found: { \"name\": \"{1}\" }", "Shader", name))
-
-      return null
+      Logger.warn("ShaderUtil", String.template("{0} was not found in SHADERS: { \"name\": \"{1}\" }", "Shader", name))
+      config = {}
     }
     Struct.set(config, "name", name)
 
