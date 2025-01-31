@@ -207,6 +207,10 @@ global.__EVENT_DISPATCHERS = {
       var blendEquation = Core.isEnum(Struct.get(event.data, "blendEquation"), BlendEquation) 
         ? event.data.blendEquation
         : BlendEquation.ADD
+
+      var blendEquationAlpha = Core.isEnum(Struct.get(event.data, "blendEquationAlpha"), BlendEquation) 
+        ? event.data.blendEquationAlpha
+        : null
       
       var _x = Struct.getIfType(event.data, "x", Number, 0.0)
       var _y = Struct.getIfType(event.data, "y", Number, 0.0)
@@ -224,6 +228,7 @@ global.__EVENT_DISPATCHERS = {
           blendModeSource: blendModeSource,
           blendModeTarget: blendModeTarget,
           blendEquation: blendEquation,
+          blendEquationAlpha: blendEquationAlpha,
           fadeInSpeed: fadeInSpeed,
           fadeOutSpeed: fadeOutSpeed,
           speed: _speed,
@@ -371,6 +376,10 @@ global.__EVENT_DISPATCHERS = {
         ? event.data.blendEquation
         : BlendEquation.ADD
       
+      var blendEquationAlpha = Core.isEnum(Struct.get(event.data, "blendEquationAlpha"), BlendEquation) 
+        ? event.data.blendEquationAlpha
+        : null
+
       var color = Assert.isType(event.data.color, Color)
       var originalAlpha = color.alpha
       var type = Assert.isType(event.data.type, String)
@@ -383,6 +392,7 @@ global.__EVENT_DISPATCHERS = {
           blendModeSource: blendModeSource,
           blendModeTarget: blendModeTarget,
           blendEquation: blendEquation,
+          blendEquationAlpha: blendEquationAlpha,
           fadeInSpeed: fadeInSpeed,
           fadeOutSpeed: fadeOutSpeed,
           type: type,

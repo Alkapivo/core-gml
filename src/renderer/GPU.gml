@@ -45,6 +45,9 @@ function BlendConfig(config = null) constructor {
   ///@type {BlendEquation}
   equation = Struct.getIfEnum(config, "equation", BlendEquation, BlendEquation.ADD)
 
+  ///@type {?BlendEquation}
+  equationAlpha = Struct.getIfEnum(config, "equationAlpha", BlendEquation)
+
   ///@private
   ///@type {?BlendModeExt}
   previousSource = null
@@ -56,6 +59,10 @@ function BlendConfig(config = null) constructor {
   ///@private 
   ///@type {?BlendEquation}
   previousEquation = null
+
+  ///@private 
+  ///@type {?BlendEquation}
+  previousEquationAlpha = null
 
   ///@type {BlendModeExt}
   ///@return {BlendConfig}
@@ -78,11 +85,19 @@ function BlendConfig(config = null) constructor {
     return this
   }
 
+  ///@param {BlendEquation}
+  ///@return {BlendConfig}
+  setEquationAlpha = function(equation) {
+    this.equationAlpha = equation
+    return this
+  }
+
   ///@return {BlendConfig}
   set = function() {
     this.previousSource = GPU.get.blendModeExt.source()
     this.previousTarget = GPU.get.blendModeExt.target()
     this.previousEquation = GPU.get.blendModeExt.equation()
+    this.previousEquationAlpha = GPU.get.blendModeExt.equationAlpha()
 
     if (this.previousSource != this.source
         || this.previousTarget != this.target) {
@@ -91,6 +106,11 @@ function BlendConfig(config = null) constructor {
 
     if (this.previousEquation != this.equation) {
       GPU.set.blendEquation(this.equation)
+    }
+
+    if (Optional.is(this.equationAlpha)
+        && this.previousEquationAlpha != this.equationAlpha) {
+      GPU.set.blendEquationAlpha(this.equationAlpha)
     }
 
     return this
@@ -114,9 +134,15 @@ function BlendConfig(config = null) constructor {
       GPU.set.blendEquation(this.previousEquation)
     }
 
+    if (Optional.is(this.equationAlpha)
+        && this.previousEquationAlpha != this.equationAlpha) {
+      GPU.set.blendEquationAlpha(this.previousEquationAlpha)
+    }
+
     this.previousSource = null
     this.previousTarget = null
     this.previousEquation = null
+    this.previousEquationAlpha = null
     return this
   }
 
@@ -142,14 +168,14 @@ function _BlendModeExt(): Enum() constructor {
   ZERO = bm_zero
   ONE = bm_one
   SRC_COLOUR = bm_src_colour
-  INV_SRC_COLOUR = bm_inv_src_colour
   SRC_ALPHA = bm_src_alpha
+  SRC_ALPHA_SAT = bm_src_alpha_sat
+  INV_SRC_COLOUR = bm_inv_src_colour
   INV_SRC_ALPHA = bm_inv_src_alpha
   DEST_ALPHA = bm_dest_alpha
-  INV_DEST_ALPHA = bm_inv_dest_alpha
   DEST_COLOUR = bm_dest_colour
+  INV_DEST_ALPHA = bm_inv_dest_alpha
   INV_DEST_COLOUR = bm_inv_dest_colour
-  SRC_ALPHA_SAT = bm_src_alpha_sat
 }
 global.__BlendModeExt = new _BlendModeExt()
 #macro BlendModeExt global.__BlendModeExt
@@ -364,9 +390,21 @@ function _GPU() constructor {
     },
 
     ///@param {BlendEquation} equation
+    ///@param {?BlendEquation} [equationAlpha]
     ///@return {GPU}
-    blendEquation: function(equation) {
-      gpu_set_blendequation(equation)
+    blendEquation: function(equation, equationAlpha = null) {
+      if (Optional.is(equationAlpha)) {
+        gpu_set_blendequation_sepalpha(equation, equationAlpha)
+      } else {
+        gpu_set_blendequation(equation)
+      }
+      return GPU
+    },
+
+    ///@param {BlendEquation} equation
+    ///@return {GPU}
+    blendEquationAlpha: function(equation) {
+      gpu_set_blendequation_sepalpha(GPU.get.blendModeExt.equation(), equation)
       return GPU
     },
 
@@ -439,6 +477,11 @@ function _GPU() constructor {
       ///@return {BlendEquation}
       equation: function() {
         return gpu_get_blendequation()
+      },
+
+      ///@return {BlendEquation}
+      equationAlpha: function() {
+        return gpu_get_blendequation_sepalpha()
       },
     },
 
