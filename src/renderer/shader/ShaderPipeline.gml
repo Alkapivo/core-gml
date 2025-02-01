@@ -255,6 +255,7 @@ function ShaderPipeline(config = {}) constructor {
     },
     "reset-templates": function(event) {
       this.templates.clear()
+      this.dispatcher.container.clear()
     },
   }))
 
