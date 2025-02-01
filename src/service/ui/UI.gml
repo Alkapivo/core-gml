@@ -309,11 +309,9 @@ function UI(config = {}) constructor {
     ? Assert.isType(method(this, config.renderSurface), Callable)
     : function() {
 
-      var color = this.state.get("background-color")
-      var alpha = this.state.getDefault("background-alpha", 1.0)
-      if (Optional.is(color)) {
-        GPU.render.clear(color, alpha)
-      }
+      var color = this.state.getDefault("background-color", c_black)
+      var alpha = this.state.getDefault("background-alpha", 0.0)
+      GPU.render.clear(color, alpha)
 
       var areaX = this.area.x
       var areaY = this.area.y
@@ -850,9 +848,8 @@ function _UIUtil() constructor {
           
           GPU.set.surface(this.surface)
           var color = this.state.get("background-color")
-          var alpha = this.state.getDefault("background-alpha", 1.0)
           if (Optional.is(color)) {
-            GPU.render.clear(color, alpha)
+            GPU.render.clear(color, this.state.getDefault("background-alpha", 1.0))
           }
           
           var areaX = this.area.x
