@@ -28,6 +28,7 @@ function ParticleSystem(_layerName) constructor {
 
   ///@type {GMParticleSystem}
   asset = part_system_create_layer(this.layerName, false)
+  part_system_automatic_update(this.asset, false)
   part_system_automatic_draw(this.asset, false)
 
   ///@type {GMEmitter}
@@ -41,6 +42,7 @@ function ParticleSystem(_layerName) constructor {
   update = function() {
     if (!part_system_exists(this.asset)) {
       this.asset = part_system_create_layer(this.layerName, false)
+      part_system_automatic_update(this.asset, false)
       part_system_automatic_draw(this.asset, false)
     }
 
@@ -49,11 +51,12 @@ function ParticleSystem(_layerName) constructor {
     }
 
     this.executor.update()
+    part_system_update(this.asset)
     return this
   }
 
   render = function() {
-    part_system_drawit(this.asset);
+    part_system_drawit(this.asset)
   }
     
   free = function() {
