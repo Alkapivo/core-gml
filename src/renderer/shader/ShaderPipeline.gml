@@ -251,7 +251,7 @@ function ShaderPipeline(config = {}) constructor {
       this.executor.add(task)
     },
     "clear-shaders": function(event) {
-      this.executor.tasks.clear()
+      this.executor.tasks.forEach(TaskUtil.fullfill).clear()
     },
     "reset-templates": function(event) {
       this.templates.clear()
