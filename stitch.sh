@@ -25,46 +25,52 @@ function check_env() {
 function build_and_run {
   check_env
   clean_out
+  set -x
   $STITCH_IGOR \
-    --project=$STITCH_PROJECT_PATH/$STITCH_PROJECT_NAME.yyp \
-    --user=$STITCH_USER_PATH \
-    --runtimePath=$STITCH_RUNTIME_PATH \
+    --project="$STITCH_PROJECT_PATH/$STITCH_PROJECT_NAME.yyp" \
+    --user="$STITCH_USER_PATH" \
+    --runtimePath="$STITCH_RUNTIME_PATH" \
     --runtime=$STITCH_RUNTIME \
-    --cache=$STITCH_PROJECT_PATH/tmp/igor/cache \
-    --temp=$STITCH_PROJECT_PATH/tmp/igor/temp \
-    --of=$STITCH_PROJECT_PATH/out/${STITCH_PROJECT_NAME}.win \
-    --tf=$STITCH_PROJECT_PATH/$STITCH_PROJECT_NAME.zip \
+    --cache="$STITCH_PROJECT_PATH/tmp/igor/cache" \
+    --temp="$STITCH_PROJECT_PATH/tmp/igor/temp" \
+    --of="$STITCH_PROJECT_PATH/out/${STITCH_PROJECT_NAME}.win" \
+    --tf="$STITCH_PROJECT_PATH/$STITCH_PROJECT_NAME.zip" \
     -- $STITCH_PLATFORM Run
+  set +x
 }
 
 function build_and_run_vm {
   check_env
   clean_out
+  set -x
   $STITCH_IGOR \
-    --project=$STITCH_PROJECT_PATH/$STITCH_PROJECT_NAME.yyp \
-    --user=$STITCH_USER_PATH \
-    --runtimePath=$STITCH_RUNTIME_PATH \
+    --project="$STITCH_PROJECT_PATH/$STITCH_PROJECT_NAME.yyp" \
+    --user="$STITCH_USER_PATH" \
+    --runtimePath="$STITCH_RUNTIME_PATH" \
     --runtime=VM \
-    --cache=$STITCH_PROJECT_PATH/tmp/igor/cache \
-    --temp=$STITCH_PROJECT_PATH/tmp/igor/temp \
-    --of=$STITCH_PROJECT_PATH/out/${STITCH_PROJECT_NAME}.win \
-    --tf=$STITCH_PROJECT_PATH/$STITCH_PROJECT_NAME.zip \
+    --cache="$STITCH_PROJECT_PATH/tmp/igor/cache" \
+    --temp="$STITCH_PROJECT_PATH/tmp/igor/temp" \
+    --of="$STITCH_PROJECT_PATH/out/${STITCH_PROJECT_NAME}.win" \
+    --tf="$STITCH_PROJECT_PATH/$STITCH_PROJECT_NAME.zip" \
     -- $STITCH_PLATFORM Run
+  set +x
 }
 
 function build_and_run_yyc {
   check_env
   clean_out
+  set -x
   $STITCH_IGOR \
-    --project=$STITCH_PROJECT_PATH/$STITCH_PROJECT_NAME.yyp \
-    --user=$STITCH_USER_PATH \
-    --runtimePath=$STITCH_RUNTIME_PATH \
+    --project="$STITCH_PROJECT_PATH/$STITCH_PROJECT_NAME.yyp" \
+    --user="$STITCH_USER_PATH" \
+    --runtimePath="$STITCH_RUNTIME_PATH" \
     --runtime=YYC \
-    --cache=$STITCH_PROJECT_PATH/tmp/igor/cache \
-    --temp=$STITCH_PROJECT_PATH/tmp/igor/temp \
-    --of=$STITCH_PROJECT_PATH/out/${STITCH_PROJECT_NAME}.win \
-    --tf=$STITCH_PROJECT_PATH/$STITCH_PROJECT_NAME.zip \
+    --cache="$STITCH_PROJECT_PATH/tmp/igor/cache" \
+    --temp="$STITCH_PROJECT_PATH/tmp/igor/temp" \
+    --of="$STITCH_PROJECT_PATH/out/${STITCH_PROJECT_NAME}.win" \
+    --tf="$STITCH_PROJECT_PATH/$STITCH_PROJECT_NAME.zip" \
     -- $STITCH_PLATFORM Run
+  set +x
 }
 
 function clean_out {
@@ -80,7 +86,12 @@ function clean_tmp {
 }
 
 function sync_yyp {
-  echo "[stitch.sh::sync_yyp] Start gm-cli watch"
+  echo "[stitch.sh::sync_yyp] Sync gm_modules with yyp project"
+  gm-cli sync
+}
+
+function watch_yyp {
+  echo "[stitch.sh::sync_yyp] Watch & sync gm_modules with yyp project"
   gm-cli watch
 }
 
@@ -96,11 +107,13 @@ echo "[stitch.sh] Run check_env"
 check_env
 
 # print help
+echo ""
 echo "Source this file to load commands:"
 echo "  build_and_run       Build usign \$STITCH_RUNTIME: $STITCH_RUNTIME"
 echo "  build_and_run_vm    Build using Virtual Machine and run it"
 echo "  build_and_run_yyc   Build using YoYo Compiler and run it"
 echo "  clean_out           Remove out folder created by build_and_run"
 echo "  clean_tmp           Remove tmp/igor folder created by build_and_run"
-echo "  sync_yyp            Run gm-cli watch"
+echo "  sync_yyp            Sync gm_modules with yyp project"
+echo "  watch_yyp           Watch & sync gm_modules with yyp project"
 echo ""
