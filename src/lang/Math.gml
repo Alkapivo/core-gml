@@ -11,21 +11,21 @@ function _Vector() constructor {
     switch (type) {
       case Vector2:
         return new Vector2(
-          Struct.getDefault(json, "x", 0.0), 
-          Struct.getDefault(json, "y", 0.0)
+          Struct.getIfType(json, "x", Number, 0.0), 
+          Struct.getIfType(json, "y", Number, 0.0)
         )
       case Vector3:
         return new Vector3(
-          Struct.getDefault(json, "x", 0.0), 
-          Struct.getDefault(json, "y", 0.0), 
-          Struct.getDefault(json, "z", 0.0)
+          Struct.getIfType(json, "x", Number, 0.0), 
+          Struct.getIfType(json, "y", Number, 0.0), 
+          Struct.getIfType(json, "z", Number, 0.0)
         )
       case Vector4:
         return new Vector4(
-          Struct.getDefault(json, "x", 0.0), 
-          Struct.getDefault(json, "y", 0.0), 
-          Struct.getDefault(json, "z", 0.0), 
-          Struct.getDefault(json, "a", 0.0)
+          Struct.getIfType(json, "x", Number, 0.0), 
+          Struct.getIfType(json, "y", Number, 0.0), 
+          Struct.getIfType(json, "z", Number, 0.0), 
+          Struct.getIfType(json, "a", Number, 0.0)
         )
       default:
         throw new ParseException()
@@ -243,20 +243,23 @@ function _Math() constructor {
   ///@param {Number} toX
   ///@param {Number} toY
   ///@return {Number}
-  fetchPointsAngle = function(fromX, fromY, toX, toY) {
+  static fetchPointsAngle = function(fromX, fromY, toX, toY) {
+    gml_pragma("forceinline")
     return point_direction(fromX, fromY, toX, toY)
   }
 
   ///@param {Number} source
   ///@param {Number} target
   ///@return {Number}
-  fetchPointsAngleDiff = function(source, target) {
+  static fetchPointsAngleDiff = function(source, target) {
+    gml_pragma("forceinline")
     return angle_difference(source, target)
   }
 
   ///@param {Number} angle
   ///@return {Number}
-  normalizeAngle = function(angle) {
+  static normalizeAngle = function(angle) {
+    gml_pragma("forceinline")
     return (angle mod 360 + 360) mod 360;
   }
 
@@ -264,7 +267,8 @@ function _Math() constructor {
   ///@param {Number} to
   ///@param {Number} factor
   ///@return {Number}
-  lerpAngle = function(from, to, factor) {
+  static lerpAngle = function(from, to, factor) {
+    gml_pragma("forceinline")
     var _from = (from mod 360 + 360) mod 360
     var _to = (to mod 360 + 360) mod 360
     var diff = _to - _from
@@ -285,7 +289,8 @@ function _Math() constructor {
   ///@param {Number} toX
   ///@param {Number} toY
   ///@return {Number}
-  fetchLength = function(fromX, fromY, toX, toY) {
+  static fetchLength = function(fromX, fromY, toX, toY) {
+    gml_pragma("forceinline")
     return point_distance(fromX, fromY, toX, toY)
   }
 
@@ -298,21 +303,24 @@ function _Math() constructor {
   ///@param {Number} dx2
   ///@param {Number} dy2
   ///@return {Boolean}
-  rectangleOverlaps = function(sx1, sy1, sx2, sy2, dx1, dy1, dx2, dy2) {
+  static rectangleOverlaps = function(sx1, sy1, sx2, sy2, dx1, dy1, dx2, dy2) {
+    gml_pragma("forceinline")
     return rectangle_in_rectangle(sx1, sy1, sx2, sy2, dx1, dy1, dx2, dy2) > 0
   }
 
   ///@param {Number} length
   ///@param {Number} angle
   ///@return {Number}
-  fetchCircleX = function(length, angle) {
+  static fetchCircleX = function(length, angle) {
+    gml_pragma("forceinline")
     return lengthdir_x(length, angle)
   }
 
   ///@param {Number} length
   ///@param {Number} angle
   ///@return {Number}
-  fetchCircleY = function(length, angle) {
+  static fetchCircleY = function(length, angle) {
+    gml_pragma("forceinline")
     return lengthdir_y(length, angle)
   }
 
@@ -320,7 +328,8 @@ function _Math() constructor {
   ///@param {Number} target
   ///@param {Number} [factor]
   ///@return {Number}
-  transformNumber = function(source, target, factor = 1.0) {
+  static transformNumber = function(source, target, factor = 1.0) {
+    gml_pragma("forceinline")
     var dir = source < target ? 1 : -1
     var value = source + (dir * factor)
     return dir > 0
@@ -330,41 +339,47 @@ function _Math() constructor {
 
   ///@param {Number} number
   ///@return {Number}
-  randomNumber = function(number) {
+  static randomNumber = function(number) {
+    gml_pragma("forceinline")
     return random(number)
   }
 
   ///@param {Number} from
   ///@param {Number} to
   ///@return {Number}
-  randomNumberFromRange = function(from, to) {
+  static randomNumberFromRange = function(from, to) {
+    gml_pragma("forceinline")
     return random_range(from, to)
   }
 
   ///@param {Number} from
   ///@param {Number} to
   ///@return {Number}
-  randomInteger = function(number) {
+  static randomInteger = function(number) {
+    gml_pragma("forceinline")
     return irandom(number)
   }
 
   ///@param {Number} from
   ///@param {Number} to
   ///@return {Number}
-  randomIntegerFromRange = function(from, to) {
+  static randomIntegerFromRange = function(from, to) {
+    gml_pragma("forceinline")
     return irandom_range(from, to)
   }
 
   ///@type {Number} a
   ///@type {Number} b
   ///@type {Number} [epsilon]
-  areNumbersEqual = function(a, b, epsilon = 0.0) {
+  static areNumbersEqual = function(a, b, epsilon = 0.0) {
+    gml_pragma("forceinline")
     return a >= b - epsilon && a <= b + epsilon
   }
 
   ///@param {any} value
   ///@return {Boolean}
-  isNaN = function(value) {
+  static isNaN = function(value) {
+    gml_pragma("forceinline")
     return is_nan(value)
   }
 
@@ -376,7 +391,8 @@ function _Math() constructor {
   ///@param {Number} width
   ///@param {Number} height
   ///@return {Struct}
-  project3DCoordsOn2D = function(x, y, z, view, projection, width, height) {
+  static project3DCoordsOn2D = function(x, y, z, view, projection, width, height) {
+    gml_pragma("forceinline")
     var _x = 0
     var _y = 0
     if (projection[15] == 0) {
@@ -409,7 +425,8 @@ function _Math() constructor {
   ///@param {Matrix} projection
   ///@param {Number} width
   ///@param {Number} width
-  project2DCoordsOn3D = function(x, y, view, projection, width, height) {
+  static project2DCoordsOn3D = function(x, y, view, projection, width, height) {
+    gml_pragma("forceinline")
     var mx = 2 * (x / width - 0.5) / projection[0]
     var my = 2 * (y / height - 0.5) / projection[5]
     var camX = -1 * (view[12] * view[0] + view[13] * view[1] + view[14] * view[2])

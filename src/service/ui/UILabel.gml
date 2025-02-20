@@ -45,11 +45,11 @@ function UILabel(json) constructor {
 
   ///@param {Number} x
   ///@param {Number} y
-  ///@param {Number} maxWidth
-  ///@param {Number} maxHeight
+  ///@param {Number} [maxWidth]
+  ///@param {Number} [maxHeight]
   ///@param {Number} [forceScale]
   ///@return {UILabel}
-  render = function(x, y, maxWidth, maxHeight, forceScale = 1.0) {  
+  render = function(x, y, maxWidth = 0, maxHeight = 0, forceScale = 1.0) {  
     var _x = x + this.offset.x
     var _y = y + this.offset.y
     var config = gpu_get_colorwriteenable()
@@ -73,9 +73,15 @@ function UILabel(json) constructor {
 
     var width = string_width(this.text)
     var height = string_height(this.text)
+    var _xx = this.offset.x
+    var _yy = this.offset.y
     var scale = min(
-      (width > maxWidth ? maxWidth / width : 1.0),
-      (height > maxHeight ? maxHeight / height : 1.0)
+      (width > maxWidth - _xx
+        ? ((maxWidth - _xx) / width)
+        : 1.0),
+      (height > maxHeight - _yy
+        ? ((maxHeight - _yy) / height)
+        : 1.0)
     )
     if (scale < 1.0) {
       scale = floor((scale * 0.95) / 0.125) * 0.125
