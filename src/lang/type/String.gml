@@ -216,10 +216,10 @@ function _String() constructor {
     var currentPosition = 1
     var result = ""
     var _font = null
-    if (Optional.is(font) && Core.isType(font, GMFont)) {
-      _font = draw_get_font()
+    if (Core.isType(font, GMFont)) {
+      _font = GPU.get.font()
       if (font != _font) {
-        draw_set_font(font)
+        GPU.set.font(font)
       }
     }
 
@@ -258,7 +258,7 @@ function _String() constructor {
     }
 
     if (Optional.is(_font) && _font != font) {
-      draw_set_font(_font)
+      GPU.set.font(_font)
     }
     return result
   }
