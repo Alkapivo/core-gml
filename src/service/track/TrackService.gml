@@ -16,6 +16,12 @@ function TrackService(_context, config = {}): Service() constructor {
   ///@type {Number}
   duration = 0.0
 
+  ///@type {?Number}
+  rewindFrom = null
+
+  ///@type {?Number}
+  rewindTo = null
+
   ///@type {Map<String, Callable>}
   handlers = Struct.contains(config, "handlers")
     ? Assert.isType(config.handlers, Map)
@@ -100,7 +106,10 @@ function TrackService(_context, config = {}): Service() constructor {
     if (this.isTrackLoaded()) {
       this.track.audio.stop()
     }
+
     this.time = 0.0
+    this.rewindFrom = null
+    this.rewindTo = null
     return this
   }
 
@@ -111,6 +120,8 @@ function TrackService(_context, config = {}): Service() constructor {
       return this
     }
 
+    this.rewindFrom = this.time
+    this.rewindTo = timestamp
     this.time = timestamp
     this.track.rewind(timestamp)
     if (!this.track.audio.isLoaded()) {
@@ -126,7 +137,21 @@ function TrackService(_context, config = {}): Service() constructor {
       return this
     }
 
-    this.time = this.track.audio.isLoaded() ? this.track.audio.getPosition() : this.time
+    if (Optional.is(this.rewindFrom) && Optional.is(this.rewindTo)) {
+      var audioPosition = this.track.audio.isLoaded() 
+        ? this.track.audio.getPosition() 
+        : this.time
+      if (audioPosition >= this.rewindTo) {
+        this.time = audioPosition
+        this.rewindFrom = null
+        this.rewindTo = null
+      }
+    } else {
+      this.time = this.track.audio.isLoaded()
+        ? this.track.audio.getPosition()
+        : this.time
+    }
+    
     this.track.update(this.time)
     return this
   }
