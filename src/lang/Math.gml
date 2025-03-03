@@ -65,7 +65,13 @@ function Vector2(_x = 0.0, _y = 0.0) constructor {
 ///@param {Number} _x
 ///@param {Number} _y
 ///@param {Number} _z
-function Vector3(_x = 0.0, _y = 0.0, _z = 0.0): Vector2(_x, _y) constructor {
+function Vector3(_x = 0.0, _y = 0.0, _z = 0.0) constructor {
+
+  ///@type {Number}
+  x = Assert.isType(_x, Number)
+
+  ///@type {Number}
+  y = Assert.isType(_y, Number)
 
   ///@type {Number}
   z = Assert.isType(_z, Number)
@@ -85,7 +91,16 @@ function Vector3(_x = 0.0, _y = 0.0, _z = 0.0): Vector2(_x, _y) constructor {
 ///@param {Number} _y
 ///@param {Number} _z
 ///@param {Number} _a
-function Vector4(_x = 0.0, _y = 0.0, _z = 0.0, _a = 0.0): Vector3(_x, _y, _z) constructor {
+function Vector4(_x = 0.0, _y = 0.0, _z = 0.0, _a = 0.0) constructor {
+
+  ///@type {Number}
+  x = Assert.isType(_x, Number)
+
+  ///@type {Number}
+  y = Assert.isType(_y, Number)
+
+  ///@type {Number}
+  z = Assert.isType(_z, Number)
 
   ///@type {Number}
   a = Assert.isType(_a, Number)
@@ -103,23 +118,23 @@ function Vector4(_x = 0.0, _y = 0.0, _z = 0.0, _a = 0.0): Vector3(_x, _y, _z) co
 
 
 ///@param {Struct} [json]
-function Rectangle(json = {}): Vector4() constructor {
+function Rectangle(json = {}) constructor {
 
   ///@override
   ///@type {Number}
-  x = Assert.isType(Struct.getDefault(json, "x", 0), Number)
+  x = Struct.getIfType(json, "x", Number, 0)
 
   ///@override
   ///@type {Number}
-  y = Assert.isType(Struct.getDefault(json, "y", 0), Number)
+  y = Struct.getIfType(json, "y", Number, 0)
 
   ///@override
   ///@type {Number}
-  z = Assert.isType(Struct.getDefault(json, "width", 0), Number)
+  z = Struct.getIfType(json, "width", Number, 0)
 
   ///@override
   ///@type {Number}
-  a = Assert.isType(Struct.getDefault(json, "height", 0), Number)
+  a = Struct.getIfType(json, "height", Number, 0)
 
   ///@return {Number}
   getX = function() {
