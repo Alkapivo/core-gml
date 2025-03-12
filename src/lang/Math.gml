@@ -117,8 +117,8 @@ function Vector4(_x = 0.0, _y = 0.0, _z = 0.0, _a = 0.0) constructor {
 }
 
 
-///@param {Struct} [json]
-function Rectangle(json = {}) constructor {
+///@param {?Struct} [json]
+function Rectangle(json = null) constructor {
 
   ///@override
   ///@type {Number}
