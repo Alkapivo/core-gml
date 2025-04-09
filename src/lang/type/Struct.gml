@@ -502,7 +502,7 @@ function _Struct() constructor {
       if (Optional.is(Struct.getIfType(defaultValue, "clampFactor", Struct))
           && Optional.is(Struct.getIfType(defaultValue.clampFactor, "from", Number))
           && Optional.is(Struct.getIfType(defaultValue.clampFactor, "to", Number))) {
-        data.target = clamp(data.target, defaultValue.clampFactor.from, defaultValue.clampIncrease.to)
+        data.factor = clamp(data.factor, defaultValue.clampFactor.from, defaultValue.clampFactor.to)
       }
   
       if (Optional.is(Struct.getIfType(defaultValue, "clampIncrease", Struct))
