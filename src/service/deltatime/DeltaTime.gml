@@ -23,9 +23,9 @@ function _DeltaTime() constructor {
 	///@type {Boolean}
 	deltaTimeRestored = false
   
-  ///@param {Number} value
+  ///@param {Number} [value]
   ///@return {Number}
-  static apply = function(value) {
+  static apply = function(value = FRAME_MS) {
     return this.deltaTime * value
   }
 
