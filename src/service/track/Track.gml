@@ -45,6 +45,7 @@ function Track(json, config = null) constructor {
           name: Assert.isType(Struct.get(channel, "name"), String),
           events: Assert.isType(Struct.get(channel, "events"), GMArray),
           index: index,
+          settings: Struct.getIfType(channel, "settings", Struct, { }),
         }, config)
       }
 
