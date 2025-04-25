@@ -85,6 +85,7 @@ function UISliderHorizontal(name, json = null) {
     ///@param {Boolean} [_updateArea]
     ///@return {UIItem}
     update: function(_updateArea = true) {
+      this.updateHidden()
       if (_updateArea && Optional.is(this.updateArea)) {
         this.updateArea()
       }

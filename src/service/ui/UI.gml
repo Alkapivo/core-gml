@@ -15,6 +15,13 @@ function UI(config = {}) constructor {
   ///@type {Boolean}
   enable = Assert.isTrue(Struct.getDefault(config, "enable", true), Boolean)
 
+  ///@type {Struct}
+  hidden = Struct.appendRecursive({
+    value: false,
+    key: null,
+    negate: false,
+  }, Struct.get(config, "hidden"))
+
   ///type {Boolean}
   propagate = Assert.isType(Struct.getDefault(config, "propagate", true), Boolean)
 
@@ -596,6 +603,7 @@ function _UIUtil() constructor {
   updateAreaTemplates = new Map(String, Callable, {
     "applyLayout": function() {
       return function() {
+        this.layout.hidden = this.hidden.value
         this.area.setX(this.layout.x())
         this.area.setY(this.layout.y())
         this.area.setWidth(this.layout.width())
@@ -604,10 +612,17 @@ function _UIUtil() constructor {
     },
     "applyLayoutTextField": function() {
       return function() {
+        this.layout.hidden = this.hidden.value
         this.area.setX(this.layout.x())
         this.area.setY(this.layout.y())
-        this.area.setWidth(max(this.layout.width(), this.textField.style.w_min))
+        this.area.setWidth(this.layout.hidden
+          ? this.layout.width()
+          : max(this.layout.width(), this.textField.style.w_min))
         this.area.setHeight(this.layout.height())
+
+        if (this.layout.hidden) {
+          return
+        }
 
         var _w = this.textField.style.w
         var _h = this.textField.style.h
@@ -977,11 +992,19 @@ function _UIUtil() constructor {
    },
     "renderItemDefault": function() {
       return function(item, iterator, area) {
+        if (item.hidden.value) {
+          return
+        }
+
         item.render()
       }
     },
     "renderItemDefaultScrollable": function() {
       return function(item, iterator, area) {
+        if (item.hidden.value) {
+          return
+        }
+
         var itemX = item.area.x
         var itemY = item.area.y
         var areaX = abs(area.x)
@@ -1248,6 +1271,15 @@ function _UIUtil() constructor {
           : Struct.getIfType(this, "value", String, "{\n  \n}")
       }
     },
+
+    ///@return {Callable}
+    getStringGMArray: function() {
+      return function(value) {
+        return Core.isType(JSON.parse(value), Array)
+          ? value
+          : Struct.getIfType(this, "value", String, "[\n  \n]")
+      }
+    },
   }
 
   ///@param {UI} container
@@ -1272,6 +1304,12 @@ function _UIUtil() constructor {
         return JSON.parse(this.get())
       }
     },
+
+    getStringGMArray: function() {
+      return function() {
+        return JSON.parse(this.get()).getContainer()
+      }
+    },
   }
 
   ///@param {Struct}
@@ -1279,6 +1317,12 @@ function _UIUtil() constructor {
     getStringStruct: function() {
       return function(value) {
         Assert.isType(JSON.parse(value), Struct)
+      }
+    },
+
+    getStringGMArray: function() {
+      return function(value) {
+        Assert.isType(JSON.parse(value), Array)
       }
     },
   }

@@ -14,6 +14,13 @@ function UIItem(_name, config = {}) constructor {
   ///@type {any}
   type = Struct.get(config, "type")
 
+  ///@type {Struct}
+  hidden = Struct.appendRecursive({
+    value: false,
+    key: null,
+    negate: false,
+  }, Struct.get(config, "hidden"))
+
   ///@type {Rectangle}
   area = new Rectangle(Struct.get(config, "area"))
 
@@ -35,16 +42,14 @@ function UIItem(_name, config = {}) constructor {
     : null
 
   ///@type {Boolean}
-  storeSubscribed = Core.isType(Struct.get(config, "storeSubscribed"), Boolean) 
-    ? config.storeSubscribed 
-    : false
+  storeSubscribed = Struct.getIfType(config, "storeSubscribed", Boolean, false) 
 
   ///@type {?Struct}
   component = Struct.getIfType(config, "component", Struct)
 
   ///@type {?GMColor}
   backgroundColor = Optional.is(Struct.getIfType(config, "backgroundColor", String))
-    ? Assert.isType(ColorUtil.parse(config.backgroundColor).toGMColor(), GMColor)
+    ? ColorUtil.parse(config.backgroundColor).toGMColor()
     : null
 
   ///@type {Number}
@@ -60,24 +65,24 @@ function UIItem(_name, config = {}) constructor {
 
   ///@param {Event} event
   ///@return {Boolean}
-  support = method(this, Assert.isType(Struct.getDefault(config, "support", function(event, key, name) {
-    return Core.isType(Struct.get(this, $"on{event.name}"), Callable)
-  }, this.name), Callable))
+  support = method(this, Struct.getIfType(config, "support", Callable, function(event, key, name) {
+    return !this.hidden.value && Core.isType(Struct.get(this, $"on{event.name}"), Callable)
+  }))
 
   ///@param {Event} event
   ///@return {?Callable}
-  fetchEventPump = method(this, Assert.isType(Struct.getDefault(config, "fetchEventPump", function(event) {
+  fetchEventPump = method(this, Struct.getIfType(config, "fetchEventPump", Callable, function(event) {
     return this.support(event) ? Struct.get(this, $"on{event.name}") : null
-  }), Callable))
+  }))
 
   ///@param {any} event
   ///@return {Boolean}
-  collide = method(this, Assert.isType(Struct.getDefault(config, "collide", function(event) {
-    return this.area.collide(
+  collide = method(this, Struct.getIfType(config, "collide", Callable, function(event) {
+    return !this.hidden.value && this.area.collide(
       Struct.get(event.data, "x") - this.context.area.getX() - this.context.offset.x, 
       Struct.get(event.data, "y") - this.context.area.getY() - this.context.offset.y
     )
-  }), Callable))
+  }))
 
   updateArea = Struct.contains(config, "updateArea")
     ? method(this, Assert.isType(Struct.get(config, "updateArea"), Callable))
@@ -102,11 +107,38 @@ function UIItem(_name, config = {}) constructor {
       }
     }
 
+  updateHidden = function() {
+    if (!Optional.is(this.hidden.key)
+        || !Core.isType(Struct.get(this.context, "state"), Map)) {
+      return
+    }
+
+    var store = this.context.state.get("store")
+    if (!Core.isType(store, Store)) {
+      return
+    }
+
+    var item = store.get(this.hidden.key)
+    if (!Core.isType(item, StoreItem)) {
+      return
+    }
+
+    var value = this.hidden.negate ? !item.get() : item.get()
+    if (value == this.hidden.value) {
+      return
+    }
+
+    this.hidden.value = value
+    this.context.areaWatchdog.signal()
+    this.context.clampUpdateTimer(0.9500)
+  }
+  
   ///@param {Boolean} [_updateArea]
   ///@return {UIItem}
   update = Struct.contains(config, "update")
     ? Assert.isType(method(this, config.update), Callable)
     : function(_updateArea = true) {
+      this.updateHidden()
       if (_updateArea && Optional.is(this.updateArea)) {
         this.updateArea()
       }
@@ -131,12 +163,12 @@ function UIItem(_name, config = {}) constructor {
       return this
     }
 
-  free = method(this, Assert.isType(Struct.getDefault(config, "free", function() {
+  free = method(this, Struct.getIfType(config, "free", Callable, function() {
     if (Optional.is(this.store)) {
       this.store.unsubscribe()
       this.storeSubscribed = false
     }
-  }), Callable))
+  }))
 
   ///@type {?Callable}
   preRender = Struct.contains(config, "preRender")
@@ -149,7 +181,7 @@ function UIItem(_name, config = {}) constructor {
     : null
   
   ///@return {UIItem}
-  render = method(this, Assert.isType(Struct.getDefault(config, "render", function() {
+  render = method(this, Struct.getIfType(config, "render", Callable, function() {
     if (Optional.is(this.preRender)) {
       this.preRender()
     }
@@ -158,7 +190,7 @@ function UIItem(_name, config = {}) constructor {
       this.postRender()
     }
     return this
-  }), Callable))
+  }))
 
   ///@description append mouse events
   Struct.forEach(config, function(value, key, button) {

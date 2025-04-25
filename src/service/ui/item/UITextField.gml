@@ -69,6 +69,7 @@ function UITextField(name, json = null) {
     ///@param {Boolean} [_updateArea]
     ///@return {UIItem}
     update: Struct.getDefault(json, "update", function(_updateArea = true) {
+      this.updateHidden()
       if (_updateArea && Optional.is(this.updateArea)) {
         this.updateArea()
       }
@@ -105,13 +106,18 @@ function UITextField(name, json = null) {
         }
       }
 
+      if (this.hidden.value && this.textField.isFocused()) {
+        this.textField.unfocus()
+      }
+      
       var _w = this.textField.style.w
       var _h = this.textField.style.h
-      this.textField.style.w = this.area.getWidth()
-      if (this.textField.style.v_grow) {
+      this.textField.style.w = !this.hidden.value ? this.area.getWidth() : this.textField.style.w
+      if (!this.hidden.value && this.textField.style.v_grow) {
         if (this.area.getHeight() != this.textField.style.h) {
           this.area.setHeight(this.textField.style.h)
           if (Optional.is(this.context)) {
+            Core.print("this.textField.style.h", this.textField.style.h)
             this.context.areaWatchdog.signal()
             this.context.clampUpdateTimer(0.9500)
           }
@@ -121,13 +127,12 @@ function UITextField(name, json = null) {
         if (Optional.is(Struct.get(layout, "setHeight"))) {
           layout.setHeight(this.textField.style.h)
         }
-      } else {
+      } else if (!this.hidden.value) {
         this.textField.style.h = this.area.getHeight()
       }
 
       if (this.textField.style.w != _w || this.textField.style.h != _h) {
         this.textField.updateStyle()
-        
       }
       
       if (Optional.is(this.context.surface)) {
@@ -138,6 +143,12 @@ function UITextField(name, json = null) {
       var text = this.textField.getText()
       if (!this.textField.isFocused() && this.value != text) {
         this.updateValue(text)
+      }
+
+      if (this.hidden.value) {
+        //Core.print("disable", "w", this.area.getWidth(), "h", this.area.getHeight(), "_w", this.textField.style.w, "_h", this.textField.style.h)
+      } else if (this.textField.style.v_grow) {
+        //Core.print("enable", "w", this.area.getWidth(), "h", this.area.getHeight(), "_w", this.textField.style.w, "_h", this.textField.style.h)
       }
       return this
     }),
