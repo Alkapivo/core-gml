@@ -742,6 +742,25 @@ function _GMArray() constructor {
     gml_pragma("forceinline")
     return Core.isType(value, GMArray) ? GMArray.getRandom(value) : value
   }
+
+  ///@param {GMArray} array
+  ///@param {?Callable} [callback]
+  ///@param {any} [acc]
+  ///@return {GMArray}
+  static clone = function(array, callback = null, acc = null) {
+    var size = array_length(array)
+    var cloned = array_create(size)
+
+    if (Optional.is(callback)) {
+      for (var index = 0; index < size; index++) {
+        cloned[index] = callback(array[index], index, acc)
+      }
+    } else {
+      array_copy(cloned, 0, array, 0, size);
+    }
+    
+    return cloned
+  }
 }
 global.__GMArray = new _GMArray()
 #macro GMArray global.__GMArray
