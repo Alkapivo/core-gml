@@ -15,12 +15,14 @@ function UI(config = {}) constructor {
   ///@type {Boolean}
   enable = Assert.isTrue(Struct.getDefault(config, "enable", true), Boolean)
 
+  var _hidden = Struct.get(config, "hidden")
   ///@type {Struct}
-  hidden = Struct.appendRecursive({
-    value: false,
-    key: null,
-    negate: false,
-  }, Struct.get(config, "hidden"))
+  hidden = {
+    value: Struct.getDefault(_hidden, "value", false),
+    key: Struct.getDefault(_hidden, "key", null),
+    keys: Struct.getDefault(_hidden, "keys", null),
+    negate: Struct.getDefault(_hidden, "negate", false),
+  }
 
   ///type {Boolean}
   propagate = Assert.isType(Struct.getDefault(config, "propagate", true), Boolean)

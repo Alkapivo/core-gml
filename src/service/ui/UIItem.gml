@@ -14,21 +14,29 @@ function UIItem(_name, config = {}) constructor {
   ///@type {any}
   type = Struct.get(config, "type")
 
+  var _hidden = Struct.get(config, "hidden")
   ///@type {Struct}
-  hidden = Struct.appendRecursive({
-    value: false,
-    key: null,
-    negate: false,
-  }, Struct.get(config, "hidden"))
+  hidden = {
+    value: Struct.getDefault(_hidden, "value", false),
+    key: Struct.getDefault(_hidden, "key", null),
+    keys: Struct.getDefault(_hidden, "keys", null),
+    negate: Struct.getDefault(_hidden, "negate", false),
+  }
+
+  var _enable = Struct.get(config, "enable")
+  ///@type {Struct}
+  enable  = {
+    value: Struct.getDefault(_enable, "value", true),
+    key: Struct.getDefault(_enable, "key", null),
+    keys: Struct.getDefault(_enable, "keys", null),
+    negate: Struct.getDefault(_enable, "negate", false),
+  }
 
   ///@type {Rectangle}
   area = new Rectangle(Struct.get(config, "area"))
 
   ///@type {Margin}
   margin = new Margin(Struct.get(config, "margin"))
-
-  ///@type {?Struct}
-  enable = Struct.getIfType(config, "enable", Struct)
 
   ///@type {Boolean}
   isHoverOver = false
@@ -108,27 +116,54 @@ function UIItem(_name, config = {}) constructor {
     }
 
   updateHidden = function() {
-    if (!Optional.is(this.hidden.key)
-        || !Core.isType(Struct.get(this.context, "state"), Map)) {
+    if (!Core.isType(Struct.get(this.context, "state"), Map)) {
       return
     }
 
     var store = this.context.state.get("store")
-    if (!Core.isType(store, Store)) {
+    if (!Optional.is(store)) {
       return
     }
 
-    var item = store.get(this.hidden.key)
-    if (!Core.isType(item, StoreItem)) {
-      return
+    if (Core.isType(this.hidden.keys, GMArray)) {
+      var isValid = true
+      var size = GMArray.size(this.hidden.keys)
+      for (var index = 0; index < size; index++) {
+        var entry = this.hidden.keys[index]
+        var item = store.get(entry.key)
+        if (!Optional.is(item)) {
+          continue
+        }
+
+        var value = Struct.getDefault(entry, "negate", false) ? !item.get() : item.get()
+        if (!value) {
+          isValid = false
+        }
+      }
+
+      if (this.hidden.value == !isValid) {
+        return
+      }
+
+      this.hidden.value = !isValid
+    } else {
+      if (!Optional.is(this.hidden.key)) {
+        return
+      }
+
+      var item = store.get(this.hidden.key)
+      if (!Optional.is(item)) {
+        return
+      }
+
+      var value = this.hidden.negate ? !item.get() : item.get()
+      if (value == this.hidden.value) {
+        return
+      }
+  
+      this.hidden.value = value
     }
 
-    var value = this.hidden.negate ? !item.get() : item.get()
-    if (value == this.hidden.value) {
-      return
-    }
-
-    this.hidden.value = value
     this.context.areaWatchdog.signal()
     this.context.clampUpdateTimer(0.9500)
   }
@@ -269,8 +304,10 @@ function _UIItemUtils() constructor {
           return
         }
 
-        Struct.set(this.enable, "value", Struct.get(this.enable, "negate") 
-          ? !item.get() : item.get())
+        var value = Struct.getDefault(this.enable, "negate", false) ? !item.get() : item.get()
+        if (Struct.get(this.enable, "value") != value) {
+          Struct.set(this.enable, "value", value)
+        }
       }
     },
     "updateEnableKeys": function() {
@@ -290,22 +327,25 @@ function _UIItemUtils() constructor {
           return
         }
 
-        Struct.set(this.enable, "value", false)
-        for (var index = 0; index < GMArray.size(keys); index++) {
+        var isValid = true
+        var size = GMArray.size(keys)
+        for (var index = 0; index < size; index++) {
           var entry = keys[index]
           var item = store.get(entry.key)
-          if (!Core.isType(item, StoreItem)) {
-            return
+          if (!Optional.is(item)) {
+            continue
           }
 
-          var result = Struct.get(this.enable, "negate") 
-            ? item.get() : !item.get()
-          if (result) {
-            return
+          var value = Struct.getDefault(entry, "negate", false) ? !item.get() : item.get()
+          if (!value) {
+            isValid = false
+            break
           }
         }
 
-        Struct.set(this.enable, "value", true)
+        if (Struct.get(this.enable, "value") != isValid) {
+          Struct.set(this.enable, "value", isValid)
+        }
       }
     },
   })
