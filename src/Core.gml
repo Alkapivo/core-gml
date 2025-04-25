@@ -334,6 +334,21 @@ function _Core() constructor {
     gml_pragma("forceinline")
     return Core.isEnum(value, type) ? value : defaultValue
   }
+
+  ///@return {Array<Number>}
+  static fetchAARange = function() {
+    if (display_aa == 2) {
+      return new Array(Number, [ 0, 2 ])
+    } else if (display_aa == 6) {
+      return new Array(Number, [ 0, 2, 4 ])
+    } else if (display_aa == 12) {
+      return new Array(Number, [ 0, 4, 8 ])
+    } else if (display_aa == 14) {
+      return new Array(Number, [ 0, 2, 4, 8 ])
+    } else  {
+      return new Array(Number, [ 0 ])
+    }
+  }
 }
 global.__Core = new _Core()
 #macro Core global.__Core
