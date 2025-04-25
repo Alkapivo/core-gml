@@ -133,15 +133,24 @@ function UILayout(config, _context = null) constructor {
   ///@return {Number}
   y = method(this, Optional.is(Struct.getIfType(config, "y", Callable)) ? config.y : this.parseY())
 
+  ///@type {Boolean}
+  hidden = Struct.getIfType(config, "hidden", Boolean, false)
+
   ///@return {Number}
-  width = method(this, Struct.getIfType(config, "width", Callable, Optional.is(this.context)
+  proxyWidth = method(this, Struct.getIfType(config, "width", Callable, Optional.is(this.context)
     ? function() { return this.context.width() - this.margin.left - this.margin.right }
     : function() { return 0 } ))
 
   ///@return {Number}
-  height = method(this, Struct.getIfType(config, "height", Callable, Optional.is(this.context)
+  proxyHeight = method(this, Struct.getIfType(config, "height", Callable, Optional.is(this.context)
     ? function() { return this.context.height() - this.margin.top - this.margin.bottom }
     : function() { return 0 } ))
+
+  ///@return {Number}
+  width = function() { return this.hidden ? 0.0 : this.proxyWidth() }
+
+  ///@return {Number}
+  height = function() { return this.hidden ? 0.0 : this.proxyHeight() }
   
   ///@return {Number}
   left = method(this, Struct.getIfType(config, "left", Callable, function() {
