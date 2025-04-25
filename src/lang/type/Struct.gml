@@ -485,6 +485,8 @@ function _Struct() constructor {
         target: Struct.getIfType(_struct, "target", Number, Struct.getIfType(defaultValue, "target", Number, 0.0)),
         factor: Struct.getIfType(_struct, "factor", Number, Struct.getIfType(defaultValue, "factor", Number, 0.0)),
         increase: Struct.getIfType(_struct, "increase", Number, Struct.getIfType(defaultValue, "increase", Number, 0.0)),
+        duration: Struct.getIfType(_struct, "duration", Number, Struct.getIfType(defaultValue, "duration", Number, 0.0)),
+        ease: Struct.getIfType(_struct, "ease", String, Struct.getIfType(defaultValue, "ease", String, EaseType.LEGACY)),
       }
 
       if (Optional.is(Struct.getIfType(defaultValue, "clampValue", Struct))
@@ -509,6 +511,12 @@ function _Struct() constructor {
           && Optional.is(Struct.getIfType(defaultValue.clampIncrease, "from", Number))
           && Optional.is(Struct.getIfType(defaultValue.clampIncrease, "to", Number))) {
         data.increase = clamp(data.increase, defaultValue.clampIncrease.from, defaultValue.clampIncrease.to)
+      }
+
+      if (Optional.is(Struct.getIfType(defaultValue, "clampDuration", Struct))
+          && Optional.is(Struct.getIfType(defaultValue.clampDuration, "from", Number))
+          && Optional.is(Struct.getIfType(defaultValue.clampDuration, "to", Number))) {
+        data.duration = clamp(data.duration, defaultValue.clampDuration.from, defaultValue.clampDuration.to)
       }
   
       return new NumberTransformer(data)

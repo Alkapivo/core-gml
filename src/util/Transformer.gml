@@ -146,6 +146,29 @@ function NumberTransformer(json = null) constructor {
 
   ///@type {Number}
   increase = Struct.getIfType(json, "increase", Number, 0.0)
+
+  ///@type {Number}
+  size = this.target - this.value
+
+  ///@type {EaseType}
+  easeType = Struct.getIfType(json, "ease", String, EaseType.LEGACY)
+
+  ///@type {Callable}
+  ease = Ease.get(this.easeType)
+  
+  ///@type {Number}
+  duration = Struct.getIfType(json, "duration", Number, 1.0)
+  if (this.easeType == EaseType.LEGACY) {
+    this.duration = this.factor != 0.0
+      ? (abs(this.value - this.target) / abs(this.factor)) / GAME_FPS
+      : this.duration
+  }
+  
+  ///@type {Number}
+  time = Struct.getIfType(json, "time", Number, 0.0)
+
+  ///@type {Number}
+  startTime = this.time
   
   ///@return {any}
   static get = function() {
@@ -160,7 +183,23 @@ function NumberTransformer(json = null) constructor {
   }
   
   ///@return {NumberTransformer}
-  static update = function() {
+  static updateNew = function() {
+    if (this.finished) {
+      return this
+    }
+
+    this.time += DeltaTime.apply()
+    if (this.time >= this.duration) {
+      this.finished = true
+      this.time = this.duration
+    }
+    this.value = this.startValue + (this.size * this.ease((this.duration == 0.0 ? 0.0 : (this.time / this.duration))))
+
+    return this
+  }
+
+  ///@return {NumberTransformer}
+  static updateLegacy = function() {
     if (this.finished) {
       return this
     }
@@ -171,7 +210,13 @@ function NumberTransformer(json = null) constructor {
     if (this.value == this.target) {
       this.finished = true
     }
+
     return this
+  }
+
+  ///@return {NumberTransformer}
+  static update = function() {
+    return this.easeType == EaseType.LEGACY ? this.updateLegacy() : this.updateNew()
   }
 
   ///@return {Struct}
@@ -181,6 +226,8 @@ function NumberTransformer(json = null) constructor {
       target: this.target,
       factor: this.factor,
       increase: this.increase,
+      duration: this.duration,
+      ease: this.easeType,
     }
   }
 
@@ -189,6 +236,15 @@ function NumberTransformer(json = null) constructor {
     this.finished = false 
     this.value = this.startValue
     this.factor = this.startFactor
+    this.time = this.startTime
+    this.size = this.target - this.value
+    this.ease = Ease.get(this.easeType)
+    if (this.easeType == EaseType.LEGACY) {
+      this.duration = this.factor != 0.0
+        ? (abs(this.value - this.target) / abs(this.factor)) / GAME_FPS
+        : this.duration
+    }
+    
     return this
   }
 }
