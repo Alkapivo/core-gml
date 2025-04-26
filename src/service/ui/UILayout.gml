@@ -75,13 +75,13 @@ function UILayout(config, _context = null) constructor {
   static parseX = function() {
     gml_pragma("forceinline")
     if (this.context == null) {
-      return function() { return this.margin.left }
+      return function() { return this.margin().left }
     } 
 
     switch (this.type) {
       case UILayoutType.HORIZONTAL: return function() { return this.context.right() 
-        + this.margin.left }
-      default: return function() { return this.context.x() + this.margin.left }
+        + this.margin().left }
+      default: return function() { return this.context.x() + this.margin().left }
     }
   }
 
@@ -90,13 +90,13 @@ function UILayout(config, _context = null) constructor {
   static parseY = function() {
     gml_pragma("forceinline")
     if (this.context == null) {
-      return function() { return this.margin.top }
+      return function() { return this.margin().top }
     }
 
     switch (this.type) {
       case UILayoutType.VERTICAL: return function() { return this.context.bottom() 
-        + this.margin.top }
-      default: return function() { return this.context.y() + this.margin.top }
+        + this.margin().top }
+      default: return function() { return this.context.y() + this.margin().top }
     }
   }
 
@@ -120,13 +120,52 @@ function UILayout(config, _context = null) constructor {
 
   ///@type {UILayoutType}
   type = Struct.getIfEnum(config, "type", UILayoutType, UILayoutType.NONE)
-  
+
+  ///@type {UILayoutType}
+  orientation = Optional.is(this.type) && this.type != UILayoutType.NONE
+    ? this.type
+    : (Optional.is(Struct.get(this.context, "type")) && Struct.get(this.context, "type") != UILayoutType.NONE
+      ? this.context.type
+      : UILayoutType.VERTICAL)
+
   ///@type {?String}
   name = Struct.getIfType(config, "name", String)
 
-  ///@return {Margin}
-  margin = new Margin(Struct.getIfType(config, "margin", Struct))
+  ///@type {Margin}
+  marginHidden = new Margin()
   
+  ///@type {Margin}
+  marginRef = new Margin(Struct.getIfType(config, "margin", Struct))
+
+  ///@return {Margin}
+  margin = function() {
+    if (this.hidden) {
+      switch (this.type) {
+        case UILayoutType.VERTICAL:
+          this.marginHidden.top = 0
+          this.marginHidden.bottom = 0
+          this.marginHidden.left = this.marginRef.left
+          this.marginHidden.right = this.marginRef.right
+          break
+        case UILayoutType.HORIZONTAL:
+          this.marginHidden.top = this.marginRef.top
+          this.marginHidden.bottom = this.marginRef.bottom
+          this.marginHidden.left = 0
+          this.marginHidden.right = 0
+          break
+        default:
+          this.marginHidden.top = 0
+          this.marginHidden.bottom = 0
+          this.marginHidden.left = 0
+          this.marginHidden.right = 0
+          break
+      }
+      return this.marginHidden
+    } else {
+      return this.marginRef
+    }
+  }
+
   ///@return {Number}
   x = method(this, Optional.is(Struct.getIfType(config, "x", Callable)) ? config.x : this.parseX())
 
@@ -136,40 +175,59 @@ function UILayout(config, _context = null) constructor {
   ///@type {Boolean}
   hidden = Struct.getIfType(config, "hidden", Boolean, false)
 
+  ///@type {Boolean}
+  propagateHidden = Struct.getIfType(config, "propagateHidden", Boolean, false)
+
+  ///@param {Boolean} hidden
+  ///@return {UILayer}
+  updateHidden = function(hidden) {
+    static updateNodeHidden = function(node, key, hidden) {
+      node.hidden = hidden
+    }
+
+    this.hidden = hidden
+    this.fetchNodes().forEach(updateNodeHidden, hidden)
+    if (this.propagateHidden && Optional.is(this.context)) {
+      this.context.updateHidden(hidden)
+    }
+
+    return this
+  }
+
   ///@return {Number}
   proxyWidth = method(this, Struct.getIfType(config, "width", Callable, Optional.is(this.context)
-    ? function() { return this.context.width() - this.margin.left - this.margin.right }
+    ? function() { return this.context.width() - this.margin().left - this.margin().right }
     : function() { return 0 } ))
 
   ///@return {Number}
   proxyHeight = method(this, Struct.getIfType(config, "height", Callable, Optional.is(this.context)
-    ? function() { return this.context.height() - this.margin.top - this.margin.bottom }
+    ? function() { return this.context.height() - this.margin().top - this.margin().bottom }
     : function() { return 0 } ))
 
   ///@return {Number}
-  width = function() { return this.hidden ? 0.0 : this.proxyWidth() }
+  width = function() { return this.hidden && this.orientation == UILayoutType.HORIZONTAL ? 0.0 : this.proxyWidth() }
 
   ///@return {Number}
-  height = function() { return this.hidden ? 0.0 : this.proxyHeight() }
+  height = function() { return this.hidden && this.orientation == UILayoutType.VERTICAL ? 0.0 : this.proxyHeight() }
   
   ///@return {Number}
   left = method(this, Struct.getIfType(config, "left", Callable, function() {
-    return this.x() - this.margin.left
+    return this.x() - this.margin().left
   }))
 
   ///@return {Number}
   top = method(this, Struct.getIfType(config, "top", Callable, function() {
-    return this.y() - this.margin.top
+    return this.y() - this.margin().top
   }))
 
   ///@return {Number}
   right = method(this, Struct.getIfType(config, "right", Callable, function() {
-    return this.x() + this.width() + this.margin.right
+    return this.x() + this.width() + this.margin().right
   }))
   
   ///@return {Number}
   bottom = method(this, Struct.getIfType(config, "bottom", Callable, function() {
-    return this.y() + this.height() + this.margin.bottom
+    return this.y() + this.height() + this.margin().bottom
   }))
 
   ///@type {?Struct}
@@ -181,6 +239,16 @@ function UILayout(config, _context = null) constructor {
   ///@type {Struct}
   nodes = this.parseNodes(config, this)
 
+  ///@return {Map<String, UILayout>}
+  fetchNodes = function() {
+    var nodeMap = Struct.get(this, "nodeMap")
+    if (!Optional.is(nodeMap)) {
+      nodeMap = Struct.toMap(this.nodes, String, UILayout)
+      Struct.set(this, "nodeMap", nodeMap)
+    }
+    return nodeMap
+  }
+  
   Struct.appendUnique(this, config, true)
 }
 
@@ -198,6 +266,27 @@ function _UILayoutUtil() constructor {
       var acc = { height: 0 }
       Struct.forEach(this.nodes, sumHeight, acc)
       return acc.height
+    }
+  }
+
+  ///@return {Callable}
+  areNodesHidden = function() {
+    return function() {
+      var nodeKeys = Struct.get(this, "nodeKeys")
+      if (!Optional.is(nodeKeys)) {
+        nodeKeys = Struct.keys(this.nodes)
+        Struct.set(this, "nodeKeys", nodeKeys)
+      }
+      
+      var size = GMArray.size(nodeKeys)
+      for (var index = 0; index < size; index++) {
+        var node = Struct.get(this.nodes, this.nodeKeys[index])
+        if (!node.hidden) {
+          return false
+        }
+      }
+
+      return true
     }
   }
 }
@@ -282,13 +371,13 @@ function UILayout(config, _context = null) constructor {
   ///@return {Callable}
   static parseX = function() {
     if (this.context == null) {
-      return function() { return this.margin.left }
+      return function() { return this.margin().left }
     } 
 
     switch (this.type) {
       case UILayoutType.HORIZONTAL: return function() { return this.context.right() 
-        + this.margin.left }
-      default: return function() { return this.context.x() + this.margin.left }
+        + this.margin().left }
+      default: return function() { return this.context.x() + this.margin().left }
     }
   }
 
@@ -296,13 +385,13 @@ function UILayout(config, _context = null) constructor {
   ///@return {Callable}
   static parseY = function() {
     if (this.context == null) {
-      return function() { return this.margin.top }
+      return function() { return this.margin().top }
     }
 
     switch (this.type) {
       case UILayoutType.VERTICAL: return function() { return this.context.bottom() 
-        + this.margin.top }
-      default: return function() { return this.context.y() + this.margin.top }
+        + this.margin().top }
+      default: return function() { return this.context.y() + this.margin().top }
     }
   }
 
@@ -360,32 +449,32 @@ function UILayout(config, _context = null) constructor {
 
   ///@return {Number}
   ____width = method(this, Struct.getIfType(config, "width", Callable, Optional.is(this.context)
-    ? function() { return this.context.width() - this.margin.left - this.margin.right }
+    ? function() { return this.context.width() - this.margin().left - this.margin().right }
     : function() { return 0 } ))
 
   ///@return {Number}
   ____height = method(this, Struct.getIfType(config, "height", Callable, Optional.is(this.context)
-    ? function() { return this.context.height() - this.margin.top - this.margin.bottom }
+    ? function() { return this.context.height() - this.margin().top - this.margin().bottom }
     : function() { return 0 } ))
   
   ///@return {Number}
   left = method(this, Struct.getIfType(config, "left", Callable, function() {
-    return this.x() - this.margin.left
+    return this.x() - this.margin().left
   }))
 
   ///@return {Number}
   top = method(this, Struct.getIfType(config, "top", Callable, function() {
-    return this.y() - this.margin.top
+    return this.y() - this.margin().top
   }))
 
   ///@return {Number}
   right = method(this, Struct.getIfType(config, "right", Callable, function() {
-    return this.x() + this.width() + this.margin.right
+    return this.x() + this.width() + this.margin().right
   }))
   
   ///@return {Number}
   bottom = method(this, Struct.getIfType(config, "bottom", Callable, function() {
-    return this.y() + this.height() + this.margin.bottom
+    return this.y() + this.height() + this.margin().bottom
   }))
 
   ///@type {?Struct}

@@ -164,7 +164,7 @@ function UIItem(_name, config = {}) constructor {
       this.hidden.value = value
     }
 
-    this.context.areaWatchdog.signal()
+    this.context.areaWatchdog.signal(2)
     this.context.clampUpdateTimer(0.9500)
   }
   

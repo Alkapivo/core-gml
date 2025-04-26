@@ -126,6 +126,7 @@ function _Core() constructor {
       }
     } catch (exception) {
       Logger.error("Core.isType", $"'{type}' Fatal error: {exception.message}")
+      Core.printStackTrace()
     }
     return false
   }

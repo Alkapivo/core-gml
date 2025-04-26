@@ -117,8 +117,7 @@ function UITextField(name, json = null) {
         if (this.area.getHeight() != this.textField.style.h) {
           this.area.setHeight(this.textField.style.h)
           if (Optional.is(this.context)) {
-            Core.print("this.textField.style.h", this.textField.style.h)
-            this.context.areaWatchdog.signal()
+            this.context.areaWatchdog.signal(2)
             this.context.clampUpdateTimer(0.9500)
           }
         }

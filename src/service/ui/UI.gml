@@ -131,13 +131,17 @@ function UI(config = {}) constructor {
     name: this.name,
     value: false,
     force: false,
+    delay: 0,
     area: new Rectangle({ width: -1, height: -1 }),
-    signal: function() {
+    signal: function(delay = null) {
       this.force = true
+      this.delay = delay == null ? this.delay : delay
       return this
     },
     get: function() {
-      return this.value || this.force
+      var result = this.value || this.force || this.delay > 0
+      this.delay = clamp(this.delay - 1, 0, 10)
+      return result
     },
     update: function(area) {
       var force = this.force
@@ -170,6 +174,9 @@ function UI(config = {}) constructor {
       //}
       var updateItemArea = this.areaWatchdog.update(this.area).get()
       this.items.forEach(this.updateItem, updateItemArea)
+      if (this.areaWatchdog.delay > 0) {
+        this.clampUpdateTimer(0.9500)
+      }
     }
 
   hoverItem = null
@@ -605,7 +612,7 @@ function _UIUtil() constructor {
   updateAreaTemplates = new Map(String, Callable, {
     "applyLayout": function() {
       return function() {
-        this.layout.hidden = this.hidden.value
+        this.layout.updateHidden(this.hidden.value)
         this.area.setX(this.layout.x())
         this.area.setY(this.layout.y())
         this.area.setWidth(this.layout.width())
@@ -614,7 +621,7 @@ function _UIUtil() constructor {
     },
     "applyLayoutTextField": function() {
       return function() {
-        this.layout.hidden = this.hidden.value
+        this.layout.updateHidden(this.hidden.value)
         this.area.setX(this.layout.x())
         this.area.setY(this.layout.y())
         this.area.setWidth(this.layout.hidden
