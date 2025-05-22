@@ -136,8 +136,9 @@ function UIItem(_name, config = {}) constructor {
         }
 
         var value = Struct.getDefault(entry, "negate", false) ? !item.get() : item.get()
-        if (!value) {
+        if (value) {
           isValid = false
+          break
         }
       }
 
@@ -146,6 +147,8 @@ function UIItem(_name, config = {}) constructor {
       }
 
       this.hidden.value = !isValid
+      this.context.areaWatchdog.signal(1)
+      this.context.clampUpdateTimer(0.9000)
     } else {
       if (!Optional.is(this.hidden.key)) {
         return
@@ -162,33 +165,100 @@ function UIItem(_name, config = {}) constructor {
       }
   
       this.hidden.value = value
+      this.context.areaWatchdog.signal(1)
+      this.context.clampUpdateTimer(0.9000)
+    }
+  }
+
+  updateStore = function() {
+    if (Optional.is(this.store)) {
+      this.store.subscribe()
     }
 
-    this.context.areaWatchdog.signal(2)
-    this.context.clampUpdateTimer(0.9500)
+    if (!Core.isType(Struct.get(this.context, "state"), Map)) {
+      return
+    }
+
+    var store = this.context.state.get("store")
+    if (!Optional.is(store)) {
+      return
+    }
+
+    if (Core.isType(this.hidden.keys, GMArray)) {
+      for (var index = 0; index < GMArray.size(this.hidden.keys); index++) {
+        var entry = this.hidden.keys[index]
+        var item = store.get(entry.key)
+        if (Optional.is(item)) {
+          item.addSubscriber({
+            name: $"{this.name}",
+            overrideSubscriber: true,
+            callback: this.updateHidden,
+            data: this
+          })
+        }
+      }
+    } else if (Core.isType(this.hidden.key, String)) {
+      var item = store.get(this.hidden.key)
+      if (Optional.is(item)) {
+        item.addSubscriber({
+          name: $"{this.name}",
+          overrideSubscriber: true,
+          callback: this.updateHidden,
+          data: this,
+        })
+      }
+    }
+
+    if (this.updateEnable != null && Core.isType(this.enable.keys, GMArray)) {
+      for (var index = 0; index < GMArray.size(this.enable.keys); index++) {
+        var entry = this.enable.keys[index]
+        var item = store.get(entry.key)
+        if (Optional.is(item)) {
+          item.addSubscriber({
+            name: $"{this.name}",
+            overrideSubscriber: true,
+            callback: this.updateEnable,
+            data: this,
+          })
+        }
+      }
+    } else if (this.updateEnable != null && Core.isType(this.enable.key, String)) {
+      var item = store.get(this.enable.key)
+      if (Optional.is(item)) {
+        item.addSubscriber({
+          name: $"{this.name}",
+          overrideSubscriber: true,
+          callback: this.updateEnable,
+          data: this,
+        })
+      }
+    }
   }
-  
+
   ///@param {Boolean} [_updateArea]
   ///@return {UIItem}
   update = Struct.contains(config, "update")
     ? Assert.isType(method(this, config.update), Callable)
-    : function(_updateArea = true) {
-      this.updateHidden()
-      if (_updateArea && Optional.is(this.updateArea)) {
-        this.updateArea()
-      }
+    : function(_updateArea = false) {
+      if (_updateArea) {
+        this.updateHidden()
 
-      if (Optional.is(this.updateEnable)) {
-        this.updateEnable()
+        if (Optional.is(this.updateArea)) {
+          this.updateArea()
+        }
+  
+        if (Optional.is(this.updateEnable)) {
+          this.updateEnable()
+        }
       }
 
       if (Optional.is(this.updateCustom)) {
         this.updateCustom()
       }
 
-      if (!storeSubscribed && Optional.is(this.store)) {
-        this.store.subscribe()
+      if (!storeSubscribed) {
         this.storeSubscribed = true
+        this.updateStore()
       }
 
       if (this.isHoverOver) {
@@ -307,6 +377,8 @@ function _UIItemUtils() constructor {
         var value = Struct.getDefault(this.enable, "negate", false) ? !item.get() : item.get()
         if (Struct.get(this.enable, "value") != value) {
           Struct.set(this.enable, "value", value)
+          this.context.areaWatchdog.signal(1)
+          this.context.clampUpdateTimer(0.9000)
         }
       }
     },
@@ -345,6 +417,8 @@ function _UIItemUtils() constructor {
 
         if (Struct.get(this.enable, "value") != isValid) {
           Struct.set(this.enable, "value", isValid)
+          this.context.areaWatchdog.signal(1)
+          this.context.clampUpdateTimer(0.9000)
         }
       }
     },

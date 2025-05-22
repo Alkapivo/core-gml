@@ -26,6 +26,7 @@ function _DeltaTime() constructor {
   ///@param {Number} [value]
   ///@return {Number}
   static apply = function(value = FRAME_MS) {
+    gml_pragma("forceinline")
     return this.deltaTime * value
   }
 

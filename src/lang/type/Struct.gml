@@ -94,6 +94,18 @@ function _Struct() constructor {
   }
 
   ///@param {?Struct} struct
+  ///@param {any} key
+  ///@param {any} value
+  ///@param {Type} type
+  ///@return {?Struct}
+  static setIfType = function(struct, key, value, type) {
+    gml_pragma("forceinline")
+    return Core.isType(value, type)
+      ? Struct.set(struct, key, value)
+      : struct
+  }
+
+  ///@param {?Struct} struct
   ///@return {Number}
   static size = function(struct) {
     gml_pragma("forceinline")

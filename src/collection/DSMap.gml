@@ -1,24 +1,12 @@
 ///@package io.alkapivo.core.collection
 
+#macro GMMap "GMMap"
+
+
 ///@param {Type} _keyType
 ///@param {Type} _valueType
 ///@param {?Struct} [_container]
-///@param {?Struct} [config]
-function Map(_keyType = any, _valueType = any, _container = null) constructor {
-
-  ///@private
-  _acc = null
-
-  ///@private
-  ///@type {?Callable}
-  _callback = null
-
-  ///@private
-  ///@param {any} key
-  ///@param {any} value
-  _forEachWrapper = function(key, value) {
-    this._callback(value, key, this._acc)
-  }
+function DSMap(_keyType = any, _valueType = any, _container = null) constructor {
 
   ///@type {?Type}
   keyType = _keyType
@@ -27,33 +15,37 @@ function Map(_keyType = any, _valueType = any, _container = null) constructor {
   valueType = _valueType
 
   ///@private
-  ///@type {Struct}
-  container = typeof(_container) == "struct" ? _container : {}
-
-  ///@private
   ///@type {Array}
   _keys = new Array(_keyType)
 
-  ///@test MapTest.test_map_get
+  ///@private
+  ///@type {GMMap}
+  container = ds_map_create()
+  if (_container != null && Core.isType(_container, Struct)) {
+    Struct.forEach(_container, function(value, key, container) {
+      container[? key] = value
+    }, this.container)
+  }
+
   ///@param {any} key
   ///@return {any}
   static get = function(key) {
     gml_pragma("forceinline")
-    return Struct.get(this.container, key)
+    return this.container[? key]
   }
 
   ///@return {any}
   static getFirst = function() {
     gml_pragma("forceinline")
-    var key = this.keys().getFirst()
-    return key != null ? this.get(key) : null
+    var key = ds_map_find_first(this.container)
+    return key != null ? this.container[? key] : null
   }
 
   ///@return {any}
   static getLast = function() {
     gml_pragma("forceinline")
-    var key = this.keys().getLast()
-    return key != null ? this.get(key) : null
+    var key = ds_map_find_last(this.container)
+    return key != null ? this.container[? key] : null
   }
 
   ///@test MapTest.test_map_getdefault
@@ -62,7 +54,7 @@ function Map(_keyType = any, _valueType = any, _container = null) constructor {
   ///@return {any}
   static getDefault = function(key, defaultValue) {
     gml_pragma("forceinline")
-    return this.contains(key) ? this.get(key) : defaultValue
+    return this.contains(key) ? this.container[? key] : defaultValue
   }
 
   ///@param {any} key
@@ -71,7 +63,8 @@ function Map(_keyType = any, _valueType = any, _container = null) constructor {
   ///@return {any}
   static getIfType = function(key, type, defaultValue = null) {
     gml_pragma("forceinline")
-    return Struct.getIfType(this.container, key, type, defaultValue)
+    var value = this.container[? key]
+    return Core.isType(value, type) ? value : defaultValue
   }
 
   ///@param map
@@ -79,18 +72,18 @@ function Map(_keyType = any, _valueType = any, _container = null) constructor {
   ///@return {Boolean}
   static contains = function(key) {
     gml_pragma("forceinline")
-    return Struct.contains(this.container, key)
+    return ds_map_exists(this.container, key)
   }
 
   ///@param {any} key
   ///@param {any} item
   ///@throws {InvalidClassException}
-  ///@return {Map}
+  ///@return {DSMap}
   static set = function(key, item) {
     gml_pragma("forceinline")
     Assert.isType(key, this.keyType)
     Assert.isType(item, this.valueType)
-    Struct.set(this.container, key, item)
+    this.container[? key] = item
     return this
   }
 
@@ -98,7 +91,7 @@ function Map(_keyType = any, _valueType = any, _container = null) constructor {
   ///@param {any} item
   ///@param {any} key
   ///@throws {Exception}
-  ///@return {Map}
+  ///@return {DSMap}
   static add = function(item, key = null) {
     gml_pragma("forceinline")
     var _key = key
@@ -118,21 +111,21 @@ function Map(_keyType = any, _valueType = any, _container = null) constructor {
   ///@return {Number}
   static size = function() {
     gml_pragma("forceinline")
-    return Struct.size(this.container)
+    return ds_map_size(this.container)
   }
 
   ///@param {any} key
-  ///@return {Map}
+  ///@return {DSMap}
   static remove = function(key) {
     gml_pragma("forceinline")
-    Struct.remove(this.container, key)
+    ds_map_delete(this.container, key)
     return this
   }
 
   ///@return {Array}
   static keys = function() {
     gml_pragma("forceinline")
-    this._keys.setContainer(Struct.keys(this.container))
+    this._keys.setContainer(ds_map_keys_to_array(this.container))
     return this._keys
   }
 
@@ -149,14 +142,11 @@ function Map(_keyType = any, _valueType = any, _container = null) constructor {
   ///@override
   ///@param {Callable} callback
   ///@param {any} [acc]
-  ///@return {Map}
-  static _forEach = function(callback, acc = null) {
+  ///@return {DSMap}
+  static forEach = function(callback, acc = null) {
     gml_pragma("forceinline")
-    var keys = this.keys()
-    var size = keys.size()
-    for (var index = 0; index < size; index++) {
-      var key = keys.get(index)
-      var item = this.get(key)
+    for (var key = ds_map_find_first(this.container); key != null; key = ds_map_find_next(this.container, key)) {
+      var item = this.container[? key]
       var result = callback(item, key, acc)
       if (result == BREAK_LOOP) {
         break
@@ -168,29 +158,14 @@ function Map(_keyType = any, _valueType = any, _container = null) constructor {
   ///@override
   ///@param {Callable} callback
   ///@param {any} [acc]
-  ///@return {Map}
-  static forEach = function(callback, acc = null) {
-    gml_pragma("forceinline")
-    this._callback = callback
-    this._acc = acc
-    struct_foreach(this.getContainer(), this._forEachWrapper)
-    this._callback = null
-    this._acc = null
-    return this
-  }
-
-  ///@override
-  ///@param {Callable} callback
-  ///@param {any} [acc]
-  ///@return {Map}
+  ///@return {DSMap}
   static filter = function(callback, acc = null) {
     gml_pragma("forceinline")
-    var filtered = new Map(this.keyType, this.valueType)
+    var filtered = new DSMap(this.keyType, this.valueType)
     var keys = this.keys()
     var size = keys.size()
-    for (var index = 0; index < size; index++) {
-      var key = keys.get(index)
-      var item = this.get(key)
+    for (var key = ds_map_find_first(this.container); key != null; key = ds_map_find_next(this.container, key)) {
+      var item = this.container[? key]
       if (callback(item, key, acc)) {
         filtered.set(key, item)
       }
@@ -203,16 +178,15 @@ function Map(_keyType = any, _valueType = any, _container = null) constructor {
   ///@param {any} [acc]
   ///@param {Type} [keyType]
   ///@param {Type} [valueType]
-  ///@return {Map}
+  ///@return {DSMap}
   static map = function(callback, acc = null, keyType = null, valueType = null) {
     gml_pragma("forceinline")
-    var mapped = new Map(keyType == null ? this.keyType : keyType, 
+    var mapped = new DSMap(keyType == null ? this.keyType : keyType, 
       valueType == null ? this.valueType : valueType)
     var keys = this.keys()
     var size = keys.size()
-    for (var index = 0; index < size; index++) {
-      var key = keys.get(index)
-      var item = this.get(key)
+    for (var key = ds_map_find_first(this.container); key != null; key = ds_map_find_next(this.container, key)) {
+      var item = this.container[? key]
       var result = callback(item, key, acc)
       if (result == BREAK_LOOP) {
         break
@@ -228,11 +202,8 @@ function Map(_keyType = any, _valueType = any, _container = null) constructor {
   ///@return {any}
   static find = function(callback, acc = null) {
     gml_pragma("forceinline")
-    var keys = this.keys()
-    var size = keys.size()
-    for (var index = 0; index < size; index++) {
-      var key = keys.get(index)
-      var item = this.get(key)
+    for (var key = ds_map_find_first(this.container); key != null; key = ds_map_find_next(this.container, key)) {
+      var item = this.container[? key]
       if (callback(item, key, acc)) {
         return item
       }
@@ -245,11 +216,8 @@ function Map(_keyType = any, _valueType = any, _container = null) constructor {
   ///@return {any}
   static findKey = function(callback, acc = null) {
     gml_pragma("forceinline")
-    var keys = this.keys()
-    var size = keys.size()
-    for (var index = 0; index < size; index++) {
-      var key = keys.get(index)
-      var item = this.get(key)
+    for (var key = ds_map_find_first(this.container); key != null; key = ds_map_find_next(this.container, key)) {
+      var item = this.container[? key]
       if (callback(item, key, acc)) {
         return key
       }
@@ -258,15 +226,10 @@ function Map(_keyType = any, _valueType = any, _container = null) constructor {
   }
 
   ///@override
-  ///@return {Map}
+  ///@return {DSMap}
   static clear = function() {
     gml_pragma("forceinline")
-    var keys = this.keys()
-    var size = keys.size()
-    for (var index = 0; index < size; index++) {
-      var key = keys.get(index)
-      Struct.remove(this.container, key)
-    }
+    ds_map_clear(this.container)
     return this
   }
 
@@ -298,18 +261,17 @@ function Map(_keyType = any, _valueType = any, _container = null) constructor {
   ///@return {Struct}
   static toStruct = function(callback = null, acc = null) {
     gml_pragma("forceinline")
-    var struct = null
+    var struct = {}
     if (callback) {
-      struct = {}
-      var keys = this.keys()
-      var size = keys.size()
-      for (var index = 0; index < size; index++) {
-        var key = keys.get(index)
-        var item = this.get(key)
+      for (var key = ds_map_find_first(this.container); key != null; key = ds_map_find_next(this.container, key)) {
+        var item = this.container[? key]
         Struct.set(struct, key, callback(item, key, acc))
       }
     } else {
-      struct = JSON.clone(this.container)
+      for (var key = ds_map_find_first(this.container); key != null; key = ds_map_find_next(this.container, key)) {
+        var item = this.container[? key]
+        Struct.set(struct, key, item)
+      }
     }
     return struct
   }
@@ -320,13 +282,13 @@ function Map(_keyType = any, _valueType = any, _container = null) constructor {
   ///@return {Array}
   static toArray = function(callback, acc = null, keyType = null) {
     gml_pragma("forceinline")
-    var keys = this.keys()
-    var size = keys.size()
+    var size = this.size()
     var arr = new Array(keyType == null ? this.keyType : keyType, GMArray.createGMArray(size))
-    for (var index = 0; index < size; index++) {
-      var key = keys.get(index)
-      var item = this.get(key)
+    var index = 0
+    for (var key = ds_map_find_first(this.container); key != null; key = ds_map_find_next(this.container, key)) {
+      var item = this.container[? key]
       arr.set(index, callback(item, key, acc))
+      index++
     }
     return arr
   }
@@ -337,24 +299,33 @@ function Map(_keyType = any, _valueType = any, _container = null) constructor {
     return this.container
   }
 
-  ///@param {Struct} container
-  ///@return {Map}
+  ///@param {GMMap} container
+  ///@return {DSMap}
   static setContainer = function(container) {
     gml_pragma("forceinline")
+    Assert.isTrue(typeof(container) == "ref" && ds_exists(container, ds_type_map), "container must be type of GMMap")
     this.container = container
     return this
   }
 
   ///@param {...Map} map
-  ///@return {Map}
+  ///@return {DSMap}
   static merge = function(/*...map*/) {
     gml_pragma("forceinline")
     for (var index = 0; index < argument_count; index++) {
       var map = argument[index]
       map.forEach(function(item, key, items) {
         items.add(item, key)
+        //items.container[? key] = item
       }, this)
     }
     return this
+  }
+
+  static free = function() {
+    if (typeof(this.container) == "ref" && ds_exists(this.container, ds_type_map)) {
+      ds_map_destroy(this.container)
+      this.container = null
+    }
   }
 }

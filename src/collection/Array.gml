@@ -15,11 +15,7 @@ function Array(_type = any, _container = null) constructor {
   
   ///@private
   ///@type {GMArray}
-  container = _container != null ? _container : []
-  ///@description Cannot use Assert.isType due to initialization order
-  if (typeof(this.container) != "array") {
-    throw new InvalidAssertException($"Invalid 'Array.container' type: '{typeof(this.container)}'")
-  }
+  container = typeof(_container) == "array" ? _container : []
 
   ///@private
   ///@type {?Stack<Number>}

@@ -174,8 +174,9 @@ function UI(config = {}) constructor {
       //}
       var updateItemArea = this.areaWatchdog.update(this.area).get()
       this.items.forEach(this.updateItem, updateItemArea)
+      
       if (this.areaWatchdog.delay > 0) {
-        this.clampUpdateTimer(0.9500)
+        this.clampUpdateTimer(0.9000)
       }
     }
 
@@ -238,7 +239,7 @@ function UI(config = {}) constructor {
 
         if (this.hoverItem != item) {
           this.hoverItem = item
-          this.clampUpdateTimer(0.9500)
+          this.clampUpdateTimer(0.9000)
         }
         item.isHoverOver = true
       }

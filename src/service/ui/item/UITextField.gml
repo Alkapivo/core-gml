@@ -68,23 +68,26 @@ function UITextField(name, json = null) {
     ///@override
     ///@param {Boolean} [_updateArea]
     ///@return {UIItem}
-    update: Struct.getDefault(json, "update", function(_updateArea = true) {
-      this.updateHidden()
-      if (_updateArea && Optional.is(this.updateArea)) {
-        this.updateArea()
-      }
+    update: Struct.getDefault(json, "update", function(_updateArea = false) {
+      if (_updateArea) {
+        this.updateHidden()
 
-      if (Optional.is(this.updateEnable)) {
-        this.updateEnable()
+        if (Optional.is(this.updateArea)) {
+          this.updateArea()
+        }
+  
+        if (Optional.is(this.updateEnable)) {
+          this.updateEnable()
+        }
       }
 
       if (Optional.is(this.updateCustom)) {
         this.updateCustom()
       }
 
-      if (!storeSubscribed && Optional.is(this.store)) {
-        this.store.subscribe()
+      if (!storeSubscribed) {
         this.storeSubscribed = true
+        this.updateStore()
       }
 
       if (this.isHoverOver) {
@@ -118,7 +121,7 @@ function UITextField(name, json = null) {
           this.area.setHeight(this.textField.style.h)
           if (Optional.is(this.context)) {
             this.context.areaWatchdog.signal(2)
-            this.context.clampUpdateTimer(0.9500)
+            this.context.clampUpdateTimer(0.9000)
           }
         }
 
@@ -144,11 +147,6 @@ function UITextField(name, json = null) {
         this.updateValue(text)
       }
 
-      if (this.hidden.value) {
-        //Core.print("disable", "w", this.area.getWidth(), "h", this.area.getHeight(), "_w", this.textField.style.w, "_h", this.textField.style.h)
-      } else if (this.textField.style.v_grow) {
-        //Core.print("enable", "w", this.area.getWidth(), "h", this.area.getHeight(), "_w", this.textField.style.w, "_h", this.textField.style.h)
-      }
       return this
     }),
     

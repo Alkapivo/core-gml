@@ -60,11 +60,13 @@ function Surface(config = null) constructor {
     }
 
     if (!Core.isType(this.asset, GMSurface)) {
+      surface_depth_disable(true)
       this.asset = surface_create(this.width, this.height, this.format)
       this.updated = true
     }
 
     if (surface_get_format(this.asset) != this.format) {
+      surface_depth_disable(true)
       this.asset = surface_create(this.width, this.height, this.format)
       this.updated = true
     }

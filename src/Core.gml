@@ -89,8 +89,12 @@ function _Core() constructor {
           || is_instanceof(object, Array) 
           || is_instanceof(object, Map) 
           || is_instanceof(object, Stack) 
-          || is_instanceof(object, Queue))
+          || is_instanceof(object, Queue)
+          || is_instanceof(object, DSMap)
+          || is_instanceof(object, DSList))
         case GMArray: return result == "array"
+        case GMMap: return result == "ref" && ds_exists(object, ds_type_map)
+        case GMList: return result == "ref" && ds_exists(object, ds_type_list)
         case GMBuffer: return result == "ref" && buffer_exists(object)
         case GMCamera: return result == "number"
         case GMColor: return result == "number"
@@ -276,7 +280,7 @@ function _Core() constructor {
   ///@return {Core}
   static debugOverlay = function(value) {
     gml_pragma("forceinline")
-    show_debug_overlay(value)
+    show_debug_overlay(value, true, 1.0, 0.75)
     return this
   }
 

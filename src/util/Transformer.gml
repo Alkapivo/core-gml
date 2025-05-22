@@ -66,8 +66,26 @@ function ColorTransformer(json = null) constructor {
   target = ColorUtil.fromHex(Struct.get(json, "target"))
 
   ///@type {Number}
-  factor = Struct.getIfType(json, "factor", Number, 1)
+  duration = Struct.getIfType(json, "duration", Number, 0.0)
 
+  ///@type {Number}
+  factor = Struct.getIfType(json, "factor", Number, 0.0)
+
+  ///@return {Transformer}
+  static setDuration = function(duration) {
+    this.duration = clamp(duration, 0.0, 999.9)
+
+    var length = max(
+      abs(this.value.red - this.target.red),
+      abs(this.value.green - this.target.green),
+      abs(this.value.blue - this.target.blue)
+    )
+    this.factor = this.duration > 0.0 && length > 0.0
+      ? (length / (this.duration * GAME_FPS))
+      : 1.0
+    return this
+  }
+  
   ///@return {any}
   static get = function() {
     return this.value
@@ -100,9 +118,9 @@ function ColorTransformer(json = null) constructor {
   ///@return {Struct}
   static serialize = function() {
     return {
-      value: this.value,
-      factor: this.factor,
-      target: this.target
+      value: this.value.serialize(),
+      target: this.target.serialize(),
+      duration: this.duration,
     }
   }
 
@@ -117,6 +135,8 @@ function ColorTransformer(json = null) constructor {
     this.value.alpha = color.alpha
     return this
   }
+
+  this.setDuration(this.duration)
 }
 
 
@@ -508,19 +528,16 @@ function ResolutionTransformer(json = null) constructor {
     return this
   }
 
-  ///@return {Struct}
+  ///@return {Struct} 
   static serialize = function() {
     return {
-      x: this.x.serialize(),
-      y: this.y.serialize(),
+      value: this.value.serialize(),
     }
   }
 
   ///@return {ResolutionTransformer}
   static reset = function() {
     this.finished = false 
-    this.x.reset()
-    this.y.reset()
     return this
   }
 }

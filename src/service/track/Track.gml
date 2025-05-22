@@ -409,6 +409,9 @@ function TrackChannel(json, config = null) constructor {
 ///@param {?Struct} [config]
 function TrackEvent(json, config = null): Event("TrackEvent") constructor {
 
+  ///@type {?String}
+  uid = Struct.getIfType(json, "uid", String)
+
   ///@override
   ///@type {Struct}
   data = Struct.getIfType(json, "data", Struct, { })
