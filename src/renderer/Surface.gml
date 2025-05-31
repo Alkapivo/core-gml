@@ -80,16 +80,24 @@ function Surface(config = null) constructor {
     return this
   }
 
+  ///@param {Callable} callback
+  ///@param {any} [data]
+  ///@param {Boolean} [gpuSetSurface]
   ///@return {Surface}
-  static renderOn = function(callback, data) {
+  static renderOn = function(callback, data = null, gpuSetSurface = true) {
     if (!Core.isType(this.asset, GMSurface)) {
       Logger.error("Surface", "renderOn fatal error")
-      return
+      return this
     }
 
-    GPU.set.surface(this)
-    callback(data)
-    GPU.reset.surface()
+    if (gpuSetSurface) {
+      GPU.set.surface(this)
+      callback(data)
+      GPU.reset.surface()
+    } else {
+      callback(data)
+    }
+
     return this
   }
 

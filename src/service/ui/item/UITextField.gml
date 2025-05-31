@@ -123,11 +123,11 @@ function UITextField(name, json = null) {
             this.context.areaWatchdog.signal(2)
             this.context.clampUpdateTimer(0.9000)
           }
-        }
 
-        var layout = Struct.get(this, "layout")
-        if (Optional.is(Struct.get(layout, "setHeight"))) {
-          layout.setHeight(this.textField.style.h)
+          var layout = Struct.get(this, "layout")
+          if (Optional.is(Struct.get(layout, "setHeight"))) {
+            layout.setHeight(this.textField.style.h)
+          }
         }
       } else if (!this.hidden.value) {
         this.textField.style.h = this.area.getHeight()

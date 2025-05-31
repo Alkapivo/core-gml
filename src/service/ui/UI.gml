@@ -1214,15 +1214,12 @@ function _UIUtil() constructor {
           this.data = new Vector2(0.0, 1.0)
         }
 
-        if (value.easeType == EaseType.LEGACY) {
-          value.value = clamp(value.value, this.data.x, this.data.y)
-          value.target = clamp(value.target, this.data.x, this.data.y)
-          return value
-        } else {
-          value.startValue = clamp(value.value, this.data.x, this.data.y)
-          value.target = clamp(value.target, this.data.x, this.data.y)
-          return value.reset()
-        }
+
+        value.value = clamp(value.value, this.data.x, this.data.y)
+        value.startValue = value.value
+        value.duration = value.duration < 0.0 ? 0.0 : value.duration
+        value.target = clamp(value.target, this.data.x, this.data.y)
+        return value.reset()
       }
     },
 
@@ -1233,15 +1230,11 @@ function _UIUtil() constructor {
           return this.value
         }
 
-        if (value.easeType == EaseType.LEGACY) {
-          value.value = clamp(value.value, 0.0, 1.0)
-          value.target = clamp(value.target, 0.0, 1.0)
-          return value
-        } else {
-          value.startValue = clamp(value.value, 0.0, 1.0)
-          value.target = clamp(value.target, 0.0, 1.0)
-          return value.reset()
-        }
+        value.value = clamp(value.value, 0.0, 1.0)
+        value.startValue = value.value
+        value.duration = value.duration < 0.0 ? 0.0 : value.duration
+        value.target = clamp(value.target, 0.0, 1.0)
+        return value.reset()
       }
     },
 
