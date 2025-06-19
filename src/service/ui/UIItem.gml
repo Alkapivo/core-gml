@@ -441,9 +441,9 @@ function _UIItemUtils() constructor {
         if (!Struct.contains(this, "__colors")) {
           Struct.set(this, "__colors", {
             unfocusedValid: this.textField.style.c_bkg_unfocused.c,
-            unfocusedInvalid: ColorUtil.fromHex(VETheme.color.denyShadow).toGMColor(),
+            unfocusedInvalid: ColorUtil.fromHex("#6d3c54").toGMColor(),
             focusedValid: this.textField.style.c_bkg_focused.c,
-            focusedInvalid: ColorUtil.fromHex(VETheme.color.deny).toGMColor(),
+            focusedInvalid: ColorUtil.fromHex("#9e3d54").toGMColor(),
           })
         }
 

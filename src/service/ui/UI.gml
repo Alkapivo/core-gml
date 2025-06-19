@@ -472,7 +472,7 @@ function UI(config = {}) constructor {
       align: HAlign.LEFT,
       width: 10,
       thickness: 3,
-      color: ColorUtil.fromHex(VETheme.color.primaryShadow).toGMColor(),
+      color: ColorUtil.fromHex("#2B2B35").toGMColor(),
       alpha: 1.0,
       render: function(context) {
         var x1 = 0, y1 = 0, x2 = 0, y2 = 0
