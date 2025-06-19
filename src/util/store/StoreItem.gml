@@ -19,6 +19,9 @@ function StoreItem(_name, json) constructor {
   ///@type {Array<StoreItemSubscriber>}
   subscribers = new Array(StoreItemSubscriber)
 
+  ///@type {Boolean}
+  lazyNotify = false
+
   ///@return {any}
   get = method(this, Assert.isType(Struct.getDefault(json, "get", function() {
     return this.value
@@ -26,14 +29,17 @@ function StoreItem(_name, json) constructor {
 
   ///@param {any} value
   ///@return {StoreItem}
-  set = method(this, Assert.isType(Struct.getDefault(json, "set", function(value) {
+  set = method(this, Assert.isType(Struct.getDefault(json, "set", function(value, lazyNotify = false) {
     var _value = Assert.isType(this.passthrough(value), this.type, $"Store item name: {this.name}")
     this.validate(_value)
     this.value = _value
-    this.subscribers.forEach(function(subscriber, index, value) {
-      subscriber.callback(value, subscriber.data)
-    }, _value)
-    
+    if (lazyNotify) {
+      this.lazyNotify = true
+    } else {
+      this.subscribers.forEach(function(subscriber, index, value) {
+        subscriber.callback(value, subscriber.data)
+      }, _value)
+    }
     return this
   }), Callable))
 
@@ -128,5 +134,19 @@ function StoreItem(_name, json) constructor {
     gml_pragma("forceinline")
     return Core.isType(this.subscribers
       .find(this.findSubscriberByName, name), StoreItemSubscriber)
+  }
+
+  ///@param {String}
+  ///@return {StoreItem}
+  static resolveLazyNotify = function(lazyNotify = false) {
+    if (!this.lazyNotify && !lazyNotify) {
+      return this
+    }
+
+    this.lazyNotify = false
+    this.subscribers.forEach(function(subscriber, index, value) {
+      subscriber.callback(value, subscriber.data)
+    }, this.value)
+    return this
   }
 }
