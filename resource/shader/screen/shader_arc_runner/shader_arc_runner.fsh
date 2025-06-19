@@ -136,9 +136,9 @@ vec3 lightning_field(vec2 uv, float jumpiness, float distortion, float scale, fl
   float time_offset = u_time * 0.08;
 
   float d1 = lightning_path(uv, 100.0 + time_offset * 1.0, jumpiness, distortion, scale, curve_freq, wiggle);
-  float d2 = lightning_path(uv, 400.0 + time_offset * 1.5, jumpiness, distortion, scale, curve_freq, wiggle);
-  float d3 = lightning_path(uv, 300.0 + time_offset * 2.0, jumpiness, distortion, scale, curve_freq, wiggle);
-  float d4 = lightning_path(uv, 700.0 + time_offset * 4.0, jumpiness, distortion, scale, curve_freq, wiggle);
+  float d2 = lightning_path(uv, 300.0 + time_offset * 1.5, jumpiness, distortion, scale, curve_freq, wiggle);
+  float d3 = lightning_path(uv, 600.0 + time_offset * 2.0, jumpiness, distortion, scale, curve_freq, wiggle);
+  float d4 = lightning_path(uv, 900.0 + time_offset * 4.0, jumpiness, distortion, scale, curve_freq, wiggle);
 
   float inverse_sqrt = max(0.0, 1.0 - sqrt(d1 + d2 * d3 + d3 + d4 * d1) * brightness);
   float glow = 0.07 / sqrt(d1 * d2 * d3 * d4);

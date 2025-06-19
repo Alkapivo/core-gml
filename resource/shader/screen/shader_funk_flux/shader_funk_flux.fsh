@@ -72,10 +72,10 @@ float cosRange(float degrees, float range, float minimum) {
 void main() {
 	vec2 uv = v_texcoord.xy / u_res.xy;
 	vec2 pixel  = rotated_uv_resolution(v_texcoord, u_res, u_offset, u_angle);
-	float ct = cosRange(u_time * 5.0, 3.0, 1.1);
-	float xBoost = cosRange(u_time * 0.2, 5.0, 5.0);
-	float yBoost = cosRange(u_time * 0.1, 15.0, 5.0);
-	float fScale = cosRange(u_time * 15.5, 1.25, 0.5);
+	float ct = cosRange(u_time * 5.0, 15.0, 1.1);
+	float xBoost = cosRange(u_time * 4.2, 60.0, 5.0);
+	float yBoost = cosRange(u_time * 6.6, 60.0, 5.0);
+	float fScale = cosRange(u_time * 15.5, 1.5, 0.5);
 	for (float idx = 1.0; idx < 40.0; idx += 1.0) {
 		vec2 new_pixel = pixel;
 		new_pixel.x += 0.25 / idx * sin(idx * pixel.y + u_time * cos(ct) * 0.5 / 20.0 + 0.005 * idx) * fScale + xBoost;		
