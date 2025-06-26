@@ -60,7 +60,7 @@ function UIImage(name, json = null) {
           .setScaleX(scaleX)
           .setScaleY(scaleY)
 
-        if (this.origin != null) {
+        if (this.origin != null && this.store != null) {
           var textureTemplate = this.store.getStore().getValue(this.origin)
           var originX = textureTemplate.originX
           var originY = textureTemplate.originY

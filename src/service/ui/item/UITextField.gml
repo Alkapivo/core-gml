@@ -85,7 +85,7 @@ function UITextField(name, json = null) {
         this.updateCustom()
       }
 
-      if (!storeSubscribed) {
+      if (!this.storeSubscribed) {
         this.storeSubscribed = true
         this.updateStore()
       }

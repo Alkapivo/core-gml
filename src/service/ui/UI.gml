@@ -256,7 +256,9 @@ function UI(config = {}) constructor {
       item.context = this //@todo item context constructor
       //this.areaWatchdog.signal()
       this.items.add(item, item.name)
-      if (updateArea == true && Optional.is(item.updateArea)) {
+      
+      if (((item.type == UITextField && item.textField.style.v_grow == true) || updateArea == true)
+          && Optional.is(item.updateArea)) {
         item.updateArea()
       }
       return this
