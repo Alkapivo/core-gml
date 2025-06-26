@@ -248,14 +248,15 @@ function UI(config = {}) constructor {
     }
 
   ///@param {UIItem} item
+  ///@param {?Boolean} [updateArea]
   ///@return {UI} 
   add = Struct.contains(config, "add")
     ? Assert.isType(method(this, config.add), Callable)
-    : function(item) {
+    : function(item, updateArea = true) {
       item.context = this //@todo item context constructor
       //this.areaWatchdog.signal()
       this.items.add(item, item.name)
-      if (Optional.is(item.updateArea)) {
+      if (updateArea == true && Optional.is(item.updateArea)) {
         item.updateArea()
       }
       return this
@@ -401,7 +402,7 @@ function UI(config = {}) constructor {
       Struct.set(data, "textField", item.textField)
     }
 
-    this.add(item, item.name)
+    this.add(item, Struct.get(data, "updateArea"))
     //if (Optional.is(item.updateArea)) {
     //  item.updateArea()
     //}
@@ -522,7 +523,7 @@ function UI(config = {}) constructor {
 
   if (Struct.contains(config, "items")) {
     Struct.forEach(Struct.get(config, "items"), function(json, name, container) {
-      container.add(json.type(name, json), name)
+      container.add(json.type(name, json), json)
     }, this)
   }
   
