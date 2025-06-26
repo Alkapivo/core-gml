@@ -49,6 +49,36 @@ function UI(config = {}) constructor {
 
   ///@type {Margin}
   margin = new Margin(Struct.get(config, "margin"))
+
+  subscribersPipeline = {
+    step: Struct.getIfType(config, "subscribersPipelineStep", Number, 32),
+    container: new Queue(Struct),
+    push: function(config) {
+      this.container.push(config)
+      return this
+    },
+    update: function(ui) {
+      if (this.container.size() == 0) {
+        return this
+      }
+      
+      repeat (this.step) {
+        var config = this.container.pop()
+        if (config == null) {
+          break
+        }
+
+        if (!ui.items.contains(config.name)) {
+          Logger.warn("UI", $"Found non-existing subscribe intent: {config.name}")
+          continue
+        }
+
+        config.callback(config.data)
+      }
+
+      return this
+    },
+  }
   
   ///@return {Number}
   fetchViewWidth = Struct.contains(config, "fetchViewWidth")
@@ -259,7 +289,12 @@ function UI(config = {}) constructor {
       
       if (((item.type == UITextField && item.textField.style.v_grow == true) || updateArea == true)
           && Optional.is(item.updateArea)) {
-        item.updateArea()
+        this.subscribersPipeline.push({
+          name: item.name,
+          callback: function(data) { data.updateArea() },
+          data: item,
+        })
+        //item.updateArea()
       }
       return this
     }
@@ -321,6 +356,7 @@ function UI(config = {}) constructor {
         }
       }
       
+      this.subscribersPipeline.update(this)
       return this
     }
 
@@ -410,7 +446,12 @@ function UI(config = {}) constructor {
     //}
 
     if (!item.storeSubscribed && Optional.is(item.store)) {
-      item.store.subscribe()
+      //item.store.subscribe()
+      this.subscribersPipeline.push({
+        name: item.name,
+        callback: function(data) { data.subscribe() },
+        data: item.store,
+      })
       item.storeSubscribed = true
     }
   }
