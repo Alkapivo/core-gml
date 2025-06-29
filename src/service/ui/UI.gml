@@ -51,10 +51,20 @@ function UI(config = {}) constructor {
   margin = new Margin(Struct.get(config, "margin"))
 
   subscribersPipeline = {
+    instantSubscribe: Struct.getIfType(config, "instantSubscribe", Boolean, true),
     step: Struct.getIfType(config, "subscribersPipelineStep", Number, 32),
     container: new Queue(Struct),
     push: function(config) {
-      this.container.push(config)
+      if (config == null) {
+        return this
+      }
+
+      if (this.instantSubscribe) {
+        //Callable.run(Struct.get(config, "callback"), Struct.get(config, "data"))
+        config.callback(config.data)
+      } else {
+        this.container.push(config)
+      }
       return this
     },
     update: function(ui) {
@@ -286,7 +296,6 @@ function UI(config = {}) constructor {
       item.context = this //@todo item context constructor
       //this.areaWatchdog.signal()
       this.items.add(item, item.name)
-      
       if (((item.type == UITextField && item.textField.style.v_grow == true) || updateArea == true)
           && Optional.is(item.updateArea)) {
         this.subscribersPipeline.push({
@@ -445,11 +454,12 @@ function UI(config = {}) constructor {
     //  item.updateArea()
     //}
 
-    if (!item.storeSubscribed && Optional.is(item.store)) {
-      //item.store.subscribe()
+    if (item.store != null && !item.storeSubscribed) {
       this.subscribersPipeline.push({
         name: item.name,
-        callback: function(data) { data.subscribe() },
+        callback: function(data) {
+          data.subscribe()
+        },
         data: item.store,
       })
       item.storeSubscribed = true
