@@ -449,7 +449,7 @@ function UI(config = {}) constructor {
       Struct.set(data, "textField", item.textField)
     }
 
-    this.add(item, Struct.get(data, "updateArea"))
+    this.add(item, Struct.getIfType(data, "updateArea", Boolean, true))
     //if (Optional.is(item.updateArea)) {
     //  item.updateArea()
     //}
