@@ -7,6 +7,10 @@
 #define DEG_TO_RAD 0.01745329251
 
 
+// Shader specific constants
+#define SQRT_3 1.732050807568877
+
+
 // Varying Outputs
 varying vec2 v_texcoord;
 varying vec4 v_color;
@@ -33,24 +37,23 @@ uniform vec3 u_color_mesh;    // Default: vec3(1.0, 0.0, 0.0)
 
 // Base methods
 vec2 rotated_uv_resolution(vec2 v_texcoord, vec2 resolution, vec2 origin, float angle_deg) {
+  v_texcoord *= resolution;
   float angle_rad = angle_deg * DEG_TO_RAD;
   float cos_a = cos(angle_rad);
   float sin_a = sin(angle_rad);
 
-  float aspect = resolution.x / resolution.y;
-  vec2 centered_uv = v_texcoord - origin;
-  centered_uv.x *= aspect;
+  vec2 origin_ndc = (origin * resolution);
+  origin_ndc = (origin_ndc * 2.0 - resolution) / resolution.y;
 
-  vec2 rotated = vec2(
-    centered_uv.x * cos_a - centered_uv.y * sin_a,
-    centered_uv.x * sin_a + centered_uv.y * cos_a
+  vec2 coord = (v_texcoord * 2.0 - resolution) / resolution.y;
+  coord -= origin_ndc;
+
+  return vec2(
+    coord.x * cos_a - coord.y * sin_a,
+    coord.x * sin_a + coord.y * cos_a
   );
-
-  rotated.x /= aspect;
-  rotated += origin;
-
-  return rotated;
 }
+
 
 vec2 rotated_uv(vec2 texcoord, vec2 origin, float angle_deg) {
   float angle_rad = angle_deg * DEG_TO_RAD;
@@ -157,6 +160,10 @@ float pulse(vec2 p, float t) {
   return clamp(fade, 0.0, 1.0);
 }
 
+float get_color_distance(vec3 color_from, vec3 color_to) {
+  return distance(color_from, color_to) / SQRT_3;
+}
+
 void main() { 
   vec2 uv = rotated_uv_resolution(v_texcoord, u_resolution, u_offset, u_angle);
   uv *= u_mesh_size;
@@ -164,7 +171,7 @@ void main() {
   vec2 grid = floor(uv);
   vec2 pixel_uv = rotated_uv_resolution(v_texcoord, u_resolution, u_offset, u_angle);
   vec4 texture = texture2D(gm_BaseTexture, v_texcoord);
-  vec3 col = vec3(texture.r, texture.g, texture.b);
+  vec3 col = vec3(0.0);
   float time = u_time * u_time_scale;
   float angle_rad = u_angle * DEG_TO_RAD;
   uv.x += cos(angle_rad) * time;
@@ -182,8 +189,10 @@ void main() {
       float fade = pulse(cell, time);
       fade *= fade * fade;
       //col += dot_shape(pixel_uv, norm_pos, 0.01) * fade * fade;
-      for (int jj = -1; jj <= 1; ++jj) {
-        for (int ii = -1; ii <= 1; ++ii) {
+      for (int jj = 0; jj <= 1; ++jj) {
+        for (int ii = 0; ii <= 1; ++ii) {
+      //for (int jj = -1; jj <= 1; ++jj) {
+      //  for (int ii = -1; ii <= 1; ++ii) {
           vec2 n_off = vec2(float(ii), float(jj));
           vec2 neighbor = cell + n_off;
           if (neighbor == cell) {
@@ -225,5 +234,7 @@ void main() {
     }
   }
 
-  gl_FragColor = vec4(col, texture.a * v_color.a);
+  float factor = get_color_distance(texture.rgb, col);
+  vec3 color = mix(texture.rgb, col, factor);
+  gl_FragColor = vec4(color, texture.a * v_color.a);
 }
