@@ -20,6 +20,7 @@ uniform float u_fbm_size;     // Default: 0.5
 uniform float u_jitter;       // Default: 0.5
 uniform float u_jitter_seed;  // Default: 20.0
 uniform float u_mesh_size;    // Default: 2.0
+uniform float u_shift;        // Default: 0.0
 uniform float u_thickness;    // Default: 1.0
 uniform float u_time_scale;   // Default: 0.5
 uniform float u_time;         // Default: 0.0, where 1.0=1sec
@@ -176,7 +177,7 @@ void main() {
     for (int i = -1; i <= 1; ++i) {
       vec2 offset = vec2(float(i), float(j));
       vec2 cell = grid + offset;
-      vec2 pos = cell + 0.5 + jitter(cell, time, u_jitter, u_jitter_seed, u_mesh_size);
+      vec2 pos = cell + 0.5 + u_shift + jitter(cell, time, u_jitter, u_jitter_seed, u_mesh_size);
       vec2 norm_pos = pos / u_mesh_size;
       float fade = pulse(cell, time);
       fade *= fade * fade;
@@ -189,7 +190,7 @@ void main() {
               continue;
           }
           
-          vec2 n_pos = neighbor + 0.5 + jitter(neighbor, time, u_jitter, u_jitter_seed, u_mesh_size);
+          vec2 n_pos = neighbor + 0.5 - u_shift + jitter(neighbor, time, u_jitter, u_jitter_seed, u_mesh_size);
           vec2 n_norm_pos = n_pos / u_mesh_size;
           float n_fade = pulse(neighbor, time);
           n_fade *= n_fade * n_fade;
@@ -210,7 +211,7 @@ void main() {
           }
           
           vec2 third = neighbor + vec2(1.0, 0.0);
-          vec2 third_pos = third + 0.5 + jitter(third, time, u_jitter, u_jitter_seed, u_mesh_size);
+          vec2 third_pos = third + 0.5 + (u_shift / 2.0) + jitter(third, time, u_jitter, u_jitter_seed, u_mesh_size);
           vec2 third_norm = third_pos / u_mesh_size;
           float third_fade = pulse(third, time);
           third_fade *= third_fade * third_fade;

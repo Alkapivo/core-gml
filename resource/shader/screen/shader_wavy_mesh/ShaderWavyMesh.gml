@@ -14,6 +14,7 @@ global.__ShaderWavyMesh = {
         u_jitter: "FLOAT",
         u_jitter_seed: "FLOAT",
         u_mesh_size: "FLOAT",
+        u_shift: "FLOAT",
         u_thickness: "FLOAT",
         u_time_scale: "FLOAT",
         u_time: "FLOAT",
@@ -85,6 +86,15 @@ global.__ShaderWavyMesh = {
         store: {
           value: 2.0,
           target: 2.0,
+          duration: 0.0,
+          ease: "LINEAR",
+        },
+        components: { },
+      },
+      u_shift: {
+        store: {
+          value: 0.0,
+          target: 0.0,
           duration: 0.0,
           ease: "LINEAR",
         },
