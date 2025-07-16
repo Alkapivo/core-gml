@@ -105,7 +105,9 @@ function StoreItem(_name, json) constructor {
     this.subscribers.add(subscriber, subscriber.name)
 
     ///@description Notify all subscribers
-    this.set(this.get())
+    if (Struct.get(subscriber.data, "notify") == true) {
+      this.set(this.get())
+    }
     return this
   }
 

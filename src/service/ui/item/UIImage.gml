@@ -28,6 +28,9 @@ function UIImage(name, json = null) {
     ///@type {?String}
     origin: Struct.getIfType(json, "origin", String),
 
+    ///@type {Boolean}
+    notify: Struct.getIfType(json, "notify", Boolean, true),
+
     updateEnable: Struct.getIfType(json, "updateEnable", Callable, Callable.run(UIItemUtils.templates.get("updateEnable"))),
 
     renderBackgroundColor: new BindIntent(Callable.run(UIItemUtils.templates.get("renderBackgroundColor"))),

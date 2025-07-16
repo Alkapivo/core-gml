@@ -71,6 +71,9 @@ function UIItem(_name, config = {}) constructor {
   ///@type {Event}
   hoverEvent = new Event("MouseHoverOut", { x: 0, y: 0 })
 
+  ///@type {Boolean}
+  notify = Struct.getIfType(config, "notify", Boolean, false)
+
   ///@param {Event} event
   ///@return {Boolean}
   support = method(this, Struct.getIfType(config, "support", Callable, function(event, key, name) {

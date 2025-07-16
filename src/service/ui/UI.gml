@@ -1118,10 +1118,16 @@ function _UIUtil() constructor {
           ? (_x <= 0)
           : (_x >= this.area.getWidth())
         var scrollbarY = Struct.get(this, "scrollbarY")
-        if (collide) || (Struct.get(scrollbarY, "isDragEvent") == true) {
-          var ratio = _y / this.area.getHeight() 
-          this.offset.y = clamp(-1 * (this.offsetMax.y * ratio), -1 * this.offsetMax.y, 0)
-          Struct.set(scrollbarY, "isDragEvent", true)
+        var isDragEvent = Struct.get(scrollbarY, "isDragEvent") == true 
+
+        var gmtf = GMTFContext.get()
+        if (gmtf != null && gmtf.bugDelay) {
+          return
+        }
+
+        if (collide || isDragEvent) {
+          this.offset.y = clamp(-1 * (this.offsetMax.y * (_y / this.area.getHeight())), -1 * this.offsetMax.y, 0)
+          Struct.set(scrollbarY, "isDragEvent", !isDragEvent)
         }
       }
     },
