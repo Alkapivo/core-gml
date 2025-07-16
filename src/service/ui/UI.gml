@@ -1127,7 +1127,7 @@ function _UIUtil() constructor {
 
         if (collide || isDragEvent) {
           this.offset.y = clamp(-1 * (this.offsetMax.y * (_y / this.area.getHeight())), -1 * this.offsetMax.y, 0)
-          Struct.set(scrollbarY, "isDragEvent", !isDragEvent)
+          Struct.set(scrollbarY, "isDragEvent", true)
         }
       }
     },
