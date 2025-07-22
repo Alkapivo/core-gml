@@ -135,7 +135,7 @@ global.__ShaderFunkFlux = {
   },
   install: function(shaders, config) {
     Struct.set(shaders, "shader_funk_flux", ShaderFunkFlux.template())
-    config.set("shader_funk_flux", ShaderFunkFlux.config())
+    Struct.set(config, "shader_funk_flux", ShaderFunkFlux.config())
   },
 }
 #macro ShaderFunkFlux global.__ShaderFunkFlux

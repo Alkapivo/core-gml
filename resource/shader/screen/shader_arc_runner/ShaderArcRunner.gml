@@ -165,7 +165,7 @@ global.__ShaderArcRunner = {
   },
   install: function(shaders, config) {
     Struct.set(shaders, "shader_arc_runner", ShaderArcRunner.template())
-    config.set("shader_arc_runner", ShaderArcRunner.config())
+    Struct.set(config, "shader_arc_runner", ShaderArcRunner.config())
   },
 }
 #macro ShaderArcRunner global.__ShaderArcRunner

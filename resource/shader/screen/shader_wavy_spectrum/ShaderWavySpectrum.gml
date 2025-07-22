@@ -144,7 +144,7 @@ global.__ShaderWavySpectrum = {
   },
   install: function(shaders, config) {
     Struct.set(shaders, "shader_wavy_spectrum", ShaderWavySpectrum.template())
-    config.set("shader_wavy_spectrum", ShaderWavySpectrum.config())
+    Struct.set(config, "shader_wavy_spectrum", ShaderWavySpectrum.config())
   },
 }
 

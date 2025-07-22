@@ -175,7 +175,7 @@ global.__ShaderWavyMesh = {
   },
   install: function(shaders, config) {
     Struct.set(shaders, "shader_wavy_mesh", ShaderWavyMesh.template())
-    config.set("shader_wavy_mesh", ShaderWavyMesh.config())
+    Struct.set(config, "shader_wavy_mesh", ShaderWavyMesh.config())
   },
 }
 #macro ShaderWavyMesh global.__ShaderWavyMesh
