@@ -5,7 +5,7 @@ function _DeltaTime() constructor {
 	
   ///@private
 	///@type {Number}
-  deltaTime = 0
+  deltaTime = 1
 	
   ///@private
 	///@type {Number}
@@ -17,7 +17,7 @@ function _DeltaTime() constructor {
 	
 	///@private
   ///@type {Number}
-	deltaTimePrevious = 0.0
+	deltaTimePrevious = 1.0
 	
   ///@private
 	///@type {Boolean}
