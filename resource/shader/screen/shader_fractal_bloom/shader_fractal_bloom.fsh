@@ -162,7 +162,7 @@ void main() {
   vec2 rotation = u_rotation / 10.0;
   float scale = u_scale / 3.0;
   float time = u_time + u_seed;
-  time += (sin(time * bpm) + 1.0) / 2.0;
+  time += sin(time * bpm);
   vec2 uv = rotated_uv_resolution(v_texcoord, u_resolution, u_offset, u_angle) * u_factor;
   float dist = length(uv);
   vec4 color = vec4(u_tint, 0.0);

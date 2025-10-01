@@ -134,7 +134,7 @@ vec4 star_layer(vec2 uv, float time, float glow, float shift, vec3 base, vec3 ti
       float n = hash(id + offset);
       float size = fract(n);
       float result = star(gv - offset - vec2(n, fract(n * 34.0)) + 0.5, smoothstep(0.1, 0.9, size) * 0.46, glow);
-      vec3 color = sin(base * fract(n * 2345.2) * TAU) * (0.25 + shift) + 0.75;
+      vec3 color = base * sin(fract(n * 2345.2) * TAU) * (0.25 + shift) + 0.75;
       color *= tint;
       result *= sin(time * 0.6 + n * TAU) * 0.5 + 0.5;
       pixel.rgb += result * size * color;
@@ -158,6 +158,7 @@ void main() {
   float u_sat = 1.0;
   float u_seed = 0.0;
   float u_size = 8.0;
+  float u_shift = 1.0;
   float u_speed = 2.5;
   float u_time = iTime;
   float u_zoom = 1.0;

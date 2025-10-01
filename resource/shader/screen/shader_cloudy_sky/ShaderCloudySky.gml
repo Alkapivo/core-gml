@@ -7,18 +7,16 @@ global.__ShaderCloudySky = {
     return {
       type: "GLSL_ES",
       uniforms: {
-        u_angle: "FLOAT",
+        u_angle: "CONST_FLOAT",
         u_brightness: "FLOAT",
-        u_cloud_breakup: "FLOAT",
         u_cloud_coverage: "FLOAT",
         u_cloud_dark: "FLOAT",
-        u_cloud_direction: "FLOAT",
         u_cloud_light: "FLOAT",
         u_hue: "FLOAT",
         u_sat: "FLOAT",
         u_seed: "CONST_FLOAT",
         u_sky_alpha: "FLOAT",
-        u_speed: "FLOAT",
+        u_speed: "CONST_FLOAT",
         u_time: "FLOAT",
         u_zoom: "FLOAT",
         u_offset: "VECTOR2",
@@ -32,24 +30,10 @@ global.__ShaderCloudySky = {
   config: function() {
     return {
       u_angle: {
-        store: {
-          value: 0.0,
-          target: 0.0,
-          duration: 0.0,
-          ease: "LINEAR",
-        },
+        store: { value: 0.0 },
         components: { },
       },
       u_brightness: {
-        store: {
-          value: 1.0,
-          target: 1.0,
-          duration: 0.0,
-          ease: "LINEAR",
-        },
-        components: { },
-      },
-      u_cloud_breakup: {
         store: {
           value: 1.0,
           target: 1.0,
@@ -71,15 +55,6 @@ global.__ShaderCloudySky = {
         store: {
           value: 0.5,
           target: 0.5,
-          duration: 0.0,
-          ease: "LINEAR",
-        },
-        components: { },
-      },
-      u_cloud_direction: {
-        store: {
-          value: 0.0,
-          target: 0.0,
           duration: 0.0,
           ease: "LINEAR",
         },
@@ -126,12 +101,7 @@ global.__ShaderCloudySky = {
         components: { },
       },
       u_speed: {
-        store: {
-          value: 1.0,
-          target: 1.0,
-          duration: 0.0,
-          ease: "LINEAR",
-        },
+        store: { value: 0.03 },
         components: { },
       },
       u_time: {

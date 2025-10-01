@@ -1,6 +1,6 @@
 ///@package io.alkapivo.core
 ///@description shader_cloudy_sky
-
+ 
 // Base constants
 #define PI 3.14159265359
 #define TAU 6.28318530718
@@ -22,11 +22,11 @@ const mat3 yiq2rgb = mat3(
 
 // Shader constants
 #define CLOUD_ALPHA 8.0
-#define ITERATIONS 7
+#define ITERATIONS 8
 #define K1 0.366025404
 #define K2 0.211324865
 
-const mat2 m = mat2(1.6,  1.2, -1.2,  1.6);
+const mat2 M = mat2(1.6,  1.2, -1.2, 1.6);
 
 
 // Varying Outputs
@@ -40,24 +40,23 @@ varying vec4 v_color;
 ///*
 uniform float u_angle;            // Default: 0.0
 uniform float u_brightness;       // Default: 1.0
-uniform float u_cloud_breakup;    // Default: 1.0
-uniform float u_cloud_coverage;   // Default: 0.5
+uniform float u_cloud_coverage;   // Default: 0.2
 uniform float u_cloud_dark;       // Default: 0.5
-uniform float u_cloud_direction;  // Default: 0.0
-uniform float u_cloud_light;      // Default: 0.5
+uniform float u_cloud_light;      // Default: 0.3
 uniform float u_hue;              // Default: 0.0
 uniform float u_sat;              // Default: 1.0
 uniform float u_seed;             // Default: 0.0
-uniform float u_sky_alpha;        // Default: 1.0
-uniform float u_speed;            // Default: 1.0
+uniform float u_sky_alpha;        // Default: 0.9
+uniform float u_speed;            // Default: 0.03
 uniform float u_time;             // Default: 0.0, where 1.0=1sec
 uniform float u_zoom;             // Default: 1.0
 uniform vec2 u_offset;            // Default: (0.5, 0.5)
 uniform vec2 u_resolution;        // Default: (GuiWidth(), GuiHeight())
-uniform vec3 u_sky_color_bottom;  // Default: (0.4, 0.7, 1.0)
-uniform vec3 u_sky_color_top;     // Default: (0.2, 0.4, 0.6)
+uniform vec3 u_sky_color_bottom;  // Default: (0.2, 0.4, 0.6)
+uniform vec3 u_sky_color_top;     // Default: (0.4, 0.7, 1.0)
 uniform vec3 u_tint;              // Default: (1.0, 1.0, 1.0)
 //*/
+
 
 // Base methods
 vec2 rotated_uv_resolution(vec2 v_texcoord, vec2 resolution, vec2 origin, float angle_deg) {
@@ -138,42 +137,12 @@ float fbm(vec2 n, mat2 m) {
   float total = 0.0;
   float amplitude = 0.1;
   for (int i = 0; i < 7; i++) {
-	  total += noise(n) * amplitude;
-	  n = m * n;
-	  amplitude *= 0.4;
+    total += noise(n) * amplitude;
+    n = m * n;
+    amplitude *= 0.4;
   }
 
   return total;
-}
-
-float calc_component(vec2 uv, float time, float zoom, float speed, float angle_rad, float weight, float weight_factor) {
-  float result = 0.0;
-  vec2 coord = uv;
-  coord *= zoom;
-  coord.x += cos(time) * speed * cos(angle_rad);
-  coord.y += sin(time) * speed * sin(angle_rad);
-  for (int idx = 0; idx < ITERATIONS; idx++) {
-    result += weight * noise(coord);
-    coord = m * coord + time;
-    weight *= weight_factor;
-  }
-
-  return result;
-}
-
-float calc_component_abs(vec2 uv, float time, float zoom, float speed, float angle_rad, float weight, float weight_factor) {
-  float result = 0.0;
-  vec2 coord = uv;
-  coord *= zoom;
-  coord.x += cos(time) * speed * cos(angle_rad);
-  coord.y += sin(time) * speed * sin(angle_rad);
-  for (int idx = 0; idx < ITERATIONS; idx++) {
-    result += abs(weight * noise(coord));
-    coord = m * coord + time;
-    weight *= weight_factor;
-  }
-
-  return result;
 }
 
 
@@ -183,48 +152,94 @@ void main() {
   vec4 v_color = vec4(1.0);
   float u_angle = 0.0;
   float u_brightness = 1.0;
-  float u_cloud_breakup = 0.0;
-  float u_cloud_coverage = 0.5;
+  float u_cloud_coverage = 0.2;
   float u_cloud_dark = 0.5;
-  float u_cloud_direction = 0.0;
-  float u_cloud_light = 0.5;
+  float u_cloud_light = 0.3;
   float u_hue = 0.0;
   float u_sat = 1.0;
   float u_seed = 0.0;
-  float u_sky_alpha = 1.0;
-  float u_speed = 1.0;
+  float u_sky_alpha = 0.9;
+  float u_speed = 0.03;
   float u_time = iTime;
   float u_zoom = 1.0;
   vec2 u_offset = vec2(0.5, 0.5);
   vec2 u_resolution = iResolution.xy;
-  vec3 u_sky_color_bottom = vec3(0.0, 0.5, 1.0);
-  vec3 u_sky_color_top = vec3(0.5, 0.75, 1.0);
+  vec3 u_sky_color_bottom = vec3(0.2, 0.4, 0.6);
+  vec3 u_sky_color_top = vec3(0.4, 0.7, 1.0);
   vec3 u_tint = vec3(1.0, 1.0, 1.0);
   */
   
-  vec2 uv = rotated_uv_resolution(v_texcoord, u_resolution, u_offset, u_angle);
-  float time = (u_time + u_seed) * 0.1;
-  float result = fbm(uv * u_zoom * 0.5, m);
-  float speed = u_speed - result;
-  float angle_rad = u_cloud_direction * DEG_TO_RAD;
-  
-  float noise_riged_shape = calc_component_abs(uv, time, u_zoom, speed, angle_rad, 0.8, 0.7);
-  float noise_shape = calc_component(uv, time, u_zoom, speed, angle_rad, 0.7, 0.6);
-  float noise_color = calc_component(uv, time, u_zoom * 2.0, speed, angle_rad, 0.5, 0.7);
-  float noise_ridge_color = calc_component_abs(uv, time, u_zoom * 3.0, speed, angle_rad, 0.5, 0.7);
+  float time = (u_time + u_seed) * u_speed;
+  float zoom = (u_zoom != 0.0) ? 1.0 / u_zoom : 0.0;
+
+  vec2 uv = zoom * rotated_uv_resolution(v_texcoord, u_resolution, u_offset, u_angle);
+  vec2 uv2 = zoom * rotated_uv_resolution(v_texcoord, u_resolution, u_offset, 0.0);
+  vec2 uvb = uv;
+
+  float result = fbm(uv * zoom * 0.5, M);
+
+  float noise_riged_shape = 0.0;
+  vec2 uv_ridge = uvb * zoom - (result - time);
+  float weight = 0.8;
+  for (int i = 0; i < ITERATIONS; i++) {
+    noise_riged_shape += abs(weight * noise(uv_ridge));
+    uv_ridge = M * uv_ridge + time;
+    weight *= 0.7;
+  }
+
+  float noise_shape = 0.0;
+  vec2 uv_shape = uvb * zoom - (result - time);
+  weight = 0.7;
+  for (int i = 0; i < ITERATIONS; i++) {
+    noise_shape += weight * noise(uv_shape);
+    uv_shape = M * uv_shape + time;
+    weight *= 0.6;
+  }
+  noise_shape *= noise_riged_shape + noise_shape;
+
+  float noise_color = 0.0;
+  float t = time * 2.0;
+  vec2 uv_color = uvb * (zoom * 2.0) - (result - t);
+  weight = 0.4;
+  for (int i = 0; i < ITERATIONS; i++) {
+    noise_color += weight * noise(uv_color);
+    uv_color = M * uv_color + t;
+    weight *= 0.6;
+  }
+
+  float noise_ridge_color = 0.0;
+  t = time * 3.0;
+  vec2 uv_ridge_color = uvb * (zoom * 3.0) - (result - t);
+  weight = 0.4;
+  for (int i = 0; i < ITERATIONS; i++) {
+    noise_ridge_color += abs(weight * noise(uv_ridge_color));
+    uv_ridge_color = M * uv_ridge_color + t;
+    weight *= 0.6;
+  }
 
   noise_color += noise_ridge_color;
-  noise_shape *= (u_cloud_breakup * noise_riged_shape) + noise_shape;
   noise_shape = u_cloud_coverage + CLOUD_ALPHA * noise_shape * noise_riged_shape;
-  
+
   //vec4 texture = vec4(0.0, 0.0, 0.0, 1.0);
   //vec4 texture = texture(iChannel0, v_texcoord / iResolution.xy);
   vec4 texture = texture2D(gm_BaseTexture, v_texcoord);
-  vec3 sky_color = mix(mix(u_sky_color_bottom, u_sky_color_top,uv.y), texture.rgb, clamp(1.0 - u_sky_alpha - (1.0 - texture.a), 0.0, 1.0));
-  vec3 cloud_color = u_tint * clamp((u_cloud_dark + u_cloud_light * noise_color), 0.0, 1.0);
-  vec3 color = mix(sky_color, clamp(0.5 * sky_color + cloud_color, 0.0, 1.0), clamp(noise_shape + noise_color, 0.0, 1.0));
+
+  vec3 sky_color = mix(
+    mix(u_sky_color_top, u_sky_color_bottom, uv2.y),
+    texture.rgb,
+    clamp(1.0 - u_sky_alpha - (1.0 - texture.a), 0.0, 1.0)
+  );
+
+  vec3 cloud_color = u_tint * clamp(u_cloud_dark + u_cloud_light * noise_color, 0.0, 1.0);
+  vec3 color = mix(
+    sky_color,
+    clamp(0.5 * sky_color + cloud_color, 0.0, 1.0),
+    clamp(noise_shape + noise_color, 0.0, 1.0)
+  );
+
   vec3 pixel = apply_hue(apply_saturation(color, u_sat), u_hue) * u_brightness;
   pixel = mix(pixel, texture.rgb, 1.0 - v_color.a);
+
   //fragColor = vec4(color, 1.0);
   //fragColor = vec4(pixel, texture.a + v_color.a);
   gl_FragColor = vec4(pixel, texture.a + (texture.a * v_color.a));
