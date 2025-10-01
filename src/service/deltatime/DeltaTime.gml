@@ -27,6 +27,8 @@ function _DeltaTime() constructor {
   ///@return {Number}
   static apply = function(value = FRAME_MS) {
     gml_pragma("forceinline")
+    //var half = value / 2.0
+    //return this.deltaTime != 0.0 ? (this.deltaTime * half) + half : 0.0
     return this.deltaTime * value
   }
 
