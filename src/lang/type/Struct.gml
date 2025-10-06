@@ -501,10 +501,8 @@ function _Struct() constructor {
       var data = {
         value: Struct.getIfType(_struct, "value", Number, Struct.getIfType(defaultValue, "value", Number, 0.0)),
         target: Struct.getIfType(_struct, "target", Number, Struct.getIfType(defaultValue, "target", Number, 0.0)),
-        factor: Struct.getIfType(_struct, "factor", Number, Struct.getIfType(defaultValue, "factor", Number, 0.0)),
-        increase: Struct.getIfType(_struct, "increase", Number, Struct.getIfType(defaultValue, "increase", Number, 0.0)),
         duration: Struct.getIfType(_struct, "duration", Number, Struct.getIfType(defaultValue, "duration", Number, 0.0)),
-        ease: Struct.getIfType(_struct, "ease", String, Struct.getIfType(defaultValue, "ease", String, EaseType.LEGACY)),
+        ease: Struct.getIfType(_struct, "ease", String, Struct.getIfType(defaultValue, "ease", String, EaseType.LINEAR)),
       }
 
       if (Optional.is(Struct.getIfType(defaultValue, "clampValue", Struct))
@@ -517,18 +515,6 @@ function _Struct() constructor {
           && Optional.is(Struct.getIfType(defaultValue.clampTarget, "from", Number))
           && Optional.is(Struct.getIfType(defaultValue.clampTarget, "to", Number))) {
         data.target = clamp(data.target, defaultValue.clampTarget.from, defaultValue.clampTarget.to)
-      }
-  
-      if (Optional.is(Struct.getIfType(defaultValue, "clampFactor", Struct))
-          && Optional.is(Struct.getIfType(defaultValue.clampFactor, "from", Number))
-          && Optional.is(Struct.getIfType(defaultValue.clampFactor, "to", Number))) {
-        data.factor = clamp(data.factor, defaultValue.clampFactor.from, defaultValue.clampFactor.to)
-      }
-  
-      if (Optional.is(Struct.getIfType(defaultValue, "clampIncrease", Struct))
-          && Optional.is(Struct.getIfType(defaultValue.clampIncrease, "from", Number))
-          && Optional.is(Struct.getIfType(defaultValue.clampIncrease, "to", Number))) {
-        data.increase = clamp(data.increase, defaultValue.clampIncrease.from, defaultValue.clampIncrease.to)
       }
 
       if (Optional.is(Struct.getIfType(defaultValue, "clampDuration", Struct))
