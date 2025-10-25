@@ -8,9 +8,15 @@ function SoundIntent(json) constructor {
   ///@type {String}
   file = Assert.isType(json.file, String)
 
+  ///@type {?Struct}
+  waveform = Struct.getIfType(json, "waveform", Struct)
+
   ///@return {Struct}
   serialize = function() {
-    return { file: this.file }
+    return {
+      file: this.file,
+      waveform: this.waveform,
+    }
   }
 }
 
@@ -143,7 +149,7 @@ function Sound(_asset, config = {}) constructor {
   }
 
   ///@return {Number}
-  getLength = function() {
+  getDuration = function() {
     return audio_sound_length(this.asset)
   }
 
