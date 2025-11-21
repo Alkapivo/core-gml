@@ -20,7 +20,8 @@ function _DeltaTime() constructor {
   ///@return {DeltaTime}
   static update = function() {
     gml_pragma("forceinline")
-    this.deltaTime = min((this.expectedDeltaTime * delta_time), this.maxLagCompensation)
+    //this.deltaTime = min((this.expectedDeltaTime * delta_time), this.maxLagCompensation)
+    this.deltaTime = clamp((round(min((this.expectedDeltaTime * delta_time), this.maxLagCompensation) * 1000.0)) / 1000.0, 1.0, this.maxLagCompensation)
     DELTA_TIME = this.deltaTime
 
     if (Core.getProperty("core.delta-time.performance.logger", false)) {
