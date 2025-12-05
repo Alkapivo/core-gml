@@ -62,7 +62,7 @@ function TestSuite(json = {}) constructor {
       this.resultsPointer++
     } else {
       result._stop = unixTimestamp
-      result.duration = result._stop - result._start
+      result.duration = (result._stop - result._start) * 1000.0
       switch (result.promise.status) {
         case PromiseStatus.REJECTED:
           this.finished = this.stopAfterFailure ? true : this.finished
