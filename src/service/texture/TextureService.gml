@@ -89,6 +89,7 @@ function TextureService(config = {}): Service() constructor {
       try {
         Logger.debug("TextureService", $"Free texture '{name}'")
         sprite_delete(template.asset)
+        delete template
       } catch (exception) {
         Logger.error("TextureService", $"Free texture '{name}' exception: {exception.message}")
         Core.printStackTrace().printException(exception)
@@ -100,11 +101,12 @@ function TextureService(config = {}): Service() constructor {
   ///@param {Event}
   ///@return {TextureService}
   onTextureLoadedEvent = function(event) {
-    var task = this.executor.tasks
-      .find(function(task, index, asset) {
-        return task.state.get("asset") == asset
-      }, event.data.asset)
-    if (!Optional.is(task)) {
+    static findTask = function(task, index, asset) {
+      return task.state.get("asset") == asset
+    }
+
+    var task = this.executor.tasks.find(findTask, event.data.asset)
+    if (task == null) {
       throw new Exception($"Task for file '{event.data.file}' does not exists")
     }
     
