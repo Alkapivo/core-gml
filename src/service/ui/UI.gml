@@ -265,7 +265,7 @@ function UI(config = {}) constructor {
       if (item == null) {
         var containerHandler = Struct.get(this, $"on{event.name}")
         if (containerHandler != null) {
-          containerHandler()
+          containerHandler(event)
           return true
         } else {
           return !this.propagate
@@ -343,7 +343,7 @@ function UI(config = {}) constructor {
     if (item == null) {
       var containerHandler = Struct.get(this, $"on{name}")
       if (containerHandler != null) {
-        containerHandler()
+        containerHandler(new Event(name, { x: _x, y: _y }))
         return true
       } else {
         return !this.propagate
