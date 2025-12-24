@@ -261,11 +261,6 @@ function UI(config = {}) constructor {
         }
       }
 
-      var containerHandler = Struct.get(this, $"on{event.name}")
-      if (containerHandler = null) {
-        return !this.propagate
-      }
-      
       var item = this.items.find(isValidItem, event)
       if (item == null) {
         var containerHandler = Struct.get(this, $"on{event.name}")
