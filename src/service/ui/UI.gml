@@ -89,33 +89,37 @@ function UI(config = {}) constructor {
       return this
     },
   }
-  
+
   ///@return {Number}
   fetchViewWidth = Struct.contains(config, "fetchViewWidth")
     ? Assert.isType(method(this, config.fetchViewWidth), Callable)
     : function() {
-      static updateWidthPeak = function(item, name, acc) {
-        acc.peak = max(acc.peak, item.area.getX() 
-          + item.area.getWidth() + item.margin.right)
+      var peak = 0
+      var keys = this.items.keys()
+      var size = keys.size()
+      for (var idx = 0; idx < size; idx++) {
+        var key = keys.get(idx)
+        var item = this.items.get(key)
+        peak = max(peak, item.area.getX() + item.area.getWidth() + item.margin.right)
       }
-      
-      var acc = { peak: 0 }
-      this.items.forEach(updateWidthPeak, acc)
-      return acc.peak
+
+      return peak
     }
 
   ///@return {Number}
   fetchViewHeight = Struct.contains(config, "fetchViewHeight")
     ? Assert.isType(method(this, config.fetchViewHeight), Callable)
     : function() {
-      static updateHeightPeak = function(item, name, acc) {
-        acc.peak = max(acc.peak, item.area.getY() 
-          + item.area.getHeight() + item.margin.bottom)
+      var peak = 0
+      var keys = this.items.keys()
+      var size = keys.size()
+      for (var idx = 0; idx < size; idx++) {
+        var key = keys.get(idx)
+        var item = this.items.get(key)
+        peak = max(peak, item.area.getY() + item.area.getHeight() + item.margin.bottom)
       }
-      
-      var acc = { peak: 0 }
-      this.items.forEach(updateHeightPeak, acc)
-      return acc.peak
+
+      return peak
     } 
 
   ///@private
