@@ -154,7 +154,7 @@ function Settings(_path) constructor {
       var file = FileUtil.readFileSync(this.path)
       var data = JSON.parse(file.getData()).data
       GMArray.forEach(data, function(entry, index, settings) {
-        Logger.info("Settings", $"Load SettingEntry '{entry.name}'")
+        /*//@log.level*/ Logger.debug("Settings", $"Load SettingEntry '{entry.name}'")
         settings.set(new SettingEntry(entry))
       }, this)
     } catch (exception) {
@@ -176,7 +176,7 @@ function Settings(_path) constructor {
 
     Beans.get(BeanFileService).send(new Event("save-file").setData(new File({ 
       path: this.path,
-      data: JSON.stringify(json, { pretty: true })
+      data: JSON.stringify(json, true)
     })))
 
     return this
