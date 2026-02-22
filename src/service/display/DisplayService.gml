@@ -54,7 +54,7 @@ function DisplayService(config = null): Service(config) constructor {
 
   ///@private
   ///@type {Timer}
-  timer = new Timer(FRAME_MS * 20)
+  timer = new Timer(Core.getProperty("core.display-service.resize.timer", 0.25))
 
   ///@private
 	///@type {Number}
@@ -244,8 +244,8 @@ function DisplayService(config = null): Service(config) constructor {
     }
 
     if (this.state == "required" && this.timer.update().finished) {
-      var width = window_get_width()
-      var height = window_get_height()
+      var width = this.getWidth()
+      var height = this.getHeight()
       if (width > 0 && height > 0) {
         this.resize(width, height)
         this.timer.reset()
@@ -254,8 +254,8 @@ function DisplayService(config = null): Service(config) constructor {
     }
 
     if (this.state == "idle" || this.state == "resized") {
-      this.previousWidth = window_get_width()
-      this.previousHeight = window_get_height()
+      this.previousWidth = this.getWidth()
+      this.previousHeight = this.getHeight()
       this.previousGuiWidth = display_get_gui_width()
       this.previousGuiHeight = display_get_gui_height()
     }

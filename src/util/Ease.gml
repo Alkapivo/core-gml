@@ -2,7 +2,6 @@
 
 ///@enum
 function _EaseType(): Enum() constructor {
-  LEGACY = "LEGACY"
   LINEAR = "LINEAR"
   IN_SINE = "IN_SINE"
   OUT_SINE = "OUT_SINE"
@@ -45,11 +44,6 @@ global.__Ease = {
   ///@param {EaseType} [ease]
   ///@return {Callable}
   get: function(ease = EaseType.LINEAR) {
-
-    #region ease functions
-    static easeLegacy = function(progress = 0.0) {
-      return progress
-    }
   
     static easeLinear = function(progress = 0.0) {
       return progress
@@ -243,7 +237,6 @@ global.__Ease = {
     #endregion
     
     switch (ease) {
-      case EaseType.LEGACY: return easeLegacy
       case EaseType.LINEAR: return easeLinear
       case EaseType.IN_SINE: return easeInSine
       case EaseType.OUT_SINE: return easeOutSine

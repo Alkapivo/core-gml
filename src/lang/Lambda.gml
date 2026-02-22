@@ -34,6 +34,13 @@ global.__Lambda = {
     return callable(data)
   },
 
+  ///@param {Struct} entry
+  ///@param {any} iterator
+  ///@param {any} data
+  free: function(entry, iterator, data) {
+    entry.free()
+  },
+
   ///@param {...any} param
   ///@return {any}
   dummy: function(/*...param*/) {

@@ -146,54 +146,72 @@ function ColorTransformer(json = null) constructor {
 ///@param {?Struct|?Number} [json]
 function NumberTransformer(json = null) constructor {
 
-  ///@type {Number}
-  value = Core.isType(json, Number) 
-    ? json
-    : Struct.getIfType(json, "value", Number, 0.0)
+  ///@param {Struct} json
+  ///@return {EaseType}
+  static resolveLegacy = function(json) {
+    var easeType = Struct.getIfType(json, "ease", String, "LEGACY")
+    if (easeType != "LEGACY") {
+      return easeType
+    }
+
+    var length = abs(this.value - this.target)
+    var factor = abs(Struct.getIfType(json, "factor", Number, length))
+    var increase = abs(Struct.getIfType(json, "increase", Number, 0.0))
+    increase = floor(increase * 10000.0) / 10000.0
+
+    
+    //this.duration = factor != 0.0 ? (length / factor) / GAME_FPS : this.duration
+    if (increase != 0.0) {
+      var tick = 0;
+      for (var dist = 0.0; dist < length; tick++) {
+        if (tick > 1000000) {
+          Logger.warn("NumberTransformer", "LEGACY tick reached 1000000")
+          return EaseType.LINEAR
+        }
+
+        dist += factor
+        factor += increase
+      }
+
+      this.duration = tick / GAME_FPS
+      return Struct.getIfType(json, "increase", Number, 0.0) >= 0.0 ? EaseType.IN_QUAD : EaseType.OUT_QUAD
+    } else if (factor != 0.0) {
+      this.duration = (length / factor) / GAME_FPS
+    }
+
+
+    return EaseType.LINEAR
+  }
 
   ///@type {Number}
-  startValue = this.value
-
-  ///@type {Boolean}
-  finished = false
-
-  ///@type {Boolean}
-  overrideValue = Struct.get(json, "overrideValue") == true
+  value = Core.isType(json, Number) ? json : Struct.getIfType(json, "value", Number, 0.0)
 
   ///@type {Number}
   target = Struct.getIfType(json, "target", Number, this.value)
 
   ///@type {Number}
-  factor = Struct.getIfType(json, "factor", Number, 1.0)
+  duration = Struct.getIfType(json, "duration", Number, 0.0)
+
+  ///@type {EaseType}
+  easeType = resolveLegacy(json)
+
+  ///@type {Callable}
+  ease = Ease.get(this.easeType)
 
   ///@type {Number}
-  startFactor = this.factor
+  startValue = this.value
 
-  ///@type {Number}
-  increase = Struct.getIfType(json, "increase", Number, 0.0)
+  ///@type {Boolean}
+  overrideValue = Struct.get(json, "overrideValue") == true
 
   ///@type {Number}
   size = this.target - this.value
 
-  ///@type {EaseType}
-  easeType = Struct.getIfType(json, "ease", String, EaseType.LEGACY)
-
-  ///@type {Callable}
-  ease = Ease.get(this.easeType)
+  ///@type {Boolean}
+  finished = false
   
   ///@type {Number}
-  duration = Struct.getIfType(json, "duration", Number, 1.0)
-  if (this.easeType == EaseType.LEGACY) {
-    this.duration = this.factor != 0.0
-      ? (abs(this.value - this.target) / abs(this.factor)) / GAME_FPS
-      : this.duration
-  }
-  
-  ///@type {Number}
-  time = Struct.getIfType(json, "time", Number, 0.0)
-
-  ///@type {Number}
-  startTime = this.time
+  time = 0.0
   
   ///@return {any}
   static get = function() {
@@ -208,45 +226,21 @@ function NumberTransformer(json = null) constructor {
   }
   
   ///@return {NumberTransformer}
-  static updateNew = function() {
+  static update = function() {
     if (this.finished) {
       return this
     }
 
     this.time += DELTA_TIME * FRAME_MS
-    //this.time += DeltaTime.apply(FRAME_MS)
     if (this.time >= this.duration) {
       this.finished = true
       this.time = this.duration
     }
-    this.value = this.startValue + (this.size * this.ease((this.duration == 0.0 ? 0.0 : (this.time / this.duration))))
+
+    var progress = this.duration == 0.0 ? 0.0 : (this.time / this.duration)
+    this.value = this.startValue + (this.size * this.ease(progress))
 
     return this
-  }
-
-  ///@return {NumberTransformer}
-  static updateLegacy = function() {
-    if (this.finished) {
-      return this
-    }
-
-    this.factor += DELTA_TIME * (this.increase * 0.5)
-    this.value = Math.transformNumber(this.value, this.target, DELTA_TIME * this.factor)
-    this.factor += DELTA_TIME * (this.increase * 0.5)
-    //this.factor += DeltaTime.apply(this.increase * 0.5)
-    //this.value = Math.transformNumber(this.value, this.target, DeltaTime.apply(this.factor))
-    //this.factor += DeltaTime.apply(this.increase * 0.5)
-    
-    if (this.value == this.target) {
-      this.finished = true
-    }
-
-    return this
-  }
-
-  ///@return {NumberTransformer}
-  static update = function() {
-    return this.easeType == EaseType.LEGACY ? this.updateLegacy() : this.updateNew()
   }
 
   ///@return {Struct}
@@ -254,8 +248,6 @@ function NumberTransformer(json = null) constructor {
     return {
       value: this.value,
       target: this.target,
-      factor: this.factor,
-      increase: this.increase,
       duration: this.duration,
       ease: this.easeType,
     }
@@ -263,18 +255,11 @@ function NumberTransformer(json = null) constructor {
 
   ///@return {NumberTransformer}
   static reset = function() {
-    this.finished = false 
     this.value = this.startValue
-    this.factor = this.startFactor
-    this.time = this.startTime
-    this.size = this.target - this.value
     this.ease = Ease.get(this.easeType)
-    if (this.easeType == EaseType.LEGACY) {
-      this.duration = this.factor != 0.0
-        ? (abs(this.value - this.target) / abs(this.factor)) / GAME_FPS
-        : this.duration
-    }
-    
+    this.size = this.target - this.value
+    this.finished = false 
+    this.time = 0.0
     return this
   }
 }
