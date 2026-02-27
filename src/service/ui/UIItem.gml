@@ -553,17 +553,15 @@ function _UIItemUtils() constructor {
   ///@type {Struct}
   textField = {
 
-    ///@return {Callable}
     getUpdateJSONTextArea: function() {
       return function() {
-        var text = this.textField.getText()
-        if (!Optional.is(text) 
-            || String.isEmpty(text) 
-            || Struct.get(this, "__previousText") == text) {
+        var text = this.textField.text
+
+        if (Struct.get(this, "__previousText") == text) {
           return
         }
-
         Struct.set(this, "__previousText", text)
+
         if (!Struct.contains(this, "__colors")) {
           Struct.set(this, "__colors", {
             unfocusedValid: this.textField.style.c_bkg_unfocused.c,
@@ -573,8 +571,12 @@ function _UIItemUtils() constructor {
           })
         }
 
-        var isValid = Optional.is(JSON.parse(text))
         var colors = Struct.get(this, "__colors")
+        var isValid = false
+        try {
+          isValid = json_parse(text) != null
+        } catch (exception) { }
+
         this.textField.style.c_bkg_unfocused.c = isValid 
           ? colors.unfocusedValid
           : colors.unfocusedInvalid
