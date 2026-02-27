@@ -157,9 +157,8 @@ function NumberTransformer(json = null) constructor {
     var length = abs(this.value - this.target)
     var factor = abs(Struct.getIfType(json, "factor", Number, length))
     var increase = abs(Struct.getIfType(json, "increase", Number, 0.0))
-    increase = floor(increase * 10000.0) / 10000.0
+    increase = floor(increase * 100000.0) / 100000.0
 
-    
     //this.duration = factor != 0.0 ? (length / factor) / GAME_FPS : this.duration
     if (increase != 0.0) {
       var tick = 0;

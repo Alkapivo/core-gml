@@ -12,17 +12,61 @@ global.__LanguageType = new _LanguageType()
 ///@param {Struct} json
 function LanguagePack(json) constructor {
 
-  ///@type {String}
-  code = Assert.isType(json.code, String)
-
-  ///@private
-  ///@type {Map<String, String>}
-  labels = new Map(String, String)
-  if (Core.isType(Struct.get(json, "labels"), Struct)) {
-    Struct.forEach(json.labels, function(value, key, labels) {
+  ///@param {Struct}
+  ///@return {Map<String, String>}
+  static parseLabels = function(json) {
+    static parseLabel = function(value, key, labels) {
       /**///@log.level Logger.debug("LanguagePack", $"Load label {key}")
       labels.set(key, value)
-    }, this.labels)
+    }
+
+    var labels = new Map(String, String)
+    if (Struct.getIfType(json, "labels", Struct) != null) {
+      Struct.forEach(json.labels, parseLabel, labels)
+    }
+
+    return labels
+  }
+
+  ///@type {String}
+  code = Assert.isType(Struct.get(json, "code"), String, "LanguagePack::code must be type of String")
+
+  ///@type {Map<String, String>}
+  labels = parseLabels(json)
+  
+  ///@param {String} key
+  ///@param {String} value
+  ///@return {LanguagePack}
+  add = function(key, value) {
+    if (this.labels.contains(value)) {
+      Logger.warn("LanguagePack", $"Key already exists. \{ \"code\": \"{this.code}\" \"key\": \"{key}\", \"value\": \"{this.labels.get(value)}\", \"overrideValue\": \"{value}\" \}")
+    }
+
+    this.labels.set(key, value)
+    return this
+  }
+}
+
+
+///@param {Struct} json
+function LanguageManifest(json) constructor {
+
+  ///@type {Array<String>}
+  en_EN = new Array(String, Struct.getIfType(json, "en_EN", GMArray))
+
+  ///@type {Array<String>}
+  pl_PL = new Array(String, Struct.getIfType(json, "pl_PL", GMArray))
+
+  ///@param {String} code
+  ///@return {Array<String>}
+  get = function(code) {
+    var result = Struct.getIfType(this, code, Array)
+    if (result == null) {
+      Logger.warn("LanguageManifest", $"Cannot find language \"{code}\". Return default \"en_EN\"")
+      result = this.en_EN
+    }
+
+    return result
   }
 }
 
@@ -33,25 +77,43 @@ function _Language() constructor {
   ///@type {?LanguagePack}
   pack = null
 
+  ///@type {?LanguageManifest}
+  manifest = null
+
   ///@param {String} code
   ///@return {Language}
   load = function(code) {
-    var path = null
-    switch (code) {
-      case LanguageType.en_EN: path = $"{working_directory}lang/en_EN.json" break
-      case LanguageType.pl_PL: path = $"{working_directory}lang/pl_PL.json" break
-      default: path = $"{working_directory}lang/en_EN.json" break
-    }
-    
-    var json = FileUtil.readFileSync(FileUtil.get(path)).getData()
+    var root = $"{working_directory}lang/"
+    var json = FileUtil.readFileSync(FileUtil.get($"{root}manifest.json")).getData()
+    var context = this
+    this.manifest = null
+    this.pack = null
     JSON.parserTask(json, {
-      acc: this,
+      model: "io.alkapivo.core.lang.LanguageManifest",
       callback: function(prototype, json, index, acc) {
-        Language.pack = Assert.isType(new prototype(json), LanguagePack,
-          "Language.pack must be type of LanguagePack")
+        acc.manifest = Assert.isType(new prototype(json), LanguageManifest, "Language::manifest must be type of LanguageManifest")
       },
-      model: "io.alkapivo.core.lang.LanguagePack",
+      acc: context,
     }).update()
+
+    this.pack = new LanguagePack({ code: code })
+    this.manifest.get(code).forEach(function(path, iterator, acc) {
+      /**///@log.level Logger.debug("Language", $"Load {path}")
+      var json = FileUtil.readFileSync(FileUtil.get($"{acc.root}{path}")).getData()
+      JSON.parserTask(json, {
+        model: "io.alkapivo.core.lang.LanguagePack",
+        callback: function(prototype, json, index, acc) {
+          var pack = Assert.isType(new prototype(json), LanguagePack, "Language::pack must be type of LanguagePack")
+          pack.labels.forEach(function(value, key, pack) {
+            pack.add(key, value)
+          }, acc)
+        },
+        acc: acc.pack,
+      }).update()
+    }, {
+      root: root,
+      pack: this.pack,
+    })
 
     return this
   }
@@ -66,7 +128,7 @@ function _Language() constructor {
 
     var label = this.pack.labels.get(key)
     if (!Core.isType(label, String)) {
-      return ""
+      return key
     }
 
     if (argument_count > 1) {
