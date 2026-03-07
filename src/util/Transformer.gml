@@ -624,14 +624,15 @@ function GenericTransformer(config) constructor {
 
       var value = Struct.getIfType(intent, "value", Number, 0.0)
         + random(Struct.getIfType(intent, "rngValue", Number, 0.0))
+      var target = Struct.getIfType(intent, "target", Number, value)
+        + random(Struct.getIfType(intent, "rngTarget", Number, 0.0))
+
       if (context.onValue == "MERGE") {
         value = value + context.get(item, controller)
       } else if (context.onValue != "OVERRIDE") {
         value = context.get(item, controller)
       }
 
-      var target = Struct.getIfType(intent, "target", Number, 0.0)
-        + random(Struct.getIfType(intent, "rngTarget", Number, 0.0))
       if (context.onTarget == "MERGE") {
         target = target + context.get(item, controller)
       }
