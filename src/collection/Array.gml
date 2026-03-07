@@ -324,6 +324,14 @@ function Array(_type = any, _container = null) constructor {
     return this
   }
 
+  ///@param {Number} [offset]
+  ///@param {?Number} [length]
+  ///@return {Array}
+  static shuffle = function(offset = 0, length = null) {
+    this.setContainer(array_shuffle(this.getContainer(), offset, (length == null ? this.size() : length)))
+    return this
+  }
+
   ///@return {GMArray}
   static getContainer = function() {
     gml_pragma("forceinline")
@@ -761,6 +769,14 @@ function _GMArray() constructor {
     gml_pragma("forceinline")
     array_sort(arr, callback)
     return arr
+  }
+
+  ///@param {GMArray} arr
+  ///@param {Number} [offset]
+  ///@param {?Number} [length]
+  ///@return {GMArray}
+  static shuffle = function(arr, offset = 0, length = null) {
+    return array_shuffle(arr, offset, (length == null ? this.size() : length))
   }
 
   ///@param {GMArray|any} value
