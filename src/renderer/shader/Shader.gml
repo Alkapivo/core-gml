@@ -45,15 +45,6 @@ global.__FancyBlendModes = new _FancyBlendModes()
 ///@static
 ///@type {Struct}
 global.__shaders = {
-  "shader_nog_betere_2": {
-    "type": "GLSL_ES",
-    "uniforms": {
-      "iTime": "FLOAT",
-      "iResolution": "VECTOR2",
-      "iColor": "VECTOR3",
-      "iMix": "FLOAT"
-    }
-  },
   "shader_art": {
     "type": "GLSL_ES",
     "uniforms": {
@@ -103,9 +94,6 @@ global.__shaders = {
       "iTint": "VECTOR3"
     }
   },
-  "shader_abberation": {
-    "type": "GLSL_ES"
-  },
   "shader_crt": {
     "type": "GLSL_ES",
     "uniforms": {
@@ -124,12 +112,6 @@ global.__shaders = {
       "uni_timer": "FLOAT"
     }
   },
-  "shader_emboss": {
-    "type": "GLSL_ES",
-    "uniforms": {
-      "resolution": "RESOLUTION"
-    }
-  },
   "shader_hue": {
     "type": "GLSL_ES",
     "uniforms": {
@@ -142,16 +124,6 @@ global.__shaders = {
       "resolution": "RESOLUTION",
       "ledSize": "FLOAT",
       "brightness": "FLOAT"
-    }
-  },
-  "shader_magnify": {
-    "type": "GLSL_ES",
-    "uniforms": {
-      "resolution": "RESOLUTION",
-      "position": "VECTOR2",
-      "radius": "FLOAT",
-      "minZoom": "FLOAT",
-      "maxZoom": "FLOAT"
     }
   },
   "shader_mosaic": {
@@ -171,6 +143,118 @@ global.__shaders = {
   "shader_revert": {
     "type": "GLSL_ES"
   },
+  "shader_broken_time_portal": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iResolution": "VECTOR3",
+      "iTime": "FLOAT",
+      "iTreshold": "FLOAT",
+      "iSize": "FLOAT",
+      "iTint": "VECTOR3"
+    }
+  },
+  "shader_base_warp_fbm": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iResolution": "VECTOR3",
+      "iTime": "FLOAT",
+      "iSize": "FLOAT"
+    }
+  },
+  "shader_cubular": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iResolution": "VECTOR3",
+      "iTime": "FLOAT",
+      "iTint": "VECTOR3",
+      "size": "FLOAT",
+      "amount": "FLOAT"
+    }
+  },
+  "shader_sincos_3d": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iResolution": "VECTOR3",
+      "iTime": "FLOAT",
+      "iMouse": "VECTOR4",
+      "lineThickness": "FLOAT",
+      "pointRadius": "FLOAT"
+    }
+  },
+  "shader_discoteq_2": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iTime": "FLOAT",
+      "iResolution": "VECTOR2"
+    }
+  },
+  "shader_colors_embody": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iTime": "FLOAT",
+      "iResolution": "VECTOR2",
+      "iSize": "FLOAT",
+      "iDistance": "FLOAT"
+    }
+  },
+  "shader_002_blue": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iTime": "FLOAT",
+      "iResolution": "VECTOR2",
+      "iIterations": "FLOAT",
+      "iSize": "FLOAT",
+      "iPhase": "FLOAT",
+      "iTreshold": "FLOAT",
+      "iDistance": "FLOAT",
+      "iTint": "VECTOR3"
+    }
+  },
+  "shader_clouds_2d": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iTime": "FLOAT",
+      "iResolution": "VECTOR2"
+    }
+  },
+  "shader_whirlpool": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iTime": "FLOAT",
+      "iResolution": "VECTOR2",
+      "iIterations": "FLOAT",
+      "iSize": "FLOAT",
+      "iFactor": "FLOAT"
+    }
+  },
+  "shader_warp_speed_2": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iTime": "FLOAT",
+      "iResolution": "VECTOR2",
+      "iIterations": "FLOAT",
+      "iSize": "VECTOR2",
+      "iFactor": "FLOAT",
+      "iSeed": "VECTOR3"
+    }
+  },
+  "shader_star_nest": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "iTime": "FLOAT",
+      "iResolution": "VECTOR2",
+      "iAngle": "FLOAT",
+      "iZoom": "FLOAT",
+      "iTile": "FLOAT",
+      "iSpeed": "FLOAT",
+      "iBrightness": "FLOAT",
+      "iDarkmatter": "FLOAT",
+      "iDistfading": "FLOAT",
+      "iSaturation": "FLOAT",
+      "iBlend": "VECTOR3",
+    }
+  },
+  /*
   "shader_ripple": {
     "type": "GLSL_ES",
     "uniforms": {
@@ -228,49 +312,11 @@ global.__shaders = {
       "iSize": "VECTOR3"
     }
   },
-  "shader_broken_time_portal": {
-    "type": "GLSL_ES",
-    "uniforms": {
-      "iResolution": "VECTOR3",
-      "iTime": "FLOAT",
-      "iTreshold": "FLOAT",
-      "iSize": "FLOAT",
-      "iTint": "VECTOR3"
-    }
-  },
-  "shader_base_warp_fbm": {
-    "type": "GLSL_ES",
-    "uniforms": {
-      "iResolution": "VECTOR3",
-      "iTime": "FLOAT",
-      "iSize": "FLOAT"
-    }
-  },
   "shader_dive_to_cloud": {
     "type": "GLSL_ES",
     "uniforms": {
       "iResolution": "VECTOR2",
       "iTime": "FLOAT"
-    }
-  },
-  "shader_cubular": {
-    "type": "GLSL_ES",
-    "uniforms": {
-      "iResolution": "VECTOR3",
-      "iTime": "FLOAT",
-      "iTint": "VECTOR3",
-      "size": "FLOAT",
-      "amount": "FLOAT"
-    }
-  },
-  "shader_sincos_3d": {
-    "type": "GLSL_ES",
-    "uniforms": {
-      "iResolution": "VECTOR3",
-      "iTime": "FLOAT",
-      "iMouse": "VECTOR4",
-      "lineThickness": "FLOAT",
-      "pointRadius": "FLOAT"
     }
   },
   "shader_lighting_with_glow": {
@@ -281,13 +327,6 @@ global.__shaders = {
       "iFactor": "FLOAT"
     }
   },
-  "shader_discoteq_2": {
-    "type": "GLSL_ES",
-    "uniforms": {
-      "iTime": "FLOAT",
-      "iResolution": "VECTOR2"
-    }
-  },
   "shader_ui_noise_halo": {
     "type": "GLSL_ES",
     "uniforms": {
@@ -295,36 +334,7 @@ global.__shaders = {
       "iResolution": "VECTOR2"
     }
   },
-  "shader_colors_embody": {
-    "type": "GLSL_ES",
-    "uniforms": {
-      "iTime": "FLOAT",
-      "iResolution": "VECTOR2",
-      "iSize": "FLOAT",
-      "iDistance": "FLOAT"
-    }
-  },
   "shader_grid_space": {
-    "type": "GLSL_ES",
-    "uniforms": {
-      "iTime": "FLOAT",
-      "iResolution": "VECTOR2"
-    }
-  },
-  "shader_002_blue": {
-    "type": "GLSL_ES",
-    "uniforms": {
-      "iTime": "FLOAT",
-      "iResolution": "VECTOR2",
-      "iIterations": "FLOAT",
-      "iSize": "FLOAT",
-      "iPhase": "FLOAT",
-      "iTreshold": "FLOAT",
-      "iDistance": "FLOAT",
-      "iTint": "VECTOR3"
-    }
-  },
-  "shader_clouds_2d": {
     "type": "GLSL_ES",
     "uniforms": {
       "iTime": "FLOAT",
@@ -340,43 +350,35 @@ global.__shaders = {
       "iIterations": "FLOAT"
     }
   },
-  "shader_whirlpool": {
+  "shader_nog_betere_2": {
     "type": "GLSL_ES",
     "uniforms": {
       "iTime": "FLOAT",
       "iResolution": "VECTOR2",
-      "iIterations": "FLOAT",
-      "iSize": "FLOAT",
-      "iFactor": "FLOAT"
+      "iColor": "VECTOR3",
+      "iMix": "FLOAT"
     }
   },
-  "shader_warp_speed_2": {
+  "shader_abberation": {
+    "type": "GLSL_ES"
+  },
+  "shader_emboss": {
     "type": "GLSL_ES",
     "uniforms": {
-      "iTime": "FLOAT",
-      "iResolution": "VECTOR2",
-      "iIterations": "FLOAT",
-      "iSize": "VECTOR2",
-      "iFactor": "FLOAT",
-      "iSeed": "VECTOR3"
+      "resolution": "RESOLUTION"
     }
   },
-  "shader_star_nest": {
+  "shader_magnify": {
     "type": "GLSL_ES",
     "uniforms": {
-      "iTime": "FLOAT",
-      "iResolution": "VECTOR2",
-      "iAngle": "FLOAT",
-      "iZoom": "FLOAT",
-      "iTile": "FLOAT",
-      "iSpeed": "FLOAT",
-      "iBrightness": "FLOAT",
-      "iDarkmatter": "FLOAT",
-      "iDistfading": "FLOAT",
-      "iSaturation": "FLOAT",
-      "iBlend": "VECTOR3",
+      "resolution": "RESOLUTION",
+      "position": "VECTOR2",
+      "radius": "FLOAT",
+      "minZoom": "FLOAT",
+      "maxZoom": "FLOAT"
     }
   },
+  */
 }
 #macro SHADERS global.__shaders
 

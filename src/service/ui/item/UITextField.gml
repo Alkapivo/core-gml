@@ -146,7 +146,7 @@ function UITextField(name, json = null) {
       } else {
         this.textField.update(0, 0)
       }
-      var text = this.textField.getText()
+      var text = this.textField.text
       if (!this.textField.isFocused() && this.value != text) {
         this.updateValue(text)
       }

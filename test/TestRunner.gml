@@ -213,6 +213,12 @@ function TestRunner(config = null) constructor {
         game_end()
       }
 
+  ///@param {Callable} callback
+  ///@return {TestRunner}
+  setShutdown = function(callback) {
+    this.shutdown = method(this, callback)
+    return this
+  }
   ///@return {TestRunner}
   update = function() {
     if (this.testSuite == null && this.testSuites.size() > 0) {

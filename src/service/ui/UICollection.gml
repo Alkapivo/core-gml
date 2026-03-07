@@ -5,27 +5,31 @@
 function UICollection(_container, config = null) constructor {
   
   ///@param {UI}
-  container = Assert.isType(_container, UI)
+  container = Assert.isType(_container, UI,
+    "UICollection::container must be type of UI")
 
   ///@param {UILayout}
   layout = Assert.isType(Struct.get(config, "layout"), UILayout)
 
   ///@param {Collection}
   components = Struct.contains(config, "components")
-    ? Assert.isType(config.components, Collection) 
+    ? Assert.isType(config.components, Collection, 
+        "UICollection::components must be type of Collection") 
     : new Map(String, Struct)
 
   ///@param {any} key
   ///@return {?Struct}
   get = Struct.contains(config, "get")
-    ? Assert.isType(method(this, config.get), Callable)
+    ? Assert.isType(method(this, config.get), Callable,
+        "UICollection::get must be type of Callable")
     : function(key) {
       return this.components.get(key) 
     }
 
-    ///@return {Number}
+  ///@return {Number}
   size = Struct.contains(config, "size")
-    ? Assert.isType(method(this, config.size), Callable)
+    ? Assert.isType(method(this, config.size), Callable,
+        "UICollection::size must be type of Callable")
     : function() {
       return this.components.size() 
     }
@@ -33,7 +37,8 @@ function UICollection(_container, config = null) constructor {
   ///@param {Number} index
   ///@return {any}
   findByIndex = Struct.contains(config, "findByIndex")
-    ? Assert.isType(method(this, config.findByIndex), Callable)
+    ? Assert.isType(method(this, config.findByIndex), Callable,
+        "UICollection::findByIndex must be type of Callable")
     : function(index) {
       static findComponent = function(component, key, index) {
         return component.index == index
@@ -44,7 +49,8 @@ function UICollection(_container, config = null) constructor {
   ///@param {Number} index
   ///@return {any}
   findKeyByIndex = Struct.contains(config, "findKeyByIndex")
-    ? Assert.isType(method(this, config.findKeyByIndex), Callable)
+    ? Assert.isType(method(this, config.findKeyByIndex), Callable,
+        "UICollection::findKeyByIndex must be type of Callable")
     : function(index) {
       static findComponent = function(component, key, index) {
         return component.index == index
@@ -55,7 +61,8 @@ function UICollection(_container, config = null) constructor {
   ///@param {any} key
   ///@return {Boolean}
   contains = Struct.contains(config, "contains")
-    ? Assert.isType(method(this, config.contains), Callable)
+    ? Assert.isType(method(this, config.contains), Callable,
+        "UICollection::contains must be type of Callable")
     : function(key) {
       return this.components.contains(key)
     }
@@ -63,7 +70,8 @@ function UICollection(_container, config = null) constructor {
   ///@param {Number} index
   ///@return {Boolean}
   containsIndex = Struct.contains(config, "containsIndex")
-    ? Assert.isType(method(this, config.containsIndex), Callable)
+    ? Assert.isType(method(this, config.containsIndex), Callable,
+        "UICollection::containsIndex must be type of Callable")
     : function(index) {
       var size = this.size()
       return size == 0 ? false : (index >= 0 && index < size)
@@ -73,7 +81,8 @@ function UICollection(_container, config = null) constructor {
   ///@param {?Number} [index]
   ///@return {UICollection}
   add = Struct.contains(config, "add")
-    ? Assert.isType(method(this, config.add), Callable)
+    ? Assert.isType(method(this, config.add), Callable,
+        "UICollection::add must be type of Callable")
     : function(component, index = null) {
       static updateIndex = function(component, key, index) {
         if (component.index >= index) {
@@ -125,7 +134,8 @@ function UICollection(_container, config = null) constructor {
   ///@param {Number} index
   ///@return {UICollection}
   remove = Struct.contains(config, "remove")
-    ? Assert.isType(method(this, config.remove), Callable)
+    ? Assert.isType(method(this, config.remove), Callable,
+        "UICollection::remove must be type of Callable")
     : function(index) {
       static update = function(component, key, index) {
         if (component.index > index) {
@@ -157,9 +167,24 @@ function UICollection(_container, config = null) constructor {
   ///@param {any} key
   ///@return {UICollection}
   removeKey = Struct.contains(config, "removeKey")
-    ? Assert.isType(method(this, config.removeKey), Callable)
+    ? Assert.isType(method(this, config.removeKey), Callable,
+        "UICollection::removeKey must be type of Callable")
     : function(key) {
       var component = this.components.get(key)
       return Optional.is(component) ? this.remove(component.index) : this
+    }
+
+  ///@return {UICollection}
+  clear = Struct.contains(config, "free")
+    ? Assert.isType(method(this, config.free), Callable,
+        "UICollection::clear must be type of Callable")
+    : function() {
+      static freeUI = function(ui) {
+        ui.free()
+      }
+
+      this.container.free()
+      this.components.clear()
+      return this
     }
 }
