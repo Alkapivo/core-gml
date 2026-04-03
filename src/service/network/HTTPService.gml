@@ -13,12 +13,18 @@ function HTTPService(config = null): Service(config) constructor {
   eventPump = new EventPump(this, new Map(String, Callable, {
     "get": function(event) {
       var url = Assert.isType(Struct.get(event.data, "url"), String, "'url' must be passed to HTTPServer event 'get'")
-      var requestId = http_get(url)
+      var file = Struct.getIfType(event.data, "file", Boolean, false)
+      var target = Struct.getIfType(event.data, "target", String, "payload")
+      var requestId = file ? http_get_file(url, target) : http_get(url)
+      Core.print("url", url, "file", file, "target", target)
       var task = new Task("get-request")
         .setPromise(event.promise)
         .setTimeout(Struct.getIfType(event.data, "timeout", Number, HTTP_SERVICE_GET_TIMEOUT))
         .setState({
           requestId: requestId,
+          file: file,
+          contentLength: null,
+          sizeDownloaded: null,
         })
       this.executor.add(task)
       event.setPromise(null)
@@ -56,6 +62,8 @@ function HTTPService(config = null): Service(config) constructor {
     var event = new Event("get", {
       url: Struct.get(config, "url"),
       timeout: Struct.get(config, "timeout"),
+      file: Struct.get(config, "file"),
+      target: Struct.get(config, "target"),
     }, new Promise({
       state: Struct.get(config, "state"),
       onSuccess: Struct.getIfType(config, "onSuccess", Callable, onSuccess),
@@ -88,15 +96,27 @@ function HTTPService(config = null): Service(config) constructor {
     }
 
     var status = async_load[? "status"]
-    switch (status) {
-      case 0:
+    if (task.state.file) {
+      switch (status) {
+        case 0:
+          TaskUtil.fullfill(task, null, async_load[? "result"])
+          break
+        case 1:
+          task.state.contentLength = async_load[? "contentLength"]
+          task.state.sizeDownloaded = async_load[? "sizeDownloaded"]
+          break
+        default:
+          TaskUtil.reject(task, null, status)
+          break
+      }
+    } else {
+      if (status == 0) {
         TaskUtil.fullfill(task, null, async_load[? "result"])
-        break
-      default:
+      } else {
         TaskUtil.reject(task, null, status)
-        break
+      }
     }
-
+    
     return this
   }
 

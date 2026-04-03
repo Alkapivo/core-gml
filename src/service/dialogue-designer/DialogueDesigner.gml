@@ -5,6 +5,7 @@ function _DDNodeType(): Enum() constructor {
   START = "start"
   MESSAGE = "show_message"
   EXECUTE = "execute"
+  CONDITION = "condition_branch"
 }
 global.__DDNodeType = new _DDNodeType()
 #macro DDNodeType global.__DDNodeType
@@ -13,16 +14,22 @@ global.__DDNodeType = new _DDNodeType()
 ///@param {Array} array
 function DDDialogue(array) constructor {
 
+  Assert.isType(array, Array, 
+    $"DDDialogue(array) must be type of Array.\nRAW: {array}")
+
   ///@type {Struct}
-  var json = Assert.isType(array.get(0), Struct)
+  var json = Assert.isType(array.getFirst(), Struct,
+    $"DDDialogue::json must be type of Struct.\nJSON: {array.getFirst()}")
 
   ///@type {Array<DDNode>}
-  nodes = new Array(DDNode, GMArray.map(json.nodes, function(node) {
-    switch (node.node_type) {
+  nodes = new Array(DDNode, GMArray.map(Assert.isType(Struct.get(json, "nodes"), GMArray, $"DDDialogue::nodes must be type of Array.\nJSON: {json}"), function(node) {
+    var type = Struct.get(node, "node_type")
+    switch (type) {
       case DDNodeType.START: return new DDNode(node)
       case DDNodeType.MESSAGE: return new DDMessage(node)
       case DDNodeType.EXECUTE: return new DDExecute(node)
-      default: throw new Exception($"Unsupported type {node.node_type}")
+      case DDNodeType.CONDITION: return new DDCondition(node)
+      default: throw new Exception($"Unsupported type {type}")
     }
   }))
 
@@ -74,8 +81,9 @@ function DDDialogue(array) constructor {
   }
   
   ///@param {Map<String, Callable>} handlers
+  ///@param {Callable} conditionHandler
   ///@return {DDDialogue}
-  update = function(handlers) {
+  update = function(handlers, conditionHandler) {
     switch (this.current.type) {
       case DDNodeType.START:
         var node = this.get(this.current.next)
@@ -86,11 +94,18 @@ function DDDialogue(array) constructor {
       case DDNodeType.MESSAGE:
         break
       case DDNodeType.EXECUTE:
-        this.current.action.run(handlers)
+        var wait = this.current.action.run(handlers)
+        if (wait == true) {
+          break
+        }
+
         var node = this.get(this.current.next)
         if (Core.isType(node, DDNode)) {
           this.current = node
         }
+        break
+      case DDNodeType.CONDITION:
+        conditionHandler(this.current)
         break
     }  
     
@@ -103,20 +118,18 @@ function DDDialogue(array) constructor {
 function DDNode(json) constructor {
 
   ///@type {String}
-  name = Assert.isType(json.node_name, String)
+  name = Assert.isType(Struct.get(json, "node_name"), String,
+    $"DDNode::name must be type of String.\nJSON: {json}")
 
   ///@type {DDNodeType}
-  type = Assert.isEnum(json.node_type, DDNodeType)
+  type = Assert.isEnum(Struct.get(json, "node_type"), DDNodeType,
+    $"DDNode::name must be type of String.\nJSON: {json}")
 
   ///@type {?String}
-  next = Core.isType(Struct.get(json, "next"), String)
-    ? json.next
-    : null
+  next = Struct.getIfType(json, "next", String)
 
   ///@type {String}
-  title = Core.isType(Struct.get(json, "title"), String)
-    ? json.title
-    : ""
+  title = Struct.getIfType(json, "title", String, "")
 
   ///@param {String} lang
   ///@return {String}
@@ -149,10 +162,8 @@ function DDNode(json) constructor {
 function DDExecute(json): DDNode(json) constructor {
 
   ///@type {DDAction}
-  action = Assert.isType(
-    new DDAction(JSON.parse(json.text)), 
-    DDAction
-  )
+  action = Assert.isType(new DDAction(JSON.parse(Struct.get(json, "text"))), DDAction,
+    $"DDExecute::action must be type of DDAction.\nJSON: {json}")
 }
 
 
@@ -178,13 +189,33 @@ function DDMessage(json): DDNode(json) constructor {
 
 
 ///@param {Struct} json
+function DDCondition(json): DDNode(json) constructor {
+
+  ///@type {String}
+  statement = Assert.isType(Struct.get(json, "text"), String,
+    $"DDCondition::statement must be type of String.\nJSON: {json}")
+
+  ///@type {String}
+  onTrue = Assert.isType(Struct.get(Struct.get(json, "branches"), "True"), String,
+    $"DDCondition::onTrue must be type of String.\nJSON: {json}")
+
+  ///@type {String}
+  onFalse = Assert.isType(Struct.get(Struct.get(json, "branches"), "False"), String,
+    $"DDCondition::onFalse must be type of String.\nJSON: {json}")
+}
+
+///@param {Struct} json
 function DDChoice(json) constructor {
 
   ///@type {?String}
-  condition = json.is_condition ? Assert.isType(json.condition) : null
+  condition = Struct.get(json, "is_condition")
+    ? Assert.isType(Struct.get(json, "condition"), String,
+      $"DDChoice::condition must be type of String.\nJSON: {json}")
+    : null
 
   ///@type {String}
-  next = Assert.isType(json.next, String)
+  next = Assert.isType(Struct.get(json, "next"), String,
+    $"DDChoice::next must be type of String.\nJSON: {json}")
 
   ///@type {Map<String, String>}
   text = new Map(String, String)
@@ -207,23 +238,21 @@ function DDChoice(json) constructor {
 function DDAction(json) constructor {
 
   ///@type {String}
-  action = Assert.isType(json.action, String)
+  action = Assert.isType(Struct.get(json, "action"), String, 
+    $"DDAction::action must be type of String.\nJSON: {json}")
 
   ///@type {?Struct}
-  data = Core.isType(Struct.get(json, "data"), Struct) 
-    ? json.data 
-    : null
+  data = Struct.getIfType(json, "data", Struct, {})
 
   ///@param {Map<String, Callable>} handlers
   ///@throws {Exception}
-  ///@return {DDAction}
+  ///@return {?Boolean}
   run = function(handlers) {
     var handler = handlers.get(this.action)
     if (!Core.isType(handler, Callable)) {
       throw new Exception($"Handler for action '{this.action}' was not found")
     }
 
-    handler(this.data)
-    return this
+    return handler(this.data)
   }
 }

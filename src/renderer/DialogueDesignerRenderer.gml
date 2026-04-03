@@ -1,22 +1,41 @@
 ///@package io.alkapivo.core.service.dialogue-designer
 
 function DialogueRenderer() constructor {
-  
-  bazyl = SpriteUtil.parse({ name: "texture_baron" })
-  bazylTheta = 0.0
-
-  ///@type {Font}
-  font = Assert.isType(FontUtil.parse({ name: "font_consolas_18_regular" }), Font)
 
   ///@type {?Struct}
   context = null
+
+  ///@type {Font}
+  font = Assert.isType(FontUtil.parse({ name: Core.getProperty("core.dialogue-designer.font") }), Font) 
+
+  ///@type {Font}
+  fontHeader = Assert.isType(FontUtil.parse({ name: Core.getProperty("core.dialogue-designer.font-header") }), Font) 
+
+  ///@type {GMColor}
+  fontColor = ColorUtil.fromHex(Core.getProperty("core.dialogue-designer.font.color")).toGMColor()
+
+  ///@type {GMColor}
+  fontOutlineColor = ColorUtil.fromHex(Core.getProperty("core.dialogue-designer.font.color-outline")).toGMColor()
+
+  ///@type {GMColor}
+  fontHeaderColor = ColorUtil.fromHex(Core.getProperty("core.dialogue-designer.font.color-header")).toGMColor()
+
+  ///@type {GMColor}
+  fontHeaderOutlineColor = ColorUtil.fromHex(Core.getProperty("core.dialogue-designer.font.color-header-outline")).toGMColor()
+
+  ///@type {GMColor}
+  fontHoverColor = ColorUtil.fromHex(Core.getProperty("core.dialogue-designer.font.color-hover")).toGMColor()
+
+  ///@type {GMColor}
+  fontHoverOutlineColor = ColorUtil.fromHex(Core.getProperty("core.dialogue-designer.font.color-hover-outline")).toGMColor()
 
   layout = new UILayout({
     name: "dialog",
     width: function() { return clamp(GuiWidth(), 800, 1280) },
     height: function() { return 360 },
     x: function() { return (GuiWidth() - this.width()) / 2.0 },
-    y: function() { return GuiHeight() - this.height() - 96 },
+    //y: function() { return GuiHeight() - this.height() - 96 },
+    y: function() { return 96 + (GuiHeight() / 16) },
     nodes: {
       avatar: {
         name: "dialog-avatar",
@@ -31,6 +50,12 @@ function DialogueRenderer() constructor {
       },
     },
   })
+
+  ///@type {Sprite}
+  bazyl = SpriteUtil.parse({ name: "texture_baron" })
+  
+  ///@type {Number}
+  bazylTheta = 0.0
 
   ///@param {String} text
   ///@return {Struct}
@@ -185,8 +210,8 @@ function DialogueRenderer() constructor {
       }
     }
   
-    var font = FontUtil.parse({ name: "font_consolas_28_regular" })
-    GPU.set.font(font.asset)
+    
+    GPU.set.font(fontHeader.asset)
 
     this.bazylTheta += choose(0.05, 0.1, 0.1, 0.15)
     if (this.bazylTheta > pi * 2) {
@@ -216,11 +241,11 @@ function DialogueRenderer() constructor {
       1.0,
       0.0,
       1.0,
-      c_white,
-      font,
+      this.fontHeaderColor,
+      this.fontHeader,
       HAlign.LEFT,
       VAlign.TOP,
-      c_black,
+      this.fontHeaderOutlineColor,
       1.0
     )
 
@@ -240,7 +265,8 @@ function DialogueRenderer() constructor {
       this.context = {
         text: this.parseDialogueText(dialog.current.getText(lang)),
         choices: dialog.current.getChoicesText(lang),
-        current: dialog.current
+        current: dialog.current,
+        choiceIndex: 0,
       }
     }
 
@@ -250,8 +276,12 @@ function DialogueRenderer() constructor {
     return this
   }
 
+  ///@type {UILayout} layout
+  ///@type {Boolean} up
+  ///@type {Boolean} down
+  ///@type {Boolean} action
   ///@return {DialogueRenderer}
-  render = function() {
+  render = function(layout, up, down, action) {
     if (Core.isType(this.context, Struct)) {
       this.renderDialogue(this.context.text)
 
@@ -263,8 +293,9 @@ function DialogueRenderer() constructor {
         if (Core.isType(dialog.current, DDNode)) {
           var dispatched = false
           var choices = Struct.get(dialog.current, "choices")
+          var size = 1
           if (Core.isType(choices, Array)) {
-            var size = choices.size()
+            size = choices.size()
             for (var index = 0; index < size; index++) {
               if (keyboard_check_pressed(ord($"{index + 1}"))) {
                 dialog.select(index)
@@ -274,8 +305,23 @@ function DialogueRenderer() constructor {
             }
           }
           
-          if (!dispatched && keyboard_check_pressed(vk_anykey) || mouse_check_button_pressed(mb_any)) {
-            dialog.select()
+          if (!dispatched && up) {
+            dispatched = true
+            this.context.choiceIndex = this.context.choiceIndex - 1 < 0
+              ? size - 1
+              : this.context.choiceIndex - 1
+          }
+
+          if (!dispatched && down) {
+            dispatched = true
+            this.context.choiceIndex = this.context.choiceIndex + 1 >= size
+              ? 0
+              : this.context.choiceIndex + 1
+          }
+          
+          if (!dispatched && action) {
+            dispatched = true
+            dialog.select(this.context.choiceIndex)
           }
         } 
       }
@@ -283,19 +329,29 @@ function DialogueRenderer() constructor {
       if (this.context.text.finished && Core.isType(this.context.choices, Array)) {
         this.context.choices.forEach(function(choice, index, acc) {
 
-          var _x = acc.layout.x() + (acc.layout.width() / 2)
-          var width = GuiWidth() - _x
+          var _x = acc.layout.x()
+          var width = acc.layout.width()
           var height = 48
           var margin = 12
-          var _y = acc.layout.y() - ((acc.size - index) * height) - margin,
+          var _y = acc.layout.bottom() + (index * height) + margin,
           
-          var hoverColor = point_in_rectangle(acc.mouseX, acc.mouseY, _x, _y, _x + width, _y + height)
-            ? c_yellow
-            : c_white
+          var isHover = point_in_rectangle(acc.mouseX, acc.mouseY, _x, _y, _x + width, _y + height)
+          if (isHover) {
+            if (mouse_check_button_pressed(mb_left)) {
+              Beans.get(BeanDialogueDesignerService).dialog.select(index)
+            }
 
-          if (hoverColor == c_yellow && mouse_check_button_pressed(mb_left)) {
-            Beans.get(BeanDialogueDesignerService).dialog.select(index)
+            if (MouseUtil.hasMoved()) {
+              this.context.choiceIndex = index
+            }
           }
+          var hoverColor = this.context.choiceIndex == index
+            ? acc.fontHoverColor
+            : acc.fontColor
+
+          var hoverOutlineColor = this.context.choiceIndex == index
+            ? acc.fontHoverOutlineColor
+            : acc.fontColorOutline
 
           GPU.render.text(
             _x, 
@@ -308,11 +364,15 @@ function DialogueRenderer() constructor {
             acc.font,
             HAlign.LEFT,
             VAlign.TOP,
-            c_black,
+            hoverOutlineColor,
             1.0
           )
         }, {
           font: this.font,
+          color: this.fontColor,
+          colorOutline: this.fontOutlineColor,
+          colorHover: this.fontHoverColor,
+          colorHoverOutline: this.fontHoverOutlineColor,
           layout: this.layout,
           size: this.context.choices.size(),
           mouseX: MouseUtil.getMouseX(),
