@@ -293,7 +293,7 @@ function DialogueRenderer() constructor {
         if (Core.isType(dialog.current, DDNode)) {
           var dispatched = false
           var choices = Struct.get(dialog.current, "choices")
-          var size = 1
+          var size = 0
           if (Core.isType(choices, Array)) {
             size = choices.size()
             for (var index = 0; index < size; index++) {
@@ -304,24 +304,31 @@ function DialogueRenderer() constructor {
               }
             }
           }
-          
-          if (!dispatched && up) {
+
+          if (size == 0 && (action || mouse_check_button_pressed(mb_left))) {
             dispatched = true
+            dialog.select()
+          }
+
+          if (!dispatched && action) {
+            dispatched = true
+            dialog.select(this.context.choiceIndex)
+          }
+          
+          if (!dispatched && up && size > 0) {
+            dispatched = true
+            this.context.choiceIndex = this.context.choiceIndex == null ? 0 : this.context.choiceIndex
             this.context.choiceIndex = this.context.choiceIndex - 1 < 0
               ? size - 1
               : this.context.choiceIndex - 1
           }
 
-          if (!dispatched && down) {
+          if (!dispatched && down && size > 0) {
             dispatched = true
+            this.context.choiceIndex = this.context.choiceIndex == null ? size - 1 : this.context.choiceIndex
             this.context.choiceIndex = this.context.choiceIndex + 1 >= size
               ? 0
               : this.context.choiceIndex + 1
-          }
-          
-          if (!dispatched && action) {
-            dispatched = true
-            dialog.select(this.context.choiceIndex)
           }
         } 
       }
@@ -329,10 +336,10 @@ function DialogueRenderer() constructor {
       if (this.context.text.finished && Core.isType(this.context.choices, Array)) {
         this.context.choices.forEach(function(choice, index, acc) {
 
-          var _x = acc.layout.x()
           var width = acc.layout.width()
           var height = 48
-          var margin = 12
+          var margin = 24
+          var _x = acc.layout.x() + margin
           var _y = acc.layout.bottom() + (index * height) + margin,
           
           var isHover = point_in_rectangle(acc.mouseX, acc.mouseY, _x, _y, _x + width, _y + height)
@@ -351,7 +358,7 @@ function DialogueRenderer() constructor {
 
           var hoverOutlineColor = this.context.choiceIndex == index
             ? acc.fontHoverOutlineColor
-            : acc.fontColorOutline
+            : acc.fontOutlineColor
 
           GPU.render.text(
             _x, 
@@ -369,10 +376,10 @@ function DialogueRenderer() constructor {
           )
         }, {
           font: this.font,
-          color: this.fontColor,
-          colorOutline: this.fontOutlineColor,
-          colorHover: this.fontHoverColor,
-          colorHoverOutline: this.fontHoverOutlineColor,
+          fontColor: this.fontColor,
+          fontOutlineColor: this.fontOutlineColor,
+          fontHoverColor: this.fontHoverColor,
+          fontHoverOutlineColor: this.fontHoverOutlineColor,
           layout: this.layout,
           size: this.context.choices.size(),
           mouseX: MouseUtil.getMouseX(),
