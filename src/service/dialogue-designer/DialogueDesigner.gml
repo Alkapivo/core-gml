@@ -48,7 +48,7 @@ function DDDialogue(array) constructor {
 
   ///@return {DDDialogue}
   print = function() {
-    Core.print("current", this.current.name, "text", this.current.getText("ENG"))
+    Core.print("current", this.current.name, "text", this.current.getText(Language.getCode()))
     return this
   }
 

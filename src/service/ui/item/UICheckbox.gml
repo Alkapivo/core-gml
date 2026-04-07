@@ -13,12 +13,12 @@ function UICheckbox(name, json = null) {
     value: Assert.isType(Struct.getDefault(json, "value", false), Boolean),
     
     ///@type {?Sprite}
-    spriteOn: Struct.contains(json, "spriteOn") 
+    spriteOn: Struct.get(json, "spriteOn") != null
       ? Assert.isType(SpriteUtil.parse(json.spriteOn), Sprite)
       : null,
     
     ///@type {?Sprite}
-    spriteOff: Struct.contains(json, "spriteOff") 
+    spriteOff: Struct.get(json, "spriteOff") != null
       ? Assert.isType(SpriteUtil.parse(json.spriteOff), Sprite)
       : null,
 
@@ -26,7 +26,7 @@ function UICheckbox(name, json = null) {
     enable: Struct.getIfType(json, "enable", Struct),
 
     ///@type {Boolean}
-    scaleToFillStretched: Struct.contains(json, "scaleToFillStretched")
+    scaleToFillStretched: Struct.get(json, "scaleToFillStretched") != null
       ? Assert.isType(json.scaleToFillStretched, Boolean)
       : true,
       

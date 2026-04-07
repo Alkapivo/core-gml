@@ -260,7 +260,7 @@ function DialogueRenderer() constructor {
       return this
     }
 
-    var lang = "ENG"
+    var lang = Language.getCode()
     if (Struct.get(this.context, "current") != dialog.current) {
       this.context = {
         text: this.parseDialogueText(dialog.current.getText(lang)),
@@ -282,110 +282,112 @@ function DialogueRenderer() constructor {
   ///@type {Boolean} action
   ///@return {DialogueRenderer}
   render = function(layout, up, down, action) {
-    if (Core.isType(this.context, Struct)) {
-      this.renderDialogue(this.context.text)
+    if (!Core.isType(this.context, Struct)) {
+      return this
+    }
 
-      var dialog = Beans.get(BeanDialogueDesignerService).dialog
-      if (this.context.text.finished 
+    this.renderDialogue(this.context.text)
+
+    var dialog = Beans.get(BeanDialogueDesignerService).dialog
+    var dispatched = false
+    if (this.context.text.finished
         && !this.context.text.anykeyConsumed 
-        && Core.isType(dialog, DDDialogue)) {
+        && Core.isType(dialog, DDDialogue)
+        && Core.isType(dialog.current, DDNode)) {
 
-        if (Core.isType(dialog.current, DDNode)) {
-          var dispatched = false
-          var choices = Struct.get(dialog.current, "choices")
-          var size = 0
-          if (Core.isType(choices, Array)) {
-            size = choices.size()
-            for (var index = 0; index < size; index++) {
-              if (keyboard_check_pressed(ord($"{index + 1}"))) {
-                dialog.select(index)
-                dispatched = true
-                break
-              }
-            }
-          }
-
-          if (size == 0 && (action || mouse_check_button_pressed(mb_left))) {
-            dispatched = true
-            dialog.select()
-          }
-
-          if (!dispatched && action) {
-            dispatched = true
-            dialog.select(this.context.choiceIndex)
-          }
-          
-          if (!dispatched && up && size > 0) {
-            dispatched = true
-            this.context.choiceIndex = this.context.choiceIndex == null ? 0 : this.context.choiceIndex
-            this.context.choiceIndex = this.context.choiceIndex - 1 < 0
-              ? size - 1
-              : this.context.choiceIndex - 1
-          }
-
-          if (!dispatched && down && size > 0) {
-            dispatched = true
-            this.context.choiceIndex = this.context.choiceIndex == null ? size - 1 : this.context.choiceIndex
-            this.context.choiceIndex = this.context.choiceIndex + 1 >= size
-              ? 0
-              : this.context.choiceIndex + 1
-          }
-        } 
+      var choices = Struct.get(dialog.current, "choices")
+      var size = Core.isType(choices, Array) ? choices.size() : 0
+      for (var index = 0; index < size; index++) {
+        if (!dispatched && keyboard_check_pressed(ord($"{index + 1}"))) {
+          dialog.select(index)
+          dispatched = true
+          break
+        }
       }
 
-      if (this.context.text.finished && Core.isType(this.context.choices, Array)) {
-        this.context.choices.forEach(function(choice, index, acc) {
-
-          var width = acc.layout.width()
-          var height = 48
-          var margin = 24
-          var _x = acc.layout.x() + margin
-          var _y = acc.layout.bottom() + (index * height) + margin,
-          
-          var isHover = point_in_rectangle(acc.mouseX, acc.mouseY, _x, _y, _x + width, _y + height)
-          if (isHover) {
-            if (mouse_check_button_pressed(mb_left)) {
-              Beans.get(BeanDialogueDesignerService).dialog.select(index)
-            }
-
-            if (MouseUtil.hasMoved()) {
-              this.context.choiceIndex = index
-            }
-          }
-          var hoverColor = this.context.choiceIndex == index
-            ? acc.fontHoverColor
-            : acc.fontColor
-
-          var hoverOutlineColor = this.context.choiceIndex == index
-            ? acc.fontHoverOutlineColor
-            : acc.fontOutlineColor
-
-          GPU.render.text(
-            _x, 
-            _y,
-            $"{index + 1}. {choice}",
-            1.0,
-            0.0,
-            1.0,
-            hoverColor,
-            acc.font,
-            HAlign.LEFT,
-            VAlign.TOP,
-            hoverOutlineColor,
-            1.0
-          )
-        }, {
-          font: this.font,
-          fontColor: this.fontColor,
-          fontOutlineColor: this.fontOutlineColor,
-          fontHoverColor: this.fontHoverColor,
-          fontHoverOutlineColor: this.fontHoverOutlineColor,
-          layout: this.layout,
-          size: this.context.choices.size(),
-          mouseX: MouseUtil.getMouseX(),
-          mouseY: MouseUtil.getMouseY(),
-        })
+      if (!dispatched && action) {
+        dispatched = true
+        dialog.select(size == 0 ? null : this.context.choiceIndex)
       }
+      
+      if (!dispatched && up && size > 0) {
+        dispatched = true
+        this.context.choiceIndex = this.context.choiceIndex == null
+          ? 0
+          : this.context.choiceIndex
+        this.context.choiceIndex = this.context.choiceIndex - 1 < 0
+          ? size - 1
+          : this.context.choiceIndex - 1
+      }
+
+      if (!dispatched && down && size > 0) {
+        dispatched = true
+        this.context.choiceIndex = this.context.choiceIndex == null
+          ? size - 1
+          : this.context.choiceIndex
+        this.context.choiceIndex = this.context.choiceIndex + 1 >= size
+          ? 0
+          : this.context.choiceIndex + 1
+      }
+    }
+
+    if (this.context.text.finished
+        && Core.isType(this.context.choices, Array)) {
+
+      this.context.choices.forEach(function(choice, index, acc) {
+
+        var width = acc.layout.width()
+        var height = 48
+        var margin = 24
+        var _x = acc.layout.x() + margin
+        var _y = acc.layout.bottom() + (index * height) + margin,
+        var isHover = point_in_rectangle(acc.mouseX, acc.mouseY, _x, _y, _x + width, _y + height)
+        if (isHover) {
+          if (!acc.dispatched && acc.action) {
+            acc.dispatched = true
+            this.context.choiceIndex = index
+            Beans.get(BeanDialogueDesignerService).dialog.select(index)
+          }
+
+          if (acc.hasMoved) {
+            this.context.choiceIndex = index
+          }
+        }
+
+        var hoverColor = this.context.choiceIndex == index
+          ? acc.fontHoverColor
+          : acc.fontColor
+        var hoverOutlineColor = this.context.choiceIndex == index
+          ? acc.fontHoverOutlineColor
+          : acc.fontOutlineColor
+        GPU.render.text(
+          _x, 
+          _y,
+          $"{index + 1}. {choice}",
+          1.0,
+          0.0,
+          1.0,
+          hoverColor,
+          acc.font,
+          HAlign.LEFT,
+          VAlign.TOP,
+          hoverOutlineColor,
+          1.0
+        )
+      }, {
+        dispatched: dispatched,
+        action: action,
+        hasMoved: MouseUtil.hasMoved(),
+        font: this.font,
+        fontColor: this.fontColor,
+        fontOutlineColor: this.fontOutlineColor,
+        fontHoverColor: this.fontHoverColor,
+        fontHoverOutlineColor: this.fontHoverOutlineColor,
+        layout: this.layout,
+        size: this.context.choices.size(),
+        mouseX: MouseUtil.getMouseX(),
+        mouseY: MouseUtil.getMouseY(),
+      })
     }
 
     return this

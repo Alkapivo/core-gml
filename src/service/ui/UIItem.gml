@@ -113,15 +113,15 @@ function UIItem(_name, config = {}) constructor {
     )
   }
 
-  updateArea = Struct.contains(config, "updateArea")
+  updateArea = Struct.get(config, "updateArea") != null
     ? method(this, Assert.isType(Struct.get(config, "updateArea"), Callable))
     : null
 
-  updateEnable = Struct.contains(config, "updateEnable")
+  updateEnable = Struct.get(config, "updateEnable") != null
     ? method(this, Assert.isType(Struct.get(config, "updateEnable"), Callable))
     : null
 
-  updateCustom = Struct.contains(config, "updateCustom")
+  updateCustom = Struct.get(config, "updateCustom") != null
     ? method(this, Assert.isType(Struct.get(config, "updateCustom"), Callable))
     : null
 
