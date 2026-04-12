@@ -120,9 +120,8 @@ function KeyboardKey(key) constructor {
 ///@param {Struct} json
 function Keyboard(json) constructor {
   
-
   ///@type {Struct}
-  keys = Struct.map(json, function(key) {
+  keys = Struct.map(Struct.get(json, "keys"), function(key) {
     return new KeyboardKey(key)
   })
 
@@ -141,6 +140,9 @@ function Keyboard(json) constructor {
   }
 
   ///@return {Keyboard}
+  updateEnd = method(this, Struct.getIfType(json, "updateEnd", Callable, function() { return this }))
+
+  ///@return {Keyboard}
   update = function() {
     static keysUpdate = function(key) {
       key.on = keyboard_check(key.gmKey)
@@ -149,6 +151,7 @@ function Keyboard(json) constructor {
     }
     
     Struct.forEach(this.keys, keysUpdate)
+    this.updateEnd()
     return this
   }
 }
@@ -241,6 +244,83 @@ function PrioritizedPressedKeyUpdater(json = null) constructor {
         && this.cooldown.update().finished) {
       
       var key = keyboard.getKey(this.current.name)
+      if (key != null) {
+        key.pressed = true
+      }
+    }
+    
+    return this
+  }
+}
+
+
+///@param {?Struct} json
+function PrioritizedPressedVirtualKeyUpdater(json = null) constructor {
+
+  ///@private
+  ///@type {Timer}
+  treshold = new Timer(Struct.getIfType(json, "treshold", Number, 0.5))
+
+  ///@private
+  ///@type {Timer}
+  cooldown = new Timer(Struct.getIfType(json, "cooldown", Number, 0.1), { loop: Infinity })
+
+  ///@private
+  ///@type {Array<String>}
+  keys = new Array(String, Struct.getIfType(json, "keys", GMArray, []))
+
+  ///@private  
+  ///@type {Array<String>}
+  buffer = new Array(String).enableGC()
+
+  ///@private
+  ///@type {?Struct}
+  current = null
+  
+  ///@private
+  ///@type {Struct}
+  acc = {
+    keyboard: null,
+    buffer: null,
+    set: function(keyboard, buffer) {
+      this.keyboard = keyboard
+      this.buffer = buffer
+    },
+  }
+
+  ///@param {Keyboard} keyboard
+  ///@return {PrioritizedPressedKeyUpdater}
+  updateKeyboard = function(keyboard) {
+    static checkPressed = function(_key, index, acc) {
+      var key = acc.keyboard.getKey(_key)
+      if (key.pressed) {
+        acc.buffer.add(_key)
+      }
+    }
+
+    static checkReleased = function(_key, index, acc) {
+      var key = acc.keyboard.getKey(_key)
+      if (!key.on || key.released) {
+        acc.buffer.addToGC(index)
+      }
+    }
+
+    this.acc.set(keyboard, this.buffer)
+
+    this.keys.forEach(checkPressed, this.acc)
+    this.buffer.forEach(checkReleased, this.acc).runGC()
+
+    if (this.current != this.buffer.getLast()) {
+      this.current = this.buffer.getLast()
+      this.cooldown.reset()
+      this.treshold.reset()
+    }
+
+    if (this.current != null
+        && this.treshold.update().finished
+        && this.cooldown.update().finished) {
+      
+      var key = keyboard.getKey(this.current)
       if (key != null) {
         key.pressed = true
       }
