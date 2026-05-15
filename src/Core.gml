@@ -27,6 +27,8 @@ gml_pragma("optimise", "js_check_index", "push off")
 #macro any "any"
 
 #macro TAU 6.28318530
+#macro PI 3.14159265
+
 
 ///@enum
 function _RuntimeType(): Enum() constructor {

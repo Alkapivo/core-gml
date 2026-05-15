@@ -88,7 +88,7 @@ function UILabel(json) constructor {
       : 1.0
 
     _scale = _scale < 1.0
-      ? clamp(floor((_scale * 0.95) / 0.125) * 0.125, 0.0, 1.0)
+      ? clamp(floor((_scale * 1.0) / 0.05) * 0.05, 0.0, 1.0) //? clamp(floor((_scale * 0.95) / 0.125) * 0.125, 0.0, 1.0)
       : _scale
 
     if (_scale <= 0.0) {
