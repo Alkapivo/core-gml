@@ -15,32 +15,44 @@ global.__SettingTypes = new _SettingTypes()
 function SettingEntry(json) constructor {
 
   ///@type {String}
-  name = Assert.isType(json.name, String)
+  name = Assert.isType(Struct.get(json, "name"), String,
+    $"SettingEntry::name must be type of String (raw json: {json})")
 
   ///@type {SettingTypes}
-  type = Assert.isEnum(json.type, SettingTypes)
+  type = Assert.isEnum(Struct.get(json, "type"), SettingTypes,
+    $"SettingEntry::type must be type of SettingTypes (raw json: {json})")
+
+  ///@type {any}
+  value = null
 
   ///@param {any} value
   ///@throws {AssertException}
   ///@return {any}
-  validate = function(value) {
-    switch (this.type) {
-      case SettingTypes.BOOLEAN: return Assert.isType(value, Boolean)
-      case SettingTypes.NUMBER: return Assert.isType(value, Number)
-      case SettingTypes.STRING: return Assert.isType(value, String)
-      case SettingTypes.STRUCT: return Assert.isType(value, Struct)
-      default: throw new AssertException($"SettinghType '{this.type}'")
+  validate = Struct.getIfType(json, "validate", Callable)
+    ? method(this, json.validate)
+    : function(value) {
+      switch (this.type) {
+        case SettingTypes.BOOLEAN: return Assert.isType(value, Boolean,
+          $"SettingEntry::validate(value: {value}) must be type of Boolean")
+        case SettingTypes.NUMBER: return Assert.isType(value, Number,
+          $"SettingEntry::validate(value: {value}) must be type of Number")
+        case SettingTypes.STRING: return Assert.isType(value, String,
+          $"SettingEntry::validate(value: {value}) must be type of String")
+        case SettingTypes.STRUCT: return Assert.isType(value, Struct,
+          $"SettingEntry::validate(value: {value}) must be type of Struct")
+        default: throw new AssertException(
+          $"SettingEntry::validate(value: {value}) type not implemented: {this.type}")
+      }
+      return this.value
     }
-    return this.value
-  }
 
   ///@type {any}
-  defaultValue = this.validate(json.defaultValue)
+  defaultValue = this.validate(Struct.get(json, "defaultValue"))
 
-  ///@type {any}
-  value = null
   try {
-    value = Optional.is(Struct.get(json, "value")) ? this.validate(Struct.get(json, "value")) : this.defaultValue
+    value = Optional.is(Struct.get(json, "value"))
+      ? this.validate(Struct.get(json, "value"))
+      : this.defaultValue
   } catch (exception) {
     value = this.defaultValue
     Logger.error("SettingEntry", $"Unable to set value for SettingEntry '{this.name}'. {exception.message}")
