@@ -305,6 +305,28 @@ function DialogueRenderer() constructor {
         }
       }
 
+      if (size == 0) {
+        var width = this.layout.width()
+        var height = 48
+        var margin = 24
+        var _x = this.layout.x() + (width / 2.0)
+        var _y = this.layout.bottom() + height + margin,
+        GPU.render.text(
+          _x, 
+          _y,
+          Language.get("core.dialogue-designer.message.continue"),
+          1.0,
+          0.0,
+          1.0,
+          this.fontColor,
+          this.font,
+          HAlign.CENTER,
+          VAlign.TOP,
+          this.fontOutlineColor,
+          1.0
+        )
+      }
+
       if (!dispatched && action) {
         dispatched = true
         dialog.select(size == 0 ? null : this.context.choiceIndex)

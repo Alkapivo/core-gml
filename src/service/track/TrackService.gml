@@ -110,7 +110,8 @@ function TrackService(config = null): Service(config) constructor {
         this.track.audio.resume()
       } else {
         this.time = 0.0
-        this.track.audio.play()
+        this.track.audio
+          .play(this.track.audio.getVolume())
       }
     }
     return this
@@ -148,7 +149,9 @@ function TrackService(config = null): Service(config) constructor {
     this.time = timestamp
     this.track.rewind(timestamp)
     if (!this.track.audio.isLoaded()) {
-      this.track.audio.play().rewind(timestamp).pause()
+      this.track.audio
+        .play(this.track.audio.getVolume())
+        .rewind(timestamp).pause()
     }
     return this
   }

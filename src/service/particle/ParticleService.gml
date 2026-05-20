@@ -82,9 +82,14 @@ function ParticleService(config = null): Service() constructor {
   templates = new Map(String, ParticleTemplate)
 
   ///@type {Map<String, ParticleSystem}
-  systems = Struct.getDefault(config, "systems", new Map(String, ParticleSystem, {
-    main: new ParticleSystem(Struct.get(config, "layerName")),
-  }))
+  
+  systems = new Map(String, ParticleSystem, Struct.map(
+    Struct.appendUnique(Struct.get(config, "systems"), {
+      main: Assert.isType(Struct.get(config, "layerName"), String, 
+        "ParticleService config.layerName must be type of String")
+    }), function(layerName) {
+      return new ParticleSystem(layerName)
+    }))
 
   ///@return {Map<String, ParticleTemplate>}
   getStaticTemplates = method(this, Core.isType(Struct.get(config, "getStaticTemplates"), Callable)
