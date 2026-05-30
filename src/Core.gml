@@ -192,7 +192,7 @@ function _Core() constructor {
   ///@param {?Struct|?String} object
   ///@return {?Prototype}
   static getConstructor = function(object) {
-    gml_pragma("forceinline")
+    //gml_pragma("forceinline")
     var name = Core.isType(object, Struct) ? instanceof(object) : object
     if (!Core.isType(name, String)) {
       return null
@@ -240,11 +240,16 @@ function _Core() constructor {
   ///@param {?Struct} exception
   ///@return {Core}
   static printException = function(exception) {
-    gml_pragma("forceinline")
-    Logger.error("Core::printException", Struct.getIfType(exception, "message", String, ""))
-    GMArray.forEach(Struct.getIfType(exception, "stacktrace", GMArray, []), function(line, idx) {
+    //gml_pragma("forceinline")
+    static printStackLine = function(line, idx) {
       Core.print("       ", line)
-    })
+    }
+
+    Logger.error("Core::printException", Struct.getIfType(exception, "message", String, ""))
+    var stacktrace = Struct.getIfType(exception, "stacktrace", GMArray)
+    if (stacktrace != null) {
+      GMArray.forEach(stacktrace, printStackLine)
+    }    
     
     return Core
   }

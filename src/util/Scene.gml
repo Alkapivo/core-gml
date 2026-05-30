@@ -25,7 +25,7 @@ function _Scene() constructor {
   ///@throws {AssertException}
   ///@return {Scene}
   open = function(name, intent = null) {
-    var scene = Assert.isType(this.getScene(name), GMScene)
+    var scene = Assert.isType(this.getScene(name), GMScene, $"Scene {name} must be type of GMScene")
     Logger.info("Scene", $"open scene: {name}")
     this.setIntent(intent)
     room_goto(scene)

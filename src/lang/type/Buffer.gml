@@ -128,7 +128,7 @@ function BufferTest() constructor {
     }
 
     timer += DELTA_TIME * FRAME_MS
-    var this.newSize = this.currentSize + this.bufferStep
+    this.newSize = this.currentSize + this.bufferStep
     if (this.newSize >= this.targetSize) {
       buffer_resize(this.bufferAsset, this.targetSize)
       this.currentSize = this.targetSize

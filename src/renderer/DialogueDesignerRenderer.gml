@@ -310,7 +310,7 @@ function DialogueRenderer() constructor {
         var height = 48
         var margin = 24
         var _x = this.layout.x() + (width / 2.0)
-        var _y = this.layout.bottom() + height + margin,
+        var _y = this.layout.bottom() + height + margin
         GPU.render.text(
           _x, 
           _y,
@@ -362,7 +362,7 @@ function DialogueRenderer() constructor {
         var height = 48
         var margin = 24
         var _x = acc.layout.x() + margin
-        var _y = acc.layout.bottom() + (index * height) + margin,
+        var _y = acc.layout.bottom() + (index * height) + margin
         var isHover = point_in_rectangle(acc.mouseX, acc.mouseY, _x, _y, _x + width, _y + height)
         if (isHover) {
           if (!acc.dispatched && acc.action) {

@@ -20,13 +20,13 @@
 
 	void main() {
 		
-		vec2 texture = inputTexture;
-		texture.x *= resolution.x / resolution.y;
+		vec2 tx = inputTexture;
+		tx.x *= resolution.x / resolution.y;
 		vec2 newTexture = inputTexture;
 		vec2 pos = vec2(position.x * resolution.x, position.y * resolution.y);
 		float centerX = (pos.x / resolution.x) * (resolution.x / resolution.y);
 		float centerY = pos.y / resolution.y;
-		float dist = distance(texture, vec2(centerX, centerY));
+		float dist = distance(tx, vec2(centerX, centerY));
 		
 		if ((dist <= time + width) && 
 			(dist >= time - width)) {
@@ -34,8 +34,8 @@
 			float difference = dist - time;
 			float differencePower = 1.0 - pow(abs(difference * amplitude), refraction);
 			float differenceTime = difference * differencePower;
-			vec2 differenceTexture = normalize(texture - position);
-			newTexture = texture + (differenceTexture * differenceTime);
+			vec2 differenceTexture = normalize(tx - position);
+			newTexture = tx + (differenceTexture * differenceTime);
 			newTexture.x *= resolution.y / resolution.x;
 		}
 		

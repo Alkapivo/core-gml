@@ -20,13 +20,13 @@
 
 	void main() {
 		
-		vec2 texture = inputTexture;
-		texture.x *= (resolution.x / resolution.y);
+		vec2 tx = inputTexture;
+		tx.x *= (resolution.x / resolution.y);
 		float centerX = (position.x / resolution.x) * (resolution.x / resolution.y);
 		float centerY = position.y / resolution.y;
 		
 		vec2 direction = inputTexture - vec2(0.5, 0.5);
-		float dist = distance(texture, vec2(centerX, centerY));
+		float dist = distance(tx, vec2(centerX, centerY));
 		vec2 offset = direction * (sin(dist * amount - time * speed)) / distortion;
 		
 		vec4 outputPixel = inputColor * texture2D(gm_BaseTexture, inputTexture + offset);
