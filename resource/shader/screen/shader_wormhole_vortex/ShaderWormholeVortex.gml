@@ -1,4 +1,6 @@
 ///@package io.alkapivo.shader.screen.shader_wormhole_vortex
+show_debug_message("init ShaderWormholeVortex.gml")
+
 
 ///@static
 ///@type {Struct}

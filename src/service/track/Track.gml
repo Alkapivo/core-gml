@@ -1,15 +1,21 @@
 ///@package io.alkapivo.core.service.track
+show_debug_message("init Track.gml")
+
 
 ///@static
-///@type {Map<String, Callable>}
-global.__DEFAULT_TRACK_EVENT_HANDLERS = new Map(String, Callable, {
-  "dummy": {
-    run: function(data) {
-      Core.print("Dummy track event")
-    },
-  },
-})
+///@type {?Map<String, Callable>}
+global.__DEFAULT_TRACK_EVENT_HANDLERS = null///@GMRT
 #macro DEFAULT_TRACK_EVENT_HANDLERS global.__DEFAULT_TRACK_EVENT_HANDLERS
+function init_DEFAULT_TRACK_EVENT_HANDLERS() {
+  Core.print("init_DEFAULT_TRACK_EVENT_HANDLERS")
+  DEFAULT_TRACK_EVENT_HANDLERS = new Map(String, Callable, {
+    "dummy": {
+      run: function(data) {
+        Core.print("Dummy track event")
+      }
+    }
+  })
+}
 
 
 ///@enum

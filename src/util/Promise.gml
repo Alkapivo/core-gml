@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.util
+show_debug_message("init Promise.gml")
+
 
 ///@enum
 function _PromiseStatus(): Enum() constructor {

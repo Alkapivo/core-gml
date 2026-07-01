@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.collection
+show_debug_message("init DSMap.gml")
+
 
 #macro GMMap "GMMap"
 

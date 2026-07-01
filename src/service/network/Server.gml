@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.service.network
+show_debug_message("init Server.gml")
+
 
 #macro NetworkSocketID "NetworkSocketID"
 

@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.lang
+show_debug_message("init Math.gml")
+
 
 ///@static
 function _Vector() constructor {

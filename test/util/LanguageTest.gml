@@ -1,4 +1,6 @@
 ///@package io.alkapivo.test.utils
+show_debug_message("init LanguageTest.gml")
+
 
 ///@param {Test} test
 ///@return {Task}

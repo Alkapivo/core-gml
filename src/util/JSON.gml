@@ -1,6 +1,4 @@
-///@package io.alkapivo.util
-
-///@param {Struct} config
+///@package io.alkapivo.utilsh/@param {Struct} config
 function JSONModelType(config) constructor {
   
   ///@type {String}
@@ -25,11 +23,7 @@ function JSONModelType(config) constructor {
   ///@return {String}
   getTypeName = Callable.bind(this, Assert.isType(Struct.getDefault(config, "getTypeName", 
     function(model) {
-      return String.replaceAll(
-        String.replaceAll(
-          String.split(this.getTypeFullName(model), ".").getLast(),
-          ">", ""),
-        "<", "")
+      return String.split(this.getTypeFullName(model), ".").getLast()
     }), Callable))
 
   ///@param {String} model

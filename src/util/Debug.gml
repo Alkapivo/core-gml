@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.util
+show_debug_message("init Debug.gml")
+
 
 ///@param {String} _name
 ///@param {Number} [_size]

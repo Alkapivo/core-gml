@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.service.deltatime
+show_debug_message("init DeltaTime.gml")
+
 
 ///@static
 ///@type {Number}

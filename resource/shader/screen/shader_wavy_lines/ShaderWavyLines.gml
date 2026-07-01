@@ -1,4 +1,6 @@
 ///@package io.alkapivo.shader.screen.shader_wavy_lines
+show_debug_message("init ShaderWavyLines.gml")
+
 
 ///@static
 ///@type {Struct}

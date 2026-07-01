@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.util
+show_debug_message("init CLIParamParser.gml")
+
 
 ///@param {Struct} json
 function CLIParam(json) constructor {

@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.util.store
+show_debug_message("init StoreItemSubscriber.gml")
+
 
 ///@param {Struct} json
 function StoreItemSubscriber(json) constructor {

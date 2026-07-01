@@ -1,4 +1,6 @@
 ///@package io.alkapivo.shader.screen.shader_warp_pulse
+show_debug_message("init ShaderWarpPulse.gml")
+
 
 ///@static
 ///@type {Struct}

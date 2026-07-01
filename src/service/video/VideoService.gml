@@ -1,4 +1,6 @@
 ///@package com.alkapivo.core.component.video.VideoService
+show_debug_message("init VideoService.gml")
+
 
 
 ///@param {Struct} [config]

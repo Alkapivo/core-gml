@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.lang.type
+show_debug_message("init Number.gml")
+
 
 #macro Number "Number"
 #macro Infinity infinity

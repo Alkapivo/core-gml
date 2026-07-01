@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.util
+show_debug_message("init Language.gml")
+
 
 ///@enum
 function _LanguageType(): Enum() constructor {

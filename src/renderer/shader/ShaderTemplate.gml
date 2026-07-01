@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.renderer.shader
+show_debug_message("init ShaderTemplate.gml")
+
 
 ///@param {String} _name
 ///@param {Struct} json

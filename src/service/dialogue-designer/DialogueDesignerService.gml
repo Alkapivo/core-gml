@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.service.dialogue-designer
+show_debug_message("init DialogueDesignerService.gml")
+
 
 ///@type {String}
 #macro BeanDialogueDesignerService "DialogueDesignerService"

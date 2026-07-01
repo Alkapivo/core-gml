@@ -1,4 +1,6 @@
 ///@package io.alkapivo.shader.screen.shader_fractal_bloom
+show_debug_message("init ShaderFractalBloom.gml")
+
 
 ///@static
 ///@type {Struct}

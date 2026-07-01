@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.service.sound
+show_debug_message("init SoundService.gml")
+
 
 ///@type {String}
 #macro GMAudioGroupID "GMAudioGroupID"

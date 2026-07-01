@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.renderer.shader
+show_debug_message("init ShaderUniform.gml")
+
 
 #macro GMShaderUniform "GMShaderUniform"
 

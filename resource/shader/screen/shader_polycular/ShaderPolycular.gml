@@ -1,4 +1,6 @@
 ///@package io.alkapivo.shader.screen.shader_polycular
+show_debug_message("init ShaderPolycular.gml")
+
 
 ///@static
 ///@type {Struct}

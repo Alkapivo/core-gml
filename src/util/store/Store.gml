@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.util.store
+show_debug_message("init Store.gml")
+
 
 ///@param {Struct} json
 function Store(json) constructor {

@@ -1,4 +1,6 @@
 ///@package io.alkapivo.shader.screen.shader_gaussian_blur
+show_debug_message("init ShaderGaussianBlur.gml")
+
 
 ///@static
 ///@type {Struct}

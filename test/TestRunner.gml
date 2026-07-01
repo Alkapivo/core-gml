@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.test
+show_debug_message("init TestRunner.gml")
+
 
 #macro BeanTestRunner "TestRunner"
 ///@param {?Struct} [config]

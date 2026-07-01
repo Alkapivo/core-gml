@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.collection
+show_debug_message("init Collection.gml")
+
 
 #macro BREAK_LOOP "__BREAK_LOOP__"
 

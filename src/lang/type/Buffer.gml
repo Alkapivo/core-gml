@@ -1,4 +1,6 @@
 ///@package com.alkapivo.core.util.Buffer
+show_debug_message("init Buffer.gml")
+
 
 #macro GMBuffer "GMBuffer"
 

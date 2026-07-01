@@ -1,4 +1,6 @@
 ///@package io.alkapivo.shader.screen.shader_deep_space
+show_debug_message("init ShaderDeepSpace.gml")
+
 
 ///@static
 ///@type {Struct}

@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.service.video
+show_debug_message("init Video.gml")
+
 
 ///@description https://github.com/YoYoGames/GameMaker-Bugs/issues/2543
 #macro GMVideoSurface "GMVideoSurface"
@@ -31,13 +33,17 @@ global.__VideoFormat = new _VideoFormat()
 
 
 ///@static
-///@type {Map<VideoStatus, String>}
-global.__VideoStatusNames = new Map()
-#macro VideoStatusNames global.__VideoStatusNames
-VideoStatusNames.set(VideoStatus.CLOSED, "CLOSED")
-VideoStatusNames.set(VideoStatus.PREPARING, "PREPARING")
-VideoStatusNames.set(VideoStatus.PLAYING, "PLAYING")
-VideoStatusNames.set(VideoStatus.PAUSED, "PAUSED")
+///@type {?Map<VideoStatus, String>}
+global.__VIDEO_STATUS_NAMES = null///@GMRT
+#macro VIDEO_STATUS_NAMES global.__VIDEO_STATUS_NAMES
+function init_VIDEO_STATUS_NAMES() {
+  Core.print("init_VIDEO_STATUS_NAME")
+  VIDEO_STATUS_NAMES = new Map()
+    .set(VideoStatus.CLOSED, "CLOSED")
+    .set(VideoStatus.PREPARING, "PREPARING")
+    .set(VideoStatus.PLAYING, "PLAYING")
+    .set(VideoStatus.PAUSED, "PAUSED")
+}
 
 
 ///@param {?Struct} [config]
@@ -156,7 +162,7 @@ function Video(json) constructor {
 
   ///@return {String}
   getStatusName = function() {
-    return VideoStatusNames.get(this.getStatus())
+    return VIDEO_STATUS_NAMES.get(this.getStatus())
   }
 
   ///@return {Number}
@@ -259,10 +265,10 @@ function _VideoUtil() constructor {
 
   ///@return {VideoUtil}
   runGC = function() {
-    var before = VideoStatusNames.get(video_get_status())
+    var before = VIDEO_STATUS_NAMES.get(video_get_status())
     video_close()
     VIDEO_CONTEXT = null
-    var after = VideoStatusNames.get(video_get_status())
+    var after = VIDEO_STATUS_NAMES.get(video_get_status())
     Logger.debug("Video", $"runGC(): Video status: \{ \"before\": \"{before}\", \"after\": \"{after}\" }")
     return this
   }

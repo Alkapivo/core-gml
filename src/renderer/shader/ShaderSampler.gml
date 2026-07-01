@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.renderer.shader
+show_debug_message("init ShaderSampler.gml")
+
 
 #macro GMShaderSampler "GMShaderSampler"
 

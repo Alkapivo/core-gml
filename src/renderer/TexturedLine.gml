@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.renderer
+show_debug_message("init TexturedLine.gml")
+
 
 ///@param {?Struct} [json]
 function TexturedLine(json = null) constructor {

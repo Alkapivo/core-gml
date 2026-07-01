@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.service.input
+show_debug_message("init Keyboard.gml")
+
 
 #macro GMKeyboardKey "GMKeyboardKey"
 

@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.service.ui
+show_debug_message("init UIService.gml")
+
 
 ///@param {?Struct} [config]
 function UIService(config = null): Service(config) constructor {

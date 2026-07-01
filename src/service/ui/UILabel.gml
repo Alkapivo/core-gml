@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.service.ui
+show_debug_message("init UILabel.gml")
+
 
 ///@param {Struct} json
 function UILabel(json) constructor {

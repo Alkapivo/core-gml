@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.renderer.Color
+show_debug_message("init Color.gml")
+
 
 #macro GMColor "GMColor"
 #macro COLOR_HEX_SYMBOLS "0123456789ABCDEF"

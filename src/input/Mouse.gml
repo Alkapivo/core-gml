@@ -1,3 +1,5 @@
+show_debug_message("init Mouse.gml")
+
 
 ///@package io.alkapivo.core.service.input
 

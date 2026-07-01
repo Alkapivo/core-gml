@@ -1,5 +1,7 @@
 ///@package io.alkapivo.core
 show_debug_message("init Core.gml")
+
+show_debug_message("init Core.gml")
 gml_pragma("optimise", "js_array_check", "push off")
 gml_pragma("optimise", "js_error_check", "push off")
 gml_pragma("optimise", "js_check_index", "push off")
@@ -139,8 +141,8 @@ function _Core() constructor {
     //} catch (exception) {
     //  Logger.error("Core.isType", $"'{type}' Fatal error: {exception.message}")
     //  Core.printStackTrace().printException(exception)
+    //  return false
     //}
-    return false
   }
 
   ///@param {any} object
@@ -151,8 +153,10 @@ function _Core() constructor {
     gml_pragma("forceinline")
     //try {
       return enumerable.contains(object)
-    //} catch (exception) { }
-    return false
+    //} catch (exception) {
+    //  return false
+    //}
+
   }
 
   ///@param {any} object
@@ -163,8 +167,9 @@ function _Core() constructor {
     gml_pragma("forceinline")
     //try {
       return enumerable.containsKey(object)
-    //} catch (exception) { }
-    return false  
+    //} catch (exception) {
+    //  return false
+    //}
   }
 
   ///@param {any} object
@@ -192,7 +197,7 @@ function _Core() constructor {
   ///@param {?Struct|?String} object
   ///@return {?Prototype}
   static getConstructor = function(object) {
-    //gml_pragma("forceinline")
+    gml_pragma("forceinline")
     var name = Core.isType(object, Struct) ? instanceof(object) : object
     if (!Core.isType(name, String)) {
       return null
@@ -240,7 +245,7 @@ function _Core() constructor {
   ///@param {?Struct} exception
   ///@return {Core}
   static printException = function(exception) {
-    //gml_pragma("forceinline")
+    gml_pragma("forceinline")
     static printStackLine = function(line, idx) {
       Core.print("       ", line)
     }
@@ -396,3 +401,15 @@ function _Core() constructor {
 }
 global.__Core = new _Core()
 #macro Core global.__Core
+
+
+function init_Core() {
+  Core.print("init_Core")
+  init_Beans()
+  init_GPU()
+  init_DEFAULT_TRACK_EVENT_HANDLERS()
+  init_SHADER_UNIFORM_TEMPLATES()
+  init_VIDEO_STATUS_NAMES()
+  init_UIItemUtil()
+  init_UIUtil()
+}

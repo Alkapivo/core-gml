@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.service.particle
+show_debug_message("init ParticleService.gml")
+
 
 #macro GMParticleSystem "GMParticleSystem"
 #macro GMParticleEmitter "GMParticleEmitter"

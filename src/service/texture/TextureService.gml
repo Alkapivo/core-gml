@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.service.texture
+show_debug_message("init TextureService.gml")
+
 
 ///@type {String}
 #macro BeanTextureService "TextureService"

@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.util.task
+show_debug_message("init Task.gml")
+
 
 ///@enum
 function _TaskStatus(): Enum() constructor {

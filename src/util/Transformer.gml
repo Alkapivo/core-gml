@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.util
+show_debug_message("init Transformer.gml")
+
 
 ///@interface
 ///@param {Struct} [json]

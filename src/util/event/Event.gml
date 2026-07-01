@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.event
+show_debug_message("init Event.gml")
+
 
 global.__eventCounter = {
   value: 0,

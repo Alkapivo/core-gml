@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.lang.type
+show_debug_message("init Callable.gml")
+
 
 ///@static
 function _Callable() constructor {

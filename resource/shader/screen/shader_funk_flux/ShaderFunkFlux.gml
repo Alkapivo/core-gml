@@ -1,4 +1,6 @@
 ///@package io.alkapivo.shader.screen.shader_funk_flux
+show_debug_message("init ShaderFunkFlux.gml")
+
 
 ///@static
 ///@type {Struct}

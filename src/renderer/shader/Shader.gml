@@ -1,4 +1,5 @@
-///@package io.alkapivo.core.renderer.shader
+///@package io.alkapivo.core.renderer.shaders
+show_debug_message("init Shader.gml")
 
 #macro GMShader "GMShader"
 

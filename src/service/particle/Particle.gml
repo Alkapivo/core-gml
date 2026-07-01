@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.service.particle
+show_debug_message("init Particle.gml")
+
 
 #macro GMParticle "GMParticle"
 

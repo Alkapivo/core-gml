@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.service.network
+show_debug_message("init HTTPService.gml")
+
 
 ///@type {Number}
 #macro HTTP_SERVICE_GET_TIMEOUT 60

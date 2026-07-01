@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.service.ui.item
+show_debug_message("init UISlider.gml")
+
 
 ///@param {String} name
 ///@param {Struct} [json]

@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.service.ui
+show_debug_message("init UI.gml")
+
 
 ///@param {Struct} [config]
 function UI(config = {}) constructor {
@@ -292,6 +294,9 @@ function UI(config = {}) constructor {
       return true
     }
 
+  ///@type {Event}
+  dispatcherHandlerEvent = new Event("dispatcherHandlerEvent", { x: 0, y: 0 })
+
   ///@param {String} name
   ///@param {Number} _x
   ///@param {Number} _y
@@ -371,7 +376,12 @@ function UI(config = {}) constructor {
       item.isHoverOver = true
     }
 
-    dispatcher(new Event(name, { x: _x, y: _y })) //fffuck
+    this.dispatcherHandlerEvent.name = name
+    this.dispatcherHandlerEvent.data.x = _x
+    this.dispatcherHandlerEvent.data.y = _y
+    this.dispatcherHandlerEvent.promise = null
+    dispatcher(this.dispatcherHandlerEvent)
+    //dispatcher(new Event(name, { x: _x, y: _y })) //fffuck
     return true
   }
   
@@ -689,7 +699,6 @@ function UI(config = {}) constructor {
 }
 
 
-///@static
 function _UIUtil() constructor {
 
   ///@type {Map<String, Callable>}
@@ -1476,5 +1485,12 @@ function _UIUtil() constructor {
     },
   }
 }
-global.__UIUtil = new _UIUtil()
+
+
+///@static
+global.__UIUtil = null///@GMRT//new _UIUtil()
 #macro UIUtil global.__UIUtil
+function init_UIUtil() {
+  Core.print("init_UIUtil")
+  UIUtil = new _UIUtil()
+}

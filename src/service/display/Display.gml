@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.service.display
+show_debug_message("init Display.gml")
+
 
 ///@param {Struct} json
 function Display(json) constructor {

@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.test
+show_debug_message("init Test.gml")
+
 
 ///@param {Struct} json
 function Test(json) constructor {

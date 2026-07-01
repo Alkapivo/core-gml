@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.collection
+show_debug_message("init Struct.gml")
+
 
 ///@static
 function _Struct() constructor {
@@ -325,7 +327,7 @@ function _Struct() constructor {
   ///@param {any} value
   ///@param {Boolean} [bind]
   ///@return {Struct}
-  static appendField = function(source, key, value, bind = true) {
+  static appendField = function(source = null, key, value = null, bind = true) {
     var struct = Core.isType(source, Struct) ? source : {}
     var _value = bind ? (Core.isType(value, BindIntent) ? value.bind(struct) : value) : value
     Struct.set(struct, key, _value)
@@ -379,7 +381,7 @@ function _Struct() constructor {
   ///@param {any} value
   ///@param {Boolean} [bind]
   ///@return {Struct}
-  static appendUniqueField = function(source, key, value, bind = true) {
+  static appendUniqueField = function(source = null, key, value = null, bind = true) {
     var struct = Core.isType(source, Struct) ? source : {}
     if (!Struct.contains(struct, key)) {
       this.appendField(struct, key, value, bind)

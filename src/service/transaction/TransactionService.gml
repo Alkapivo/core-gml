@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.service.transaction
+show_debug_message("init TransactionService.gml")
+
 
 ///@type {Number}
 #macro TRANSACTION_SERVICE_DEFAULT_LIMIT 1000

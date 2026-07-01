@@ -1,6 +1,8 @@
 ///@package io.alkapivo.core.renderer.GPU
 show_debug_message("init GPU.gml")
 
+show_debug_message("init GPU.gml")
+
 ///@type {?Texture}
 global.__GPU_DEFAULT_LINE_TEXTURE = null
 #macro GPU_DEFAULT_LINE_TEXTURE global.__GPU_DEFAULT_LINE_TEXTURE
@@ -637,7 +639,8 @@ function _GPU() constructor {
 global.__GPU = new _GPU()
 #macro GPU global.__GPU
 
-function initGPU() {
+function init_GPU() {
+  Core.print("init_GPU")
   GPU_DEFAULT_LINE_TEXTURE = new Texture(texture_grid_line_default)
   GPU_DEFAULT_LINE_TEXTURE_CORNER = new Texture(texture_grid_line_corner_default)
   GPU_DEFAULT_FONT = new Font(font_consolas_12_regular)

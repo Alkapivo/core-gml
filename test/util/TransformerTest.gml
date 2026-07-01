@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.util
+show_debug_message("init TransformerTest.gml")
+
 
 ///@param {Test} test
 ///@return {Task}

@@ -1,6 +1,8 @@
 ///@package io.alkapivo.core.service.texture
 show_debug_message("init Texture.gml")
 
+show_debug_message("init Texture.gml")
+
 #macro GMTexture "GMTexture"
 
 ///@param {GMTexture} _asset

@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.service
+show_debug_message("init Service.gml")
+
 
 ///@interface
 ///param {?Struct} [config]

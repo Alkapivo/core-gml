@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.collection
+show_debug_message("init Array.gml")
+
 
 ///@symbol
 function __symbol_GC_TARGET_ENTRY() { }

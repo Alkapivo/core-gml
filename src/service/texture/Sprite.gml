@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.asset
+show_debug_message("init Sprite.gml")
+
 
 
 ///@static

@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.lang
+show_debug_message("init Exception.gml")
+
 
 ///@param {String} _message
 function Exception(_message) constructor {

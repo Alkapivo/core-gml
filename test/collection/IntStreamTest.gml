@@ -1,4 +1,6 @@
 ///@package io.alkapivo.test.core.collection.ArrayTest
+show_debug_message("init IntStreamTest.gml")
+
 
 
 ///@param {Test} test

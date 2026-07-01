@@ -1,5 +1,7 @@
 ///@package io.alkapivo.Basil.util.FSM
 ///@description FSM stands for Finite-state fsm
+show_debug_message("init FSM.gml")
+
 
 
 ///@param {String} _name

@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.lang
+show_debug_message("init GMObject.gml")
+
 
 ///@type
 #macro GMObject "GMObject"
@@ -183,11 +185,11 @@ function _GMObjectUtil() constructor {
   static factoryStructInstance = function(type, layerId, context,
       x = 0.0, y = 0.0, data = null) {
 
-    var instance = this.factoryInstance(type, layerId, x, y, data)
+    var instance = GMObjectUtil.factoryInstance(type, layerId, x, y, data)
     if (Core.isType(context, Struct)) {
       GMObjectUtil.bind(instance, context)
     }
-
+    
     return instance
   }
 

@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.collection
+show_debug_message("init Grid.gml")
+
 
 ///@param {Number} _width
 ///@param {Number} _height

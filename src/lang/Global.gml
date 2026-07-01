@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.lang
+show_debug_message("init Global.gml")
+
 
 ///@static
 function _Global() constructor {
@@ -26,10 +28,10 @@ function _Global() constructor {
   ///@param {?String} name
   ///@param {any} [defaultValue]
   ///@return {any}
-  static inject = function(name, defaultValue) {
+  static inject = function(name, defaultValue = null) {
     gml_pragma("forceinline")
     if (!Global.exists(name)) {
-      Global.set(name, defaultValue)
+      variable_global_set(name, defaultValue)
     }
 
     return this.get(name, defaultValue)

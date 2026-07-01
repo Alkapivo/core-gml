@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.util
+show_debug_message("init Ease.gml")
+
 
 ///@enum
 function _EaseType(): Enum() constructor {

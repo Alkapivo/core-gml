@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.task
+show_debug_message("init TaskExecutor.gml")
+
 
 ///@enum
 function _TaskExecutorFreeStrategyType(): Enum() constructor {

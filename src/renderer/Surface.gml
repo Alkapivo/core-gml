@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.renderer
+show_debug_message("init Surface.gml")
+
 
 #macro GMSurface "GMSurface"
 

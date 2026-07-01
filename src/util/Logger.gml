@@ -1,6 +1,8 @@
 ///@package io.alkapivo.core.util
 show_debug_message("init Logger.gml")
 
+show_debug_message("init Logger.gml")
+
 ///@static
 function _Logger() constructor {
 

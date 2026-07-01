@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.util
+show_debug_message("init VersionConfig.gml")
+
 
 ///@param {?Struct} [config]
 function VersionConfig(config = null) constructor {

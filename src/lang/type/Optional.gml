@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.lang.type
+show_debug_message("init Optional.gml")
+
 
 ///@param {Prototype} prototype
 function OptionalType(prototype) constructor {  

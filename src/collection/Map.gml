@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.collection
+show_debug_message("init Map.gml")
+
 
 ///@param {Type} _keyType
 ///@param {Type} _valueType

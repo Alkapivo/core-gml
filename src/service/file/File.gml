@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.service.file
+show_debug_message("init File.gml")
+
 
 ///@param {Struct} json
 function File(json) constructor {

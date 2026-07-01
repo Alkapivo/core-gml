@@ -1,4 +1,6 @@
 ///@package io.alkapivo.shader.screen.shader_wavy_mesh
+show_debug_message("init ShaderWavyMesh.gml")
+
 
 ///@static
 ///@type {Struct}

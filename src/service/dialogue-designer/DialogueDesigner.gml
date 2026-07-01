@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.service.dialogue-designer
+show_debug_message("init DialogueDesigner.gml")
+
 
 ///@enum
 function _DDNodeType(): Enum() constructor {

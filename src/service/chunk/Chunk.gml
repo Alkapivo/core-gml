@@ -1,4 +1,6 @@
 ///@package io.alkapivo.service.chunk
+show_debug_message("init Chunk.gml")
+
 
 ///@interface
 ///@param {ChunkService} _context

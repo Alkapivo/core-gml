@@ -1,4 +1,6 @@
 ///@package io.alkapivo.shader.screen.shader_astral_flow
+show_debug_message("init ShaderHyperspace.gml")
+
 
 ///@static
 ///@type {Struct}

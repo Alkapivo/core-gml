@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.util.store
+show_debug_message("init StoreItem.gml")
+
 
 ///@param {String} _name
 ///@param {Struct} json

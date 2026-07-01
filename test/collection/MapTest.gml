@@ -1,4 +1,6 @@
 ///@package io.alkapivo.test.core.collection
+show_debug_message("init MapTest.gml")
+
 
 ///@param {Test} test
 ///@return {Task}

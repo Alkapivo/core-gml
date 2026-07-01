@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.service.TrackService
+show_debug_message("init TrackService.gml")
+
 
 ///@param {?Struct} [config]
 function TrackService(config = null): Service(config) constructor {

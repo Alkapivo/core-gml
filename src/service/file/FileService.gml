@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.service.file
+show_debug_message("init FileService.gml")
+
 
 #macro BeanFileService "FileService"
 ///@param {?Struct} [config]

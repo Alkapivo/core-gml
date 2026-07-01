@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.service.dialogue-designer
+show_debug_message("init DialogueDesignerRenderer.gml")
+
 
 function DialogueRenderer() constructor {
 

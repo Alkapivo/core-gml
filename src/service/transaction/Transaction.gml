@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.service.transaction
+show_debug_message("init Transaction.gml")
+
 
 ///@param {Struct} config
 function Transaction(config) constructor {

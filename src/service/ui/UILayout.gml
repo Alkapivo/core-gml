@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.service.ui
+show_debug_message("init UILayout.gml")
+
 
 ///@enum
 function _UILayoutType(): Enum() constructor {

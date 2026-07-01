@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.lang.Bean
+show_debug_message("init Beans.gml")
+
 
 ///@param {String} _message
 function BeanAlreadyExistsException(_message): Exception(_message) constructor { }
@@ -223,8 +225,9 @@ global.__Beans = null
 #macro Beans global.__Beans
 
 
-function initBeans() {
+function init_Beans() {
   if (global.__Beans == null) {
+    Core.print("init_Beans")
     global.__Beans = new _Beans()
   }
 }

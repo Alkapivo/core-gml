@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.collection
+show_debug_message("init Tree.gml")
+
 
 ///@param {TreeNode} node
 ///@param {Number} index

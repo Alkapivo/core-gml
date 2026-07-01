@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.asset
+show_debug_message("init Font.gml")
+
 
 #macro GMFont "GMFont"
 

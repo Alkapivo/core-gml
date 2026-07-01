@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.service.network
+show_debug_message("init Socket.gml")
+
 
 ///@enum
 function _SocketType(): Enum() constructor {

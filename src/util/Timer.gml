@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.util
+show_debug_message("init Timer.gml")
+
 
 ///@param {Number} _duration
 ///@param {?Struct} [config]
@@ -37,7 +39,7 @@ function Timer(_duration, config = null) constructor {
 
   ///@param {any} callbackData
   ///@return {Timer}
-  static update = function(callbackData) {
+  static update = function(callbackData = null) {
     gml_pragma("forceinline")
     if (this.finished && (this.loop == Infinity || this.loopCounter < this.loop)) {
       this.finished = false

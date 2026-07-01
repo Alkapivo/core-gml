@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.service.ldtk
+show_debug_message("init LDTK.gml")
+
 
 ///@enum
 function _LDTKLayerType(): Enum() constructor {

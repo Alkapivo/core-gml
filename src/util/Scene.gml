@@ -1,6 +1,8 @@
 ///@package io.alkapivo.core.util
 show_debug_message("init Scene.gml")
 
+show_debug_message("init Scene.gml")
+
 ///@static
 function _Scene() constructor {
 

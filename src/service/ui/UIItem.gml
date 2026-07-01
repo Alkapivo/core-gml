@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.service.ui
+show_debug_message("init UIItem.gml")
+
 
 ///@interface
 ///@param {UI} _context
@@ -433,7 +435,7 @@ function UIItem(_name, config = {}) constructor {
   Struct.appendUnique(this, config)
 }
 
-///@static
+
 function _UIItemUtils() constructor {
 
   ///@type {Map<String, Callable>}
@@ -587,5 +589,12 @@ function _UIItemUtils() constructor {
     },
   }
 }
-global.__UIItemUtils = new _UIItemUtils()
+
+///@static
+global.__UIItemUtils = null///@GMRT//new _UIItemUtils()
 #macro UIItemUtils global.__UIItemUtils
+function init_UIItemUtil() {
+  Core.print("init_UIItemUtil")
+  global.__UIItemUtils = new _UIItemUtils()
+  init_GMTF_COLOR_DICTIONARY()
+}

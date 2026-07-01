@@ -1,4 +1,6 @@
 ///@package io.alkapivo.shader.screen.shader_dissolve
+show_debug_message("init ShaderDissolve.gml")
+
 
 ///@static
 ///@type {Struct}

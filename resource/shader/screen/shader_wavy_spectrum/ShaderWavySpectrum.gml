@@ -1,4 +1,6 @@
 ///@package io.alkapivo.shader.screen.shader_wavy_spectrum
+show_debug_message("init ShaderWavySpectrum.gml")
+
 
 ///@static
 ///@type {Struct}

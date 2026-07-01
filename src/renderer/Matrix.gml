@@ -1,4 +1,6 @@
 ///@package io.alkapivo.renderer
+show_debug_message("init Matrix.gml")
+
 
 #macro GMMatrix "GMMatrix"
 

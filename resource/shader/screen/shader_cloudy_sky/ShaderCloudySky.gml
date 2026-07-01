@@ -1,4 +1,6 @@
 ///@package io.alkapivo.shader.screen.shader_cloudy_sky
+show_debug_message("init ShaderCloudySky.gml")
+
 
 ///@static
 ///@type {Struct}

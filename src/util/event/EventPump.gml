@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.util.event
+show_debug_message("init EventPump.gml")
+
 
 ///@enum
 function _EventPumpFreeStrategyType(): Enum() constructor {

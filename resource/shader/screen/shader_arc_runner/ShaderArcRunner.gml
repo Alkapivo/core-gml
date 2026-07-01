@@ -1,4 +1,6 @@
 ///@package io.alkapivo.shader.screen.shader_arc_runner
+show_debug_message("init ShaderArcRunner.gml")
+
 
 ///@static
 ///@type {Struct}

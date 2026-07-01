@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.service.ui
+show_debug_message("init UICollection.gml")
+
 
 ///@param {UI} _container
 ///@param {?Struct} [config]

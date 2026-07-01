@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.service.sound.sfx
+show_debug_message("init SFXService.gml")
+
 
 function SFXService(): Service() constructor {
 

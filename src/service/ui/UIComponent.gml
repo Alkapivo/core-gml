@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.service.ui
+show_debug_message("init UIComponent.gml")
+
 
 ///@param {Struct} json
 function UIComponent(json) constructor {

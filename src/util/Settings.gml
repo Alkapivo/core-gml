@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.util.Settings
+show_debug_message("init Settings.gml")
+
 
 ///@enum
 function _SettingTypes(): Enum() constructor {

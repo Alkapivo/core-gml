@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.service.ui
+show_debug_message("init UIStore.gml")
+
 
 ///@param {Struct} config
 ///@param {?UIItem} [_context]

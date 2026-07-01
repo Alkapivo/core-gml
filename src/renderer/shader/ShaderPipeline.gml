@@ -1,4 +1,6 @@
 ///@package io.alkapivo.core.renderer.shader
+show_debug_message("init ShaderPipeline.gml")
+
 
 ///@type {Number}
 global.__DEFAULT_SHADER_PIPELINE_LIMIT = 32

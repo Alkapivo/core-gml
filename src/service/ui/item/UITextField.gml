@@ -1,17 +1,23 @@
 ///@package io.alkapivo.core.service.ui.item
+show_debug_message("init UITextField.gml")
+
 
 ///@static
-///@type {Map<String, String>}
-global.__GMTF_COLOR_DICTIONARY = new Map(String, String, {
-  "colorBackgroundUnfocused": "c_bkg_unfocused",
-  "colorBackgroundFocused": "c_bkg_focused",
-  "colorOutlineUnfocused": "c_outline_unfocused",
-  "colorOutlineFocused": "c_outline_focused",
-  "colorTextUnfocused": "c_text_unfocused",
-  "colorTextFocused": "c_text_focused",
-  "colorSelection": "c_selection",
-})
+///@type {?Map<String, String>}
+global.__GMTF_COLOR_DICTIONARY = null///@GMRT
 #macro GMTF_COLOR_DICTIONARY global.__GMTF_COLOR_DICTIONARY
+function init_GMTF_COLOR_DICTIONARY() {
+  Core.print("init_GMTF_COLOR_DICTIONARY")
+  GMTF_COLOR_DICTIONARY = new Map(String, String, {
+    "colorBackgroundUnfocused": "c_bkg_unfocused",
+    "colorBackgroundFocused": "c_bkg_focused",
+    "colorOutlineUnfocused": "c_outline_unfocused",
+    "colorOutlineFocused": "c_outline_focused",
+    "colorTextUnfocused": "c_text_unfocused",
+    "colorTextFocused": "c_text_focused",
+    "colorSelection": "c_selection",
+  })
+}
 
 
 ///@param {String} name
