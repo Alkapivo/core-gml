@@ -14,8 +14,8 @@ global.__Cursor = new _Cursor()
 ///@enum
 function _TimingMethod(): Enum() constructor {
   COUNTSYNC = tm_countvsyncs
-  //COUNTSYNC_WINALT = tm_countvsyncs_winalt
-  COUNTSYNC_WINALT = tm_countvsyncs
+  COUNTSYNC_WINALT = tm_countvsyncs_winalt
+  //COUNTSYNC_WINALT = tm_countvsyncs
   SLEEP = tm_sleep
   SYSTEMTIMING = tm_systemtiming
 }

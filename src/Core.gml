@@ -408,7 +408,6 @@ function init_Core() {
   init_Beans()
   init_GPU()
   init_DEFAULT_TRACK_EVENT_HANDLERS()
-  init_SHADER_UNIFORM_TEMPLATES()
   init_VIDEO_STATUS_NAMES()
   init_UIItemUtil()
   init_UIUtil()
