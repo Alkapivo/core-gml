@@ -9,7 +9,6 @@ function __symbol_GC_TARGET_ENTRY() { }
 
 ///@param {Type} [_type]
 ///@param {GMArray} [_container]
-///@param {?Struct} [config]
 function Array(_type = any, _container = null) constructor {
 
   ///@type {Type}
