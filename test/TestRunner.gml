@@ -39,6 +39,7 @@ function TestRunner(config = null) constructor {
     Core.printStackTrace().printException(exception)
     this.saveReport()
     this.shutdown()
+    return 1
   }
 
   ///@return {TestRunner}

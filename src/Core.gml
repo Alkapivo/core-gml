@@ -402,8 +402,19 @@ function _Core() constructor {
 global.__Core = new _Core()
 #macro Core global.__Core
 
+function defaultExceptionUnhandledHandler(exception) {
+  if (Core != null) {
+    Core.printException(exception)
+  } else {
+    show_debug_message(exception)
+  }
+  
+  return 1
+}
 
 function init_Core() {
+  exception_unhandled_handler(defaultExceptionUnhandledHandler)
+
   Core.print("init_Core")
   init_Beans()
   init_GPU()
