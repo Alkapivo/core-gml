@@ -117,7 +117,9 @@ function DisplayService(config = null): Service(config) constructor {
     if (enable && !fullscreen) { 
       this.beforeFullscreenWidth = this.previousWidth
       this.beforeFullscreenHeight = this.previousHeight
-      this.resize(this.getWidth(), this.getHeight())
+      var width = Math.getEvenCeil(max(this.minWidth, this.getDisplayWidth()) / this.scale)
+      var height = Math.getEvenCeil(max(this.minHeight, this.getDisplayHeight()) / this.scale)
+      this.resize(width, height)
     }
 
     if (!enable && fullscreen) {
