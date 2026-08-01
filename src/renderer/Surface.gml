@@ -72,9 +72,11 @@ function Surface(config = null) constructor {
       //SURFACE_COUNTER.surfaceCreate(this, this.width, this.height, this.format)
       this.asset = surface_create(this.width, this.height, this.format)
       this.updated = true
+      Logger.debug("Surface", $"New surface: {asset}, width: {this.width}, height: {this.height}, format: {this.format}, depth: {this.depth}")
     } else {
       if (this.depth && !surface_has_depth(this.asset)) {
         //SURFACE_COUNTER.surfaceFree(this)
+        Logger.debug("Surface", $"Free surface: {asset}, width: {this.width}, height: {this.height}, format: {this.format}, depth: {this.depth}")
         surface_free(this.asset)
         this.asset = null
         
@@ -82,6 +84,7 @@ function Surface(config = null) constructor {
         //SURFACE_COUNTER.surfaceCreate(this, this.width, this.height, this.format)
         this.asset = surface_create(this.width, this.height, this.format)
         this.updated = true
+        Logger.debug("Surface", $"New surface: {asset}, width: {this.width}, height: {this.height}, format: {this.format}, depth: {this.depth}")
       }
     }
 
@@ -89,12 +92,14 @@ function Surface(config = null) constructor {
       surface_depth_disable(!this.depth)
       //SURFACE_COUNTER.surfaceCreate(this, this.width, this.height, this.format)
       this.asset = surface_create(this.width, this.height, this.format)
+      Logger.debug("Surface", $"New surface: {asset}, width: {this.width}, height: {this.height}, format: {this.format}, depth: {this.depth}")
       this.updated = true
     }
 
     if (surface_get_width(this.asset) != this.width
       || surface_get_height(this.asset) != this.height) {
 
+      Logger.debug("Surface", $"Resize surface: {asset}, width: {this.width}, height: {this.height}, format: {this.format}, depth: {this.depth}")
       surface_resize(this.asset, this.width, this.height);
       this.updated = true
     }
@@ -212,8 +217,16 @@ function Surface(config = null) constructor {
     var surfaceWidth = surface_get_width(this.asset)
     var surfaceHeight = surface_get_height(this.asset)
     var scale = max(width / surfaceWidth, height / surfaceHeight)
-    this.width = ceil(surfaceWidth * scale)
-    this.height = ceil(surfaceHeight * scale)
+    var _width = ceil(surfaceWidth * scale)
+    var _height = ceil(surfaceHeight * scale)
+    if (this.width == surfaceWidth 
+        && this.height == surfaceHeight) {
+      return this
+    }
+
+    this.width = _width
+    this.height = _height
+    Logger.debug("Surface", $"Resize surface: {asset}, width: {this.width}, height: {this.height}, format: {this.format}, depth: {this.depth}")
     surface_resize(this.asset, this.width, this.height)
     return this
   }
@@ -221,6 +234,7 @@ function Surface(config = null) constructor {
   free = function() {
     if (Core.isType(this.asset, GMSurface)) {
       //SURFACE_COUNTER.surfaceFree(this)
+      Logger.debug("Surface", $"Free surface: {asset}, width: {this.width}, height: {this.height}, format: {this.format}, depth: {this.depth}")
       surface_free(this.asset)
     }
   }

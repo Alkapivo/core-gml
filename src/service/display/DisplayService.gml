@@ -210,6 +210,7 @@ function DisplayService(config = null): Service(config) constructor {
       surface_resize(application_surface, guiWidth, guiHeight)
       this.windowWidth = this.getWidth()
       this.windowHeight = this.getHeight()
+      draw_texture_flush()
     } catch (exception) {
       Logger.error("ResizeEvent", exception.message)
       Core.printStackTrace().printException(exception)
