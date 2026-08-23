@@ -228,9 +228,10 @@ function JSONModelParser(json, assertModel = null) constructor {
 function _JSON() constructor {
 
   ///@param {String} text
+  ///@param {any} defaultValue
   ///@return {?Struct|?Array|?String|?Number|?Boolean}
-  parse = function(text) {
-    var result = null
+  parse = function(text, defaultValue = null) {
+    var result = defaultValue
     try {
       result = json_parse(text)
       if (Core.isType(result, GMArray)) {
@@ -239,6 +240,7 @@ function _JSON() constructor {
     } catch (exception) {
       Logger.error("JSON::parse", exception.message)
       Core.printStackTrace().printException(exception)
+      result = defaultValue
     }
     
     return result

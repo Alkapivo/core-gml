@@ -27,6 +27,17 @@ function CLIParam(json) constructor {
 
   ///@type {Callable}
   handler = Assert.isType(method(this, json.handler), Callable)
+
+  ///@param {String} [intend]
+  ///@return {CLIParam}
+  print = function(intend = "") {
+    var descriptionText = this.description == null ? "" : $": {this.description}"
+    Core.print($"{intend}{this.name}, {this.fullName}{descriptionText}")
+    args.forEach(function(arg, idx, intend) { 
+      arg.print($"{intend}argument[{idx}] ")
+    }, $"{intend}  ")
+    return this
+  }
 }
 
 
@@ -43,8 +54,15 @@ function CLIParamArg(json) constructor {
   description = Struct.contains(json, "description") 
     ? Assert.isType(json.description, String) 
     : null
-}
 
+  ///@param {String} [intend]
+  ///@return {CLIParamArg}
+  print = function(intend = "") {
+    var descriptionText = this.description == null ? "" : $": {this.description}"
+    Core.print($"{intend}{this.name}<{this.type}>{descriptionText}")
+    return this
+  }
+}
 
 ///@param {Struct} json
 function CLIParamParser(json) constructor {
@@ -76,13 +94,15 @@ function CLIParamParser(json) constructor {
     }
   
     if (cliParam.args.size() > params.size()) {
-      throw new Exception($"param '{cliParam.name}' require '{cliParam.args.size()}' options while '{params.size()} were provided'")
+      throw new Exception($"param '{cliParam.fullName}' require '{cliParam.args.size()}' options while '{params.size()} were provided'")
     }
   
     var args = IntStream.map(0, cliParam.args.size(), function(num, idx, params) {
       return params.pop()
     }, params)
-  
+
+    var argsText = args.join(" ")
+    Logger.debug("CLIParamParser", $"Run {cliParam.fullName} {argsText}")
     cliParam.handler(args)
   
     this.dispatchParam(params)
@@ -110,6 +130,23 @@ function CLIParamParser(json) constructor {
 
     this.dispatchParam(params)
     this.parsed = true
+    return this
+  }
+
+  ///@param {String} [intend]
+  ///@return {CLIParamParser}
+  print = function(intend = "") {
+    if (this.cliParams.size() == 0) {
+      return this
+    }
+
+    Core.print($"{intend}Available CLIParams:")
+    Core.print($"{intend}  -output: Write logs to file\n{intend}    argument[0] file<String> File name")
+    this.cliParams.forEach(function(cliParam, idx, intend) {
+      cliParam.print(intend)
+    }, $"{intend}  ")
+    Core.print("")
+
     return this
   }
 }
