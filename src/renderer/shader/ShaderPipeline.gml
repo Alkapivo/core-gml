@@ -136,7 +136,7 @@ function ShaderPipeline(config = {}) constructor {
       return callback(callback, mergeQueue, inherit, parentJson)
     }
 
-    if (Core.isType(Struct.get(json, "inherit"), String)) {
+    if (1 == 2 && Core.isType(Struct.get(json, "inherit"), String)) {
       var acc = {
         mergeQueue: addToMergeQueue(addToMergeQueue, new Array(), _name, json),
         shader: null,

@@ -316,9 +316,20 @@ function _UILayoutUtil() constructor {
         acc.height = acc.height + node.height()
       }
 
-      var acc = { height: 0 }
-      Struct.forEach(this.nodes, sumHeight, acc)
-      return acc.height
+      //var acc = { height: 0 }
+      //Struct.forEach(this.nodes, sumHeight, acc)
+      //return acc.height
+
+      var height = 0
+      var keys = Struct.keys(this.nodes)
+      if (keys != null) {
+        var size = GMArray.size(keys)
+        for (var index = 0; index < size; index++) {
+          height += Struct.get(this.nodes, keys[index]).height()
+        }
+      }
+
+      return height      
     }
   }
 

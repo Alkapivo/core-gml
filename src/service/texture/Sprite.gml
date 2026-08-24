@@ -11,7 +11,7 @@ global.__OPTIMALIZATION_SPRITE_STRINGIFY = false
 
 ///@param {Texture} _texture
 ///@param {Struct} [config]
-function Sprite(_texture, config = {}) constructor {
+function Sprite(_texture, config = null) constructor {
 
   ///@final
   ///@type {Texture}

@@ -209,6 +209,93 @@ function Rectangle(json = null) constructor {
 }
 
 
+///@param {Number} [x]
+///@param {Number} [y]
+///@param {Number} [width]
+///@param {Number} [height]
+function RectangleSimple(_x = 0.0, _y = 0.0, _width = 0.0, _height = 0.0) constructor {
+
+  ///@type {Number}
+  x = _x
+
+  ///@type {Number}
+  y = _y
+
+  ///@type {Number}
+  z = _width
+
+  ///@type {Number}
+  a = _height
+
+  ///@return {Number}
+  static getX = function() {
+    return this.x
+  }
+
+  ///@return {Number}
+  static getY = function() {
+    return this.y
+  }
+
+  ///@return {Number}
+  static getWidth = function() {
+    return this.z
+  }
+
+  ///@return {Number}
+  static getHeight = function() {
+    return this.a
+  }
+
+  ///@param {Number} x
+  ///@return {RectangleSimple}
+  static setX = function(x) {
+    this.x = x
+    return this
+  }
+
+  ///@param {Number} y
+  ///@return {RectangleSimple}
+  static setY = function(y) {
+    this.y = y
+    return this
+  }
+
+  ///@param {Number} width
+  ///@return {RectangleSimple}
+  static setWidth = function(width) {
+    this.z = width
+    return this
+  }
+
+  ///@param {Number} height
+  ///@return {RectangleSimple}
+  static setHeight = function(height) {
+    this.a = height
+    return this
+  }
+
+  ///@param {Number} x
+  ///@param {Number} y
+  ///@return {Boolean}
+  static collide = function(x, y) {
+    return x >= this.getX() 
+      && x <= this.getX() + this.getWidth() 
+      && y >= this.getY() 
+      && y <= this.getY() + this.getHeight()
+  }
+
+  ///@return {Struct}
+  static serialize = function() {
+    return {
+      x: this.getX(),
+      y: this.getY(),
+      width: this.getWidth(),
+      height: this.getHeight(),
+    }
+  }
+}
+
 ///@param {Number} _width
 ///@param {Number} _height
 function Ellipse(_width, _height) constructor {

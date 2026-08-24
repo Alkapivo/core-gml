@@ -18,14 +18,13 @@ function Font(_asset) constructor {
 ///@static
 function _FontUtil() constructor {
 
-  ///@param {Struct} _json
+  ///@param {Struct} json
   ///@param {?Struct} [defaultJson]
   ///@return {?Font}
-  static parse = function(_json, defaultJson = null) {
+  static parse = function(json, defaultJson = null) {
     gml_pragma("forceinline")
     var font = null
     try {
-      var json = JSON.clone(_json)
       font = Assert.isType(FontUtil.fetch(json.name), Font)
     } catch (exception) {
       Logger.error("FontUtil", $"'parse' fatal error: {exception.message}")
