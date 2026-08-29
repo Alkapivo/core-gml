@@ -2,9 +2,6 @@
 show_debug_message("init Collection.gml")
 
 
-#macro BREAK_LOOP "__BREAK_LOOP__"
-
-
 ///@interface
 ///@param {?Struct} [config]
 function Collection(config = null) constructor {

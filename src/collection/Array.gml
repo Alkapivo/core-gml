@@ -174,16 +174,13 @@ function Array(_type = any, _container = null) constructor {
   ///@return {Array}
   static map = function(callback = null, acc = null, type = any) {
     gml_pragma("forceinline")
-    var mapped = new Array(type)
     var _callback = callback == null ? Lambda.passthrough : callback
     var size = this.size()
+    var mapped = new Array(type, GMArray.createGMArray(size))
     for (var index = 0; index < size; index++) {
       var item = this.container[index]
       var result = _callback(item, index, acc)
-      if (result == BREAK_LOOP) {
-        break
-      }
-      mapped.add(result)
+      mapped.set(index, result)
     }
     return mapped
   }
@@ -491,7 +488,7 @@ function _GMArray() constructor {
   ///@return {GMArray}
   static createGMArray = function(size, value = null) {
     gml_pragma("forceinline")
-    return array_create(size, value)
+    return size == 0 ? [] : array_create(size, value)
   }
 
   ///@param {GMArray} arr
@@ -657,16 +654,13 @@ function _GMArray() constructor {
   ///@return {GMArray}
   static map = function(arr, callback = null, acc = null) {
     gml_pragma("forceinline")
-    var mapped = []
     var _callback = callback == null ? Lambda.passthrough : callback
     var size = this.size(arr)
+    var mapped = this.createGMArray(size)
     for (var index = 0; index < size; index++) {
       var item = arr[index]
       var result = _callback(item, index, acc)
-      if (result == BREAK_LOOP) {
-        break
-      }
-      this.add(mapped, result)
+      mapped[index] = result
     }
     return mapped
   }

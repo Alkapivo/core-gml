@@ -159,15 +159,10 @@ function Map(_keyType = any, _valueType = any, _container = null) constructor {
     for (var index = 0; index < size; index++) {
       var key = keys.get(index)
       var item = this.get(key)
-      var result = callback(item, key, acc)
-      if (result == BREAK_LOOP) {
-        break
-      }
+      callback(item, key, acc)
     }
     return this
   }
-
-  
 
   ///@override
   ///@param {Callable} callback
@@ -218,9 +213,6 @@ function Map(_keyType = any, _valueType = any, _container = null) constructor {
       var key = keys.get(index)
       var item = this.get(key)
       var result = callback(item, key, acc)
-      if (result == BREAK_LOOP) {
-        break
-      }
       mapped.set(key, result)
     }
     return mapped

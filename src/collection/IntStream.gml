@@ -13,17 +13,11 @@ function _IntStream() constructor {
   static forEach = function(from, to, callback, acc = null) {
     if (from - to > 0) {
       for (var index = from; index >= to; index--) {
-        var result = callback(index, from - index, acc)
-        if (result == BREAK_LOOP) {
-          break
-        }
+        callback(index, from - index, acc)
       }
     } else {
       for (var index = from; index < to; index++) {
-        var result = callback(index, index - from, acc)
-        if (result == BREAK_LOOP) {
-          break
-        }
+        callback(index, index - from, acc)
       }
     }
     return this
@@ -35,22 +29,17 @@ function _IntStream() constructor {
   ///@param {Number} [acc]
   ///@return {Array}
   static map = function(from, to, callback, acc = null) {
-    var mapped = new Array()
+    var size = abs(from - to)
+    var mapped = new Array(any, GMArray.createGMArray(size))
     if (from - to > 0) {
       for (var index = from; index >= to; index--) {
         var result = callback(index, from - index, acc)
-        if (result == BREAK_LOOP) {
-          break
-        }
-        mapped.add(result)
+        mapped.set(from - index, result)
       }
     } else {
       for (var index = from; index < to; index++) {
         var result = callback(index, index - from, acc)
-        if (result == BREAK_LOOP) {
-          break
-        }
-        mapped.add(result)
+        mapped.set(index - from, result)
       }
     }
     return mapped

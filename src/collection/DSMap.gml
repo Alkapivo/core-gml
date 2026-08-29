@@ -149,10 +149,7 @@ function DSMap(_keyType = any, _valueType = any, _container = null) constructor 
     gml_pragma("forceinline")
     for (var key = ds_map_find_first(this.container); key != null; key = ds_map_find_next(this.container, key)) {
       var item = this.container[? key]
-      var result = callback(item, key, acc)
-      if (result == BREAK_LOOP) {
-        break
-      }
+      callback(item, key, acc)
     }
     return this
   }
@@ -190,9 +187,6 @@ function DSMap(_keyType = any, _valueType = any, _container = null) constructor 
     for (var key = ds_map_find_first(this.container); key != null; key = ds_map_find_next(this.container, key)) {
       var item = this.container[? key]
       var result = callback(item, key, acc)
-      if (result == BREAK_LOOP) {
-        break
-      }
       mapped.set(key, result)
     }
     return mapped

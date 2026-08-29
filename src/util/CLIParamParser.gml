@@ -33,7 +33,7 @@ function CLIParam(json) constructor {
   print = function(intend = "") {
     var descriptionText = this.description == null ? "" : $": {this.description}"
     Core.print($"{intend}{this.name}, {this.fullName}{descriptionText}")
-    args.forEach(function(arg, idx, intend) { 
+    this.args.forEach(function(arg, idx, intend) { 
       arg.print($"{intend}argument[{idx}] ")
     }, $"{intend}  ")
     return this

@@ -143,9 +143,7 @@ function Queue(_type = any, items = null) constructor {
     gml_pragma("forceinline")
     var size = this.container.size()
     for (var index = 0; index < size; index++) {
-      if (callback(this.pop(), index, acc) == BREAK_LOOP) {
-        break
-      }
+      callback(this.pop(), index, acc)
     }
     return this
   }
@@ -157,14 +155,11 @@ function Queue(_type = any, items = null) constructor {
   ///@return {Queue}
   static map = function(callback, acc = null) {
     gml_pragma("forceinline")
-    var mapped = []
     var size = this.container.size()
+    var mapped = GMArray.createGMArray(size)
     for (var index = 0; index < size; index++) {
       var result = callback(this.pop(), index, acc)
-      if (result == BREAK_LOOP) {
-        break
-      }
-      GMArray.add(mapped, result)
+      mapped[index] = result
     }
     return new Queue(this.type, mapped)
   }

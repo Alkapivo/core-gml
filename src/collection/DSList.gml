@@ -176,9 +176,6 @@ function DSList(_type = any, _container = null) constructor {
     for (var index = 0; index < size; index++) {
       var item = this.container[| index]
       var result = _callback(item, index, acc)
-      if (result == BREAK_LOOP) {
-        break
-      }
       mapped.add(result)
     }
     return mapped
