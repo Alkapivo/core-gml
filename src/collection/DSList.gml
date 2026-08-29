@@ -448,8 +448,8 @@ function DSList(_type = any, _container = null) constructor {
   ///@type {Number} index
   ///@return {DSList}
   static addToGC = function(index) {
-    static sortDesc = function(a, b) {
-      return a >= b
+    static sortAsc = function(a, b) {
+      return a <= b
     }
 
     if (!Core.isType(this.gc, Stack)) {
@@ -461,7 +461,7 @@ function DSList(_type = any, _container = null) constructor {
       this.gc.push(index)
     } else if (last > index) {
       this.gc.push(index)
-      this.gc.container = GMArray.sort(this.gc.container, sortDesc)
+      this.gc.container = GMArray.sort(this.gc.container, sortAsc)
     } else if (last != index) {
       this.gc.push(index)
     }
