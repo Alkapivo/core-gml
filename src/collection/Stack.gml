@@ -155,7 +155,7 @@ function Stack(_type = any, items = null) constructor {
     var mapped = GMArray.createGMArray(size)
     for (var index = size - 1; index >= 0; index--) {
       var result = callback(this.pop(), index, acc)
-      mapped[index] = result
+      mapped[(size - 1) - index] = result
     }
     return new Stack(this.type, mapped)
   }

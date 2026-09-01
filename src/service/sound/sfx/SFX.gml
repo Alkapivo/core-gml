@@ -35,25 +35,18 @@ function SFXContext(_sound) constructor {
 function SFX(_name, _limit = null) constructor {
 
   ///@type {String}
-  name = Assert.isType(_name, String)
+  name = Assert.isType(_name, String, "SFX name must be type of String")
 
   ///@type {?Number}
-  limit = Core.isType(_limit, Number) ? _limit : null
+  limit = Core.getIfType(_limit, Number, null)
 
   ///@private
   ///@type {Queue<SFXContext>}
-  queue = new Queue(SFXContext)
+  queue = new Queue(SFXContext, new Array(SFXContext).enableGC())
 
   ///@private
-  ///@type {Stack<Number>}
-  gc = new Stack(Number)
-
-  ///@private
-  ///@type {Struct}
-  acc = {
-    volume: 1.0,
-    gc: this.gc,
-  }
+  ///@type {Number}
+  volume = 1.0
 
   ///@private
   dispatched = false
@@ -64,7 +57,7 @@ function SFX(_name, _limit = null) constructor {
       return
     }
 
-    if (Optional.is(this.limit) && this.queue.size() >= this.limit) {
+    if (this.limit != null && this.queue.size() >= this.limit) {
       this.queue.pop().sound.stop()
     }
 
@@ -112,7 +105,7 @@ function SFX(_name, _limit = null) constructor {
   static update = function(volume) {
     static updateSFX = function(sfxContext, index, acc) {
       if (sfxContext.finished()) {
-        acc.gc.push(index)
+        acc.queue.container.addToGC(index)
         return
       }
 
@@ -124,12 +117,8 @@ function SFX(_name, _limit = null) constructor {
     }
 
     this.dispatched = false
-    this.acc.volume = volume
-    this.queue.container.forEach(updateSFX, this.acc)
-
-    if (this.gc.size() > 0) {
-      this.queue.container.removeMany(this.gc)
-    }
+    this.volume = volume
+    this.queue.container.forEach(updateSFX, this).runGC(true)
     
     return this
   }

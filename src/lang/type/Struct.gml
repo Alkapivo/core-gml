@@ -91,9 +91,16 @@ function _Struct() constructor {
   ///@return {?Struct}
   static inject = function(struct, key, value) {
     gml_pragma("forceinline")
-    return Struct.contains(struct, key)
-      ? Struct.get(struct, key) 
-      : Struct.get(Struct.set(struct, key, value), key)
+    if (!is_struct(struct)) {
+      return value
+    }
+
+    if (variable_struct_exists(struct, key)) {
+      return struct[$ key]
+    }
+
+    variable_struct_set(struct, key, value)
+    return value
   }
 
   ///@param {?Struct} struct
@@ -250,10 +257,11 @@ function _Struct() constructor {
   }
 
   ///@override
+  ///@param {Struct} struct
   ///@param {Callable} callback
   ///@param {any} [acc]
   ///@return {any}
-  static findKey = function(callback, acc = null) {
+  static findKey = function(struct, callback, acc = null) {
     gml_pragma("forceinline")
     var keys = Struct.keys(struct)
     if (keys == null) {
@@ -307,12 +315,12 @@ function _Struct() constructor {
   ///@return {Array}
   static toArray = function(struct, callback, acc = null) {
     gml_pragma("forceinline")
-    var keys = Struct.keys(struct)
-    var size = GMArray.size(keys)
     if (keys == null) {
       return new Array(any)
     }
 
+    var keys = Struct.keys(struct)
+    var size = GMArray.size(keys)
     var arr = GMArray.create(any, size)
     for (var index = 0; index < size; index++) {
       var key = keys[index]
@@ -555,46 +563,187 @@ function _Struct() constructor {
     ///@param {?Struct} defaultValue
     ///@return {NumberTransformer}
     numberTransformer: function(struct, key, defaultValue = null) {
-      var _struct = Struct.get(struct, key)
+      var value = Struct.get(struct, key)
+
       var data = {
-        value: Struct.getIfType(_struct, "value", Number, Struct.getIfType(defaultValue, "value", Number, 0.0)),
-        target: Struct.getIfType(_struct, "target", Number, Struct.getIfType(defaultValue, "target", Number, 0.0)),
-        duration: Struct.getIfType(_struct, "duration", Number, Struct.getIfType(defaultValue, "duration", Number, 0.0)),
-        ease: Struct.getIfType(_struct, "ease", String, Struct.getIfType(defaultValue, "ease", String, "LEGACY")),
-        factor: Struct.getIfType(_struct, "factor", Number, Struct.getIfType(defaultValue, "factor", Number, 0.0)),
-        increase: Struct.getIfType(_struct, "increase", Number, Struct.getIfType(defaultValue, "increase", Number, 0.0)),
+        value: Struct.getIfType(
+          value,
+          "value",
+          Number,
+          Struct.getIfType(
+            defaultValue,
+            "value",
+            Number,
+            0.0
+          )
+        ),
+
+        target: Struct.getIfType(
+          value,
+          "target",
+          Number,
+          Struct.getIfType(
+            defaultValue,
+            "target",
+            Number,
+            0.0
+          )
+        ),
+
+        duration: Struct.getIfType(
+          value,
+          "duration",
+          Number,
+          Struct.getIfType(
+            defaultValue,
+            "duration",
+            Number,
+            0.0
+          )
+        ),
+
+        ease: Struct.getIfType(
+          value,
+          "ease",
+          String,
+          Struct.getIfType(
+            defaultValue,
+            "ease",
+            String,
+            "LEGACY"
+          )
+        ),
+
+        factor: Struct.getIfType(
+          value,
+          "factor",
+          Number,
+          Struct.getIfType(
+            defaultValue,
+            "factor",
+            Number,
+            0.0
+          )
+        ),
+
+        increase: Struct.getIfType(
+          value,
+          "increase",
+          Number,
+          Struct.getIfType(
+            defaultValue,
+            "increase",
+            Number,
+            0.0
+          )
+        )
       }
 
-      if (Optional.is(Struct.getIfType(defaultValue, "clampValue", Struct))
-          && Optional.is(Struct.getIfType(defaultValue.clampValue, "from", Number))
-          && Optional.is(Struct.getIfType(defaultValue.clampValue, "to", Number))) {
-        data.value = clamp(data.value, defaultValue.clampValue.from, defaultValue.clampValue.to)
-      }
-      
-      if (Optional.is(Struct.getIfType(defaultValue, "clampTarget", Struct))
-          && Optional.is(Struct.getIfType(defaultValue.clampTarget, "from", Number))
-          && Optional.is(Struct.getIfType(defaultValue.clampTarget, "to", Number))) {
-        data.target = clamp(data.target, defaultValue.clampTarget.from, defaultValue.clampTarget.to)
+      var clampValue = Struct.getIfType(
+        defaultValue,
+        "clampValue",
+        Struct
+      )
+
+      if (Optional.is(clampValue)
+          && Optional.is(
+            Struct.getIfType(clampValue, "from", Number)
+          )
+          && Optional.is(
+            Struct.getIfType(clampValue, "to", Number)
+          )) {
+
+        data.value = clamp(
+          data.value,
+          clampValue.from,
+          clampValue.to
+        )
       }
 
-      if (Optional.is(Struct.getIfType(defaultValue, "clampDuration", Struct))
-          && Optional.is(Struct.getIfType(defaultValue.clampDuration, "from", Number))
-          && Optional.is(Struct.getIfType(defaultValue.clampDuration, "to", Number))) {
-        data.duration = clamp(data.duration, defaultValue.clampDuration.from, defaultValue.clampDuration.to)
+      var clampTarget = Struct.getIfType(
+        defaultValue,
+        "clampTarget",
+        Struct
+      )
+
+      if (Optional.is(clampTarget)
+          && Optional.is(
+            Struct.getIfType(clampTarget, "from", Number)
+          )
+          && Optional.is(
+            Struct.getIfType(clampTarget, "to", Number)
+          )) {
+
+        data.target = clamp(
+          data.target,
+          clampTarget.from,
+          clampTarget.to
+        )
       }
 
-      if (Optional.is(Struct.getIfType(defaultValue, "clampFactor", Struct))
-          && Optional.is(Struct.getIfType(defaultValue.clampFactor, "from", Number))
-          && Optional.is(Struct.getIfType(defaultValue.clampFactor, "to", Number))) {
-        data.factor = clamp(data.factor, defaultValue.clampFactor.from, defaultValue.clampFactor.to)
+      var clampDuration = Struct.getIfType(
+        defaultValue,
+        "clampDuration",
+        Struct
+      )
+
+      if (Optional.is(clampDuration)
+          && Optional.is(
+            Struct.getIfType(clampDuration, "from", Number)
+          )
+          && Optional.is(
+            Struct.getIfType(clampDuration, "to", Number)
+          )) {
+
+        data.duration = clamp(
+          data.duration,
+          clampDuration.from,
+          clampDuration.to
+        )
       }
-  
-      if (Optional.is(Struct.getIfType(defaultValue, "clampIncrease", Struct))
-          && Optional.is(Struct.getIfType(defaultValue.clampIncrease, "from", Number))
-          && Optional.is(Struct.getIfType(defaultValue.clampIncrease, "to", Number))) {
-        data.increase = clamp(data.increase, defaultValue.clampIncrease.from, defaultValue.clampIncrease.to)
+
+      var clampFactor = Struct.getIfType(
+        defaultValue,
+        "clampFactor",
+        Struct
+      )
+
+      if (Optional.is(clampFactor)
+          && Optional.is(
+            Struct.getIfType(clampFactor, "from", Number)
+          )
+          && Optional.is(
+            Struct.getIfType(clampFactor, "to", Number)
+          )) {
+
+        data.factor = clamp(
+          data.factor,
+          clampFactor.from,
+          clampFactor.to
+        )
       }
-  
+
+      var clampIncrease = Struct.getIfType(
+        defaultValue,
+        "clampIncrease",
+        Struct
+      )
+
+      if (Optional.is(clampIncrease)
+          && Optional.is(
+            Struct.getIfType(clampIncrease, "from", Number)
+          )
+          && Optional.is(
+            Struct.getIfType(clampIncrease, "to", Number)
+          )) {
+
+        data.increase = clamp(
+          data.increase,
+          clampIncrease.from,
+          clampIncrease.to
+        )
+      }
+
       return new NumberTransformer(data)
     },
 
@@ -603,10 +752,25 @@ function _Struct() constructor {
     ///@param {?Struct} defaultValue
     ///@return {NumberTransformer}
     normalizedNumberTransformer: function(struct, key, defaultValue = null) {
-      var _defaultValue = Core.isType(defaultValue, Struct) ? defaultValue : { }
-      Struct.set(_defaultValue, "clampValue", { from: 0.0, to: 1.0 })
-      Struct.set(_defaultValue, "clampTarget", { from: 0.0, to: 1.0 })
-      return Struct.parse.numberTransformer(struct, key, _defaultValue)
+      var _defaultValue = is_struct(defaultValue)
+        ? JSON.clone(defaultValue)
+        : {}
+
+      _defaultValue.clampValue = {
+        from: 0.0,
+        to: 1.0
+      }
+
+      _defaultValue.clampTarget = {
+        from: 0.0,
+        to: 1.0
+      }
+
+      return Struct.parse.numberTransformer(
+        struct,
+        key,
+        _defaultValue
+      )
     },
 
     ///@param {Struct} struct

@@ -47,14 +47,14 @@ function Map(_keyType = any, _valueType = any, _container = null) constructor {
   ///@return {any}
   static getFirst = function() {
     gml_pragma("forceinline")
-    var key = this.keys().getFirst()
+    var key = GMArray.getFirst(Struct.keys(this.container))
     return key != null ? this.get(key) : null
   }
 
   ///@return {any}
   static getLast = function() {
     gml_pragma("forceinline")
-    var key = this.keys().getLast()
+    var key = GMArray.getLast(Struct.keys(this.container))
     return key != null ? this.get(key) : null
   }
 
@@ -154,10 +154,10 @@ function Map(_keyType = any, _valueType = any, _container = null) constructor {
   ///@return {Map}
   static forEach = function(callback, acc = null) {
     gml_pragma("forceinline")
-    var keys = this.keys()
-    var size = keys.size()
+    var keys = Struct.keys(this.container)
+    var size = GMArray.size(keys)
     for (var index = 0; index < size; index++) {
-      var key = keys.get(index)
+      var key = keys[index]
       var item = this.get(key)
       callback(item, key, acc)
     }
@@ -185,10 +185,10 @@ function Map(_keyType = any, _valueType = any, _container = null) constructor {
   static filter = function(callback, acc = null) {
     gml_pragma("forceinline")
     var filtered = new Map(this.keyType, this.valueType)
-    var keys = this.keys()
-    var size = keys.size()
+    var keys = Struct.keys(this.container)
+    var size = GMArray.size(keys)
     for (var index = 0; index < size; index++) {
-      var key = keys.get(index)
+      var key = keys[index]
       var item = this.get(key)
       if (callback(item, key, acc)) {
         filtered.set(key, item)
@@ -207,10 +207,10 @@ function Map(_keyType = any, _valueType = any, _container = null) constructor {
     gml_pragma("forceinline")
     var mapped = new Map(keyType == null ? this.keyType : keyType, 
       valueType == null ? this.valueType : valueType)
-    var keys = this.keys()
-    var size = keys.size()
+    var keys = Struct.keys(this.container)
+    var size = GMArray.size(keys)
     for (var index = 0; index < size; index++) {
-      var key = keys.get(index)
+      var key = keys[index]
       var item = this.get(key)
       var result = callback(item, key, acc)
       mapped.set(key, result)
@@ -224,10 +224,10 @@ function Map(_keyType = any, _valueType = any, _container = null) constructor {
   ///@return {any}
   static find = function(callback, acc = null) {
     gml_pragma("forceinline")
-    var keys = this.keys()
-    var size = keys.size()
+    var keys = Struct.keys(this.container)
+    var size = GMArray.size(keys)
     for (var index = 0; index < size; index++) {
-      var key = keys.get(index)
+      var key = keys[index]
       var item = this.get(key)
       if (callback(item, key, acc)) {
         return item
@@ -241,10 +241,10 @@ function Map(_keyType = any, _valueType = any, _container = null) constructor {
   ///@return {any}
   static findKey = function(callback, acc = null) {
     gml_pragma("forceinline")
-    var keys = this.keys()
-    var size = keys.size()
+    var keys = Struct.keys(this.container)
+    var size = GMArray.size(keys)
     for (var index = 0; index < size; index++) {
-      var key = keys.get(index)
+      var key = keys[index]
       var item = this.get(key)
       if (callback(item, key, acc)) {
         return key
@@ -257,10 +257,10 @@ function Map(_keyType = any, _valueType = any, _container = null) constructor {
   ///@return {Map}
   static clear = function() {
     gml_pragma("forceinline")
-    var keys = this.keys()
-    var size = keys.size()
+    var keys = Struct.keys(this.container)
+    var size = GMArray.size(keys)
     for (var index = 0; index < size; index++) {
-      var key = keys.get(index)
+      var key = keys[index]
       Struct.remove(this.container, key)
     }
     return this
@@ -297,10 +297,10 @@ function Map(_keyType = any, _valueType = any, _container = null) constructor {
     var struct = null
     if (callback) {
       struct = {}
-      var keys = this.keys()
-      var size = keys.size()
+      var keys = Struct.keys(this.container)
+      var size = GMArray.size(keys)
       for (var index = 0; index < size; index++) {
-        var key = keys.get(index)
+        var key = keys[index]
         var item = this.get(key)
         Struct.set(struct, key, callback(item, key, acc))
       }
@@ -316,11 +316,11 @@ function Map(_keyType = any, _valueType = any, _container = null) constructor {
   ///@return {Array}
   static toArray = function(callback, acc = null, keyType = null) {
     gml_pragma("forceinline")
-    var keys = this.keys()
-    var size = keys.size()
+    var keys = Struct.keys(this.container)
+    var size = GMArray.size(keys)
     var arr = new Array(keyType == null ? this.keyType : keyType, GMArray.createGMArray(size))
     for (var index = 0; index < size; index++) {
-      var key = keys.get(index)
+      var key = keys[index]
       var item = this.get(key)
       arr.set(index, callback(item, key, acc))
     }

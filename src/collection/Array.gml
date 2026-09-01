@@ -340,7 +340,7 @@ function Array(_type = any, _container = null) constructor {
   ///@return {Array}
   static setContainer = function(container) {
     gml_pragma("forceinline")
-    Assert.isTrue((typeof(this.container) == "array"))
+    Assert.isTrue((typeof(container) == "array"))
     this.container = container
     return this
   }
