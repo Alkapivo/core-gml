@@ -1,6 +1,6 @@
 {
   "version": "1",
-  "model": "baronskeep.core.lang.LanguagePack",
+  "model": "io.alkapivo.core.lang.LanguagePack",
   "data": {
     "code": "pl_PL",
     "labels": {

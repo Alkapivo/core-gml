@@ -1,6 +1,6 @@
 {
   "version": "1",
-  "model": "baronskeep.core.lang.LanguageManifest",
+  "model": "io.alkapivo.core.lang.LanguageManifest",
   "data": {
     "en_EN": [
       "en_EN/core.json"
