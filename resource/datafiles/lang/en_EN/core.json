@@ -1,0 +1,15 @@
+{
+  "version": "1",
+  "model": "baronskeep.core.lang.LanguagePack",
+  "data": {
+    "code": "en_EN",
+    "labels": {
+      "test.language": "Test language with params: {0}, {1}",
+      "en_EN": "English",
+      "pl_PL": "Polish",
+      "core.dialogue-designer.message.continue": "Press any key",
+
+      "core.json": "core.json"
+    }
+  }
+}

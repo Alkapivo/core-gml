@@ -1,0 +1,12 @@
+{
+  "version": "1",
+  "model": "baronskeep.core.lang.LanguageManifest",
+  "data": {
+    "en_EN": [
+      "en_EN/core.json"
+    ],
+    "pl_PL": [
+      "pl_PL/core.json"
+    ]
+  }
+}
