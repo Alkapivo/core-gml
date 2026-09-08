@@ -8,9 +8,10 @@ global.__coreController = GMObjectUtil.factoryStructInstance(
 	{
 	  fpsReport: "",
     fpsReportPath: null,
-    fpsTimer: new Timer(2.0, { loop: Infinity }),
+    fpsTimer: new Timer(1.0, { loop: Infinity }),
     fpsReportTimer: new Timer(10.0, { loop: Infinity }),
     fpsValue: GAME_FPS,
+    fpsRealValue: GAME_FPS,
     generateRow: function(message) {
       var z = function(v) {
         return (v < 10 ? "0" : "") + string(v)
@@ -29,8 +30,8 @@ global.__coreController = GMObjectUtil.factoryStructInstance(
     initFpsReport: function(context, filename) {
       context.fpsReportPath = $"{program_directory}{filename}"
       var file = file_text_open_write(context.fpsReportPath)
-      var row = context.generateRow($"60,1.00")
-      file_text_write_string(file, $"timestamp,FPS_MIN,DELTA_MAX\n{row}\n")
+      var row = context.generateRow($"{context.fpsValue},{context.fpsRealValue}")
+      file_text_write_string(file, $"timestamp,FPS_MIN,FPS_REAL_MIN\n{row}\n")
       file_text_close(file);
     },
     updateBegin: function() {
@@ -225,11 +226,13 @@ global.__coreController = GMObjectUtil.factoryStructInstance(
 	  },
 	  update: function() {
       if (this.fpsReportPath != null) {
-        this.fpsValue = min(this.fpsValue, min(fps, fps_real))
+        this.fpsValue = min(this.fpsValue, abs(fps))
+        this.fpsRealValue = min(this.fpsRealValue, abs(fps_real))
         if (this.fpsTimer.update().finished) {
-          var row = this.generateRow($"{abs(this.fpsValue)},{abs(DeltaTime.deltaTime)}")
+          var row = this.generateRow($"{abs(this.fpsValue)},{abs(this.fpsRealValue)}")
           this.fpsReport = this.fpsReport == "" ? row : $"{this.fpsReport}\n{row}"
           this.fpsValue = GAME_FPS
+          this.fpsRealValue = 9999
         }
       }
       
