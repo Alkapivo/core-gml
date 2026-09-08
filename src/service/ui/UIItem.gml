@@ -588,6 +588,25 @@ function _UIItemUtils() constructor {
       }
     },
   }
+
+  getStoreItemFromUIStore = function(uiItem, key) {
+    var uiStore = Struct.get(uiItem, "store")
+    if (!Core.isType(uiStore, UIStore)) {
+      return null
+    }
+
+    var store = uiStore.getStore()
+    if (!Core.isType(store, Store)) {
+      return null
+    }
+
+    var item = store.get(key)
+    if (!Core.isType(item, StoreItem)) {
+      return null
+    }
+
+    return item
+  }
 }
 
 ///@static
