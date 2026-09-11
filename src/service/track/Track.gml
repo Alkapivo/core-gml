@@ -442,6 +442,13 @@ function TrackChannel(json, config = null) constructor {
   ///@type {Struct}
   settings = this.parseSettings(Struct.getIfType(json, "settings", Struct))
 
+  ///@return {Boolean}
+  settingsResolver = Optional.is(Struct.getIfType(config, "settingsResolver", Callable))
+    ? method(this, config.settingsResolver)
+    : function() {
+      return true
+    }
+
   ///@param {TrackEvent} event
   ///@return {TrackChannel}
   add = Optional.is(Struct.getIfType(config, "add", Callable))
@@ -556,6 +563,7 @@ function TrackChannel(json, config = null) constructor {
         return this
       }
 
+      var settingsResult = this.settingsResolver()
       for (var index = 0; index < this.MAX_EXECUTION_PER_FRAME; index++) {
         var pointer = this.pointer == null ? 0 : (this.pointer + 1)
         if (pointer == size) {
@@ -568,7 +576,7 @@ function TrackChannel(json, config = null) constructor {
         }
         
         this.pointer = pointer
-        if (this.muted) {
+        if (this.muted || !settingsResult) {
           continue
         }
 
