@@ -53,7 +53,7 @@ function TrackService(config = null): Service(config) constructor {
   ///@param {Event} event
   ///@return {TrackService}
   send = function(event) {
-    if (!Core.isType(event.promise, Promise)) {
+    if (event.promise == null) {
       event.promise = new Promise()
     }
     return this.dispatcher.send(event)
@@ -63,7 +63,7 @@ function TrackService(config = null): Service(config) constructor {
   isTrackLoaded = method(this, Struct.contains(config, "isTrackLoaded")
     ? Assert.isType(config.isTrackLoaded, Callable)
     : function() {
-      return Core.isType(this.track, Track)
+      return this.track != null
     })
 
   ///@param {Track} track

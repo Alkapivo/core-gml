@@ -39,7 +39,7 @@ function Sprite(_texture, config = null) constructor {
   blend = Struct.get(config, "blend")
   this.blend = Core.isType(this.blend, String)
     ? ColorUtil.parse(this.blend).toGMColor()
-    : (Core.isType(this.blend, GMColor)
+    : (this.blend != null
       ? this.blend
       : c_white)
 

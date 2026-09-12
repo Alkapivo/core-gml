@@ -393,17 +393,6 @@ function TrackChannel(json, config = null) constructor {
   ///@private
   ///@type {Array<TrackEvent>}
   events = new Array(TrackEvent, GMArray.createGMArray(GMArray.size(Struct.getIfType(json, "events", GMArray, [ ]))))
-  //events = new Array(TrackEvent)
-  /*
-  events = GMArray
-    .toArray(
-      Struct.getIfType(json, "events", GMArray, [ ]), 
-      TrackEvent, 
-      this.parseEvent,
-      Struct.set((Core.isType(config, Struct) ? config : { }),
-        "__channelName", this.name)
-    ).sort(compareEvents)
-  */
 
   ///@type {Task}
   var channel = this

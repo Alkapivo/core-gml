@@ -227,7 +227,7 @@ function ParticleTemplate(_name, json) constructor {
   )
 
   ///@type {?Struct}
-  sprite = Core.isType(Struct.get(json, "sprite"), Struct) ? json.sprite : null
+  sprite = Struct.get(json, "sprite") != null ? json.sprite : null
 
   ///@type {?Particle}
   particle = null
@@ -353,7 +353,7 @@ function Particle(json) constructor {
   gravity = new ParticlePropertyGravity(Struct.get(json, "gravity"))
 
   ///@type {?ParticlePropertySprite}
-  sprite = Core.isType(Struct.get(json, "sprite"), Struct)
+  sprite = Struct.get(json, "sprite") != null
     ? new ParticlePropertySprite(json.sprite)
     : null
 
@@ -371,7 +371,7 @@ function Particle(json) constructor {
 	part_type_speed(this.asset, this.speed.minValue, this.speed.maxValue, this.speed.increase, this.speed.wiggle)
 	part_type_direction(this.asset, this.angle.minValue, this.angle.maxValue, this.angle.increase, this.angle.wiggle)
 	part_type_gravity(this.asset, this.gravity.amount, this.gravity.angle)
-  if (Core.isType(this.sprite, ParticlePropertySprite)) {
+  if (this.sprite != null) {
 	  part_type_sprite(this.asset, this.sprite.texture.asset, this.sprite.animate, this.sprite.stretch, this.sprite.randomValue)
   }
   

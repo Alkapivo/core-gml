@@ -129,7 +129,7 @@ function _Language() constructor {
     }
 
     var label = this.pack.labels.get(key)
-    if (!Core.isType(label, String)) {
+    if (label == null) {
       return key
     }
 

@@ -26,9 +26,7 @@ function Bean(_name, _prototype, _instance) constructor {
 
   ///@return {?Struct}
   get = function() {
-    return Core.isType(this.instance, GMObject)
-      ? Core.getIfType(GMObjectUtil.get(this.instance, "__context"), this.prototype)
-      : null
+    return GMObjectUtil.get(this.instance, "__context", null)
   }
 
   ///@return {Bean}
