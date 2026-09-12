@@ -12,6 +12,7 @@ global.__coreController = GMObjectUtil.factoryStructInstance(
     fpsReportTimer: new Timer(10.0, { loop: Infinity }),
     fpsValue: GAME_FPS,
     fpsRealValue: GAME_FPS,
+    fpsRealMax: GAME_FPS,
     generateRow: function(message) {
       var z = function(v) {
         return (v < 10 ? "0" : "") + string(v)
@@ -30,8 +31,8 @@ global.__coreController = GMObjectUtil.factoryStructInstance(
     initFpsReport: function(context, filename) {
       context.fpsReportPath = $"{program_directory}{filename}"
       var file = file_text_open_write(context.fpsReportPath)
-      var row = context.generateRow($"{context.fpsValue},{context.fpsRealValue}")
-      file_text_write_string(file, $"timestamp,FPS_MIN,FPS_REAL_MIN\n{row}\n")
+      var row = context.generateRow($"{context.fpsValue},{context.fpsRealValue},{context.fpsRealMax}")
+      file_text_write_string(file, $"timestamp,FPS_MIN,FPS_REAL_MIN,FPS_REAL_MAX,{row}\n")
       file_text_close(file);
     },
     updateBegin: function() {
@@ -228,10 +229,12 @@ global.__coreController = GMObjectUtil.factoryStructInstance(
       if (this.fpsReportPath != null) {
         this.fpsValue = min(this.fpsValue, abs(fps))
         this.fpsRealValue = min(this.fpsRealValue, abs(fps_real))
+        this.fpsRealMax = max(this.fpsRealMax, abs(fps_real))
         if (this.fpsTimer.update().finished) {
-          var row = this.generateRow($"{abs(this.fpsValue)},{abs(this.fpsRealValue)}")
+          var row = this.generateRow($"{abs(this.fpsValue)},{abs(this.fpsRealValue)},{abs(this.fpsRealMax)}")
           this.fpsReport = this.fpsReport == "" ? row : $"{this.fpsReport}\n{row}"
           this.fpsValue = GAME_FPS
+          this.fpsRealMax = GAME_FPS
           this.fpsRealValue = 9999
         }
       }
