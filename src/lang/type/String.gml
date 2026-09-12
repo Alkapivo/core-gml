@@ -271,7 +271,7 @@ function _String() constructor {
   ///@param {?GMArray<String>} patterns
   ///@return {String}
   static trim = function(text, patterns = null) {
-    return Core.isType(patterns, GMArray)
+    return patterns != null
       ? string_trim(text, patterns)
       : string_trim(text)
   }

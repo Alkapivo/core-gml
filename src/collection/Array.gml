@@ -90,7 +90,7 @@ function Array(_type = any, _container = null) constructor {
   ///@return {Array}
   static clear = function() {
     gml_pragma("forceinline")
-    if (Core.isType(this.gc, Stack)) {
+    if (this.gc != null) {
       this.gc.clear()
     }
     
@@ -388,7 +388,7 @@ function Array(_type = any, _container = null) constructor {
   ///@return {Array}
   static enableGC = function() {
     gml_pragma("forceinline")
-    this.gc = !Core.isType(this.gc, Stack) ? new Stack(Number) : this.gc
+    this.gc = this.gc == null ? new Stack(Number) : this.gc
     return this
   }
 
@@ -406,7 +406,7 @@ function Array(_type = any, _container = null) constructor {
       return a <= b
     }
 
-    if (!Core.isType(this.gc, Stack)) {
+    if (this.gc == null) {
       this.enableGC()
     }
 
@@ -499,7 +499,7 @@ function _GMArray() constructor {
     gml_pragma("forceinline")
     var size = this.size(arr)
     if (size < 32000) { ///@description GML array limitation
-      index = Core.isType(index, Number)
+      index = index != null
         ? clamp(index, -31999, 31999)
         : size
       array_insert(arr, index, item)
@@ -675,7 +675,7 @@ function _GMArray() constructor {
       return item 
     }
 
-    return new Array(type, this.map(arr, (Core.isType(callback, Callable) 
+    return new Array(type, this.map(arr, (callback != null
         ? callback 
         : passthroughCallback), 
       acc))
@@ -692,8 +692,8 @@ function _GMArray() constructor {
     gml_pragma("forceinline")
     var map = new Map(keyType, valueType)
     var size = this.size(arr)
-    var isValueCallback = Core.isType(valueCallback, Callable)
-    if (Core.isType(keyCallback, Callable)) {
+    var isValueCallback = valueCallback != null
+    if (keyCallback != null) {
       if (isValueCallback) {
         for (var index = 0; index < size; index++) {
           var value = arr[index]
@@ -729,8 +729,8 @@ function _GMArray() constructor {
     gml_pragma("forceinline")
     var struct = {}
     var size = this.size(arr)
-    var isValueCallback = Core.isType(valueCallback, Callable)
-    if (Core.isType(keyCallback, Callable)) {
+    var isValueCallback = valueCallback != null
+    if (keyCallback != null) {
       if (isValueCallback) {
         for (var index = 0; index < size; index++) {
           var value = arr[index]
