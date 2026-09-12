@@ -564,17 +564,18 @@ function TrackChannel(json, config = null) constructor {
       }
 
       var settingsResult = this.settingsResolver()
+      var pointer = this.pointer == null ? 0 : (this.pointer)
       for (var index = 0; index < this.MAX_EXECUTION_PER_FRAME; index++) {
-        var pointer = this.pointer == null ? 0 : (this.pointer + 1)
-        if (pointer == size) {
+        if (pointer >= size) {
           break
         }
 
         var event = events.get(pointer)
         if (timestamp < event.timestamp) {
-          continue
+          break
         }
         
+        pointer++
         this.pointer = pointer
         if (this.muted || !settingsResult) {
           continue

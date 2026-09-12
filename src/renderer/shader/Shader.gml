@@ -739,7 +739,7 @@ function _ShaderUtil() constructor {
     }
 
     var config = Struct.get(SHADERS, name)
-    if (!Core.isType(config, Struct)) {
+    if (config == null) {
       Logger.warn("ShaderUtil", String.template("{0} was not found in SHADERS: { \"name\": \"{1}\" }", "Shader", name))
       config = {}
     }

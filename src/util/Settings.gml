@@ -112,7 +112,7 @@ function Settings(_path) constructor {
   ///@return {any}
   getValue = function(name, defaultValue = null) {
     var settingEntry = container.get(name)
-    return Core.isType(settingEntry, SettingEntry)
+    return settingEntry != null
       ? settingEntry.get()
       : defaultValue
   }
@@ -129,7 +129,7 @@ function Settings(_path) constructor {
   ///@return {Settings}
   setValue = function(name, value) {
     var settingEntry = this.container.get(name)
-    if (Core.isType(settingEntry, SettingEntry)) {
+    if (settingEntry != null) {
       settingEntry.set(value)
     }
     return this

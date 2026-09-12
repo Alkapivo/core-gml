@@ -293,7 +293,7 @@ function _Struct() constructor {
     }
 
     var size = GMArray.size(keys)
-    if (!Core.isType(callback, Callable)) {
+    if (callback == null) {
       for (var index = 0; index < size; index++) {
         var key = keys[index]
         var item = Struct.get(struct, key)
@@ -336,7 +336,7 @@ function _Struct() constructor {
   ///@param {Boolean} [bind]
   ///@return {Struct}
   static appendField = function(source = null, key, value = null, bind = true) {
-    var struct = Core.isType(source, Struct) ? source : {}
+    var struct = source != null ? source : {}
     var _value = bind ? (Core.isType(value, BindIntent) ? value.bind(struct) : value) : value
     Struct.set(struct, key, _value)
     return struct
@@ -351,7 +351,7 @@ function _Struct() constructor {
       Struct.appendField(data.source, key, value, data.bind)
     }
 
-    var struct = Core.isType(source, Struct) ? source : {}
+    var struct = source != null ? source : {}
     if (Core.isType(json, Struct)) {
       Struct.forEach(json, _append, { source: struct, bind: bind })
     }
@@ -377,7 +377,7 @@ function _Struct() constructor {
       }
     }
 
-    var struct = Core.isType(source, Struct) ? source : {}
+    var struct = source != null ? source : {}
     if (Core.isType(json, Struct)) {
       Struct.forEach(json, append, { source: struct, bind: bind })
     }
@@ -390,7 +390,7 @@ function _Struct() constructor {
   ///@param {Boolean} [bind]
   ///@return {Struct}
   static appendUniqueField = function(source = null, key, value = null, bind = true) {
-    var struct = Core.isType(source, Struct) ? source : {}
+    var struct = source != null ? source : {}
     if (!Struct.contains(struct, key)) {
       this.appendField(struct, key, value, bind)
     }
@@ -406,7 +406,7 @@ function _Struct() constructor {
       Struct.appendUniqueField(data.source, key, value, data.bind)
     }
 
-    var struct = Core.isType(source, Struct) ? source : {}
+    var struct = source != null ? source : {}
     if (Core.isType(json, Struct)) {
       Struct.forEach(json, append, { source: struct, bind: bind })
     }
@@ -432,7 +432,7 @@ function _Struct() constructor {
       }
     }
 
-    var struct = Core.isType(source, Struct) ? source : {}
+    var struct = source != null ? source : {}
     if (Core.isType(json, Struct)) {
       Struct.forEach(json, append, { source: struct, bind: bind })
     }

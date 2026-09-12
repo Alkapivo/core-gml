@@ -59,11 +59,11 @@ function Surface(config = null) constructor {
   ///@return {Surface}
   update = function(width = null, height = null) {
     this.updated = false
-    if (Core.isType(width, Number) && width > 2) {
+    if (width != null && width > 2) {
       this.width = ceil(width)
     }
 
-    if (Core.isType(height, Number) && height > 2) {
+    if (height != null && height > 2) {
       this.height = ceil(height)
     }
 

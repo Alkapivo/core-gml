@@ -207,8 +207,8 @@ function ShaderPipeline(config = {}) constructor {
           var oldTask = this.executor.tasks.get(index)
           if (oldTask.status != TaskStatus.FULLFILLED) {
             oldTask.fullfill()
-            fullfilled++
           }
+          fullfilled++
 
           if (size - fullfilled < limit) {
             Logger.debug("ShaderPipeline", $"Reduced task to match limit {limit}")
