@@ -212,7 +212,7 @@ function DisplayService(config = null): Service(config) constructor {
       this.windowHeight = this.getHeight()
       draw_texture_flush()
     } catch (exception) {
-      Logger.error("ResizeEvent", exception.message)
+      Logger.error(BeanDisplayService, $"resize(): {exception.message}")
       Core.printStackTrace().printException(exception)
     }
     return this

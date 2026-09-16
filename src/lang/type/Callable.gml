@@ -6,14 +6,15 @@ show_debug_message("init Callable.gml")
 function _Callable() constructor {
 
   ///@param {String} name
+  ///@param {?Callable} [defaultValue]
   ///@return {?Callable}
-  get = function(name) {
+  get = function(name, defaultValue = null) {
     if (!Core.isType(name, String)) {
-      return null
+      return defaultValue
     }
     
     var callable = asset_get_index(name)
-    return Core.isType(callable, Callable) ? callable : null
+    return Core.isType(callable, Callable) ? callable : defaultValue
   }
 
   ///@param {?Struct|?GMObject} context

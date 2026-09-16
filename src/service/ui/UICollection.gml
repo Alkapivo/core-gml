@@ -81,11 +81,12 @@ function UICollection(_container, config = null) constructor {
 
   ///@param {UIComponent} component
   ///@param {?Number} [index]
+  ///@param {any} [config]
   ///@return {UICollection}
   add = Struct.contains(config, "add")
     ? Assert.isType(method(this, config.add), Callable,
         "UICollection::add must be type of Callable")
-    : function(component, index = null) {
+    : function(component, index = null, config = null) {
       static updateIndex = function(component, key, index) {
         if (component.index >= index) {
           component.index = component.index + 1
@@ -122,6 +123,7 @@ function UICollection(_container, config = null) constructor {
         index: idx,
         name: component.name,
         items: component.toUIItems(this.layout),
+        config: config,
       }
       
       item.items
