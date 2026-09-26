@@ -620,10 +620,7 @@ void main()
       v_texcoord
     );
 
-  float alpha =
-    tex.a == 0.0
-    ? 0.0
-    : distance(tex.rgb, pixel) / SQRT_3;
+  float alpha = sign(tex.a) * distance(tex.rgb, pixel) / SQRT_3;
 
   pixel =
     mix(

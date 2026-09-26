@@ -159,10 +159,10 @@ void main() {
       mask *= result * abs(sin(uv2.x * TAU * u_mask_density)) * abs(cos(uv2.y * TAU * u_mask_density));
     } else if (mask_mode == 3) {
       mask_a = abs(sin(uv2.x * TAU * u_mask_density)) * abs(cos(uv2.y * TAU * u_mask_density));
-      mask = mask_a == 0.0 ? mask_a : mask / mask_a;
+      mask = (mask * (sign(mask_a) / max(abs(mask_a), 1e-6)));
     } else if (mask_mode == 4) {
       mask_a = abs(sin(uv2.x * TAU * u_mask_density)) * abs(cos(uv2.y * TAU * u_mask_density));
-      mask = result * (mask_a == 0.0 ? mask_a : mask / mask_a);
+      mask = result * (mask * (sign(mask_a) / max(abs(mask_a), 1e-6)));
     } else if (mask_mode == 5) {
       mask = abs(sin(uv2.x * TAU * u_mask_density)) * abs(cos(uv2.y * TAU * u_mask_density));
     } else if (mask_mode == 6) {
@@ -170,13 +170,13 @@ void main() {
     }
   }
   mask = 1.0 - clamp(mask * u_mask_size, 0.0, 1.0);
-  result = result == 0.0 || u_thickness == 0.0 ? 0.0 : (1.0 / (result / u_thickness));
+  result = u_thickness / max(result, 1e-6);
   
   vec4 texture = texture2D(gm_BaseTexture, v_texcoord);
   vec3 color = u_tint * result;
   color = clamp(color * mask, 0.0, 1.0);
   vec3 pixel = apply_hue(apply_saturation(color, u_sat), u_hue) * u_brightness;
-  float alpha = texture.a == 0.0 ? 0.0 : get_alpha_from_pixel(pixel);
+  float alpha = sign(texture.a) * get_alpha_from_pixel(pixel);
   pixel = mix(pixel, texture.rgb, 1.0 - v_color.a);
   pixel = mix(pixel, texture.rgb, 1.0 - alpha);
   gl_FragColor = vec4(pixel, texture.a + (alpha * v_color.a));

@@ -146,7 +146,7 @@ void main() {
   color = blend_colors(u_bkg, color, sqrt(fract_value) / sqrt(sdf_value), u_intensity);
   vec4 texture = texture2D(gm_BaseTexture, v_texcoord);//texture(iChannel0, uv);
   vec3 pixel = apply_hue(apply_saturation(color.rgb, u_sat), u_hue) * u_brightness;
-  float alpha = texture.a == 0.0 ? 0.0 : clamp(get_alpha_from_pixel(pixel), 0.0, 1.0);
+  float alpha = sign(texture.a) * clamp(get_alpha_from_pixel(pixel), 0.0, 1.0);
   float dist = clamp(length(uv), 0.0, 1.0);
   float middle = min(pow(1.0 - dist, FACTOR), alpha) * fract_value + (1.0 - dist * FACTOR);
   middle = clamp(middle * u_treshold, 0.0, 1.0);

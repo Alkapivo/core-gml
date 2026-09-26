@@ -29,12 +29,12 @@ global.__SurfaceFormat = new _SurfaceFormat()
 function Surface(config = null) constructor {
 
   ///@type {Number}
-  width = Assert.isType(clamp(Struct
-    .getDefault(config, "width", 1), 1, SURFACE_MAX_WIDTH), Number)
+  width = ceil(Assert.isType(clamp(Struct
+    .getDefault(config, "width", 1), 1, SURFACE_MAX_WIDTH), Number))
 
   ///@type {Number}
-  height = Assert.isType(clamp(Struct
-    .getDefault(config, "height", 1), 1, SURFACE_MAX_HEIGHT), Number)
+  height = ceil(Assert.isType(clamp(Struct
+    .getDefault(config, "height", 1), 1, SURFACE_MAX_HEIGHT), Number))
 
   ///@type {SurfaceFormat}
   format = Assert.isEnum(Struct
@@ -134,7 +134,7 @@ function Surface(config = null) constructor {
       return this
     }
 
-    draw_surface_ext(this.asset, x, y, 1.0, 1.0, 0.0, c_white, alpha)
+    draw_surface_ext(this.asset, floor(x), floor(y), 1.0, 1.0, 0.0, c_white, alpha)
     return this
   }
 
@@ -154,10 +154,10 @@ function Surface(config = null) constructor {
 
     if (blendConfig != null) {
       blendConfig.set()
-      draw_surface_stretched_ext(this.asset, x, y, ceil(width), ceil(height), blend, alpha)
+      draw_surface_stretched_ext(this.asset, floor(x), floor(y), ceil(width), ceil(height), blend, alpha)
       blendConfig.reset()
     } else {
-      draw_surface_stretched_ext(this.asset, x, y, ceil(width), ceil(height), blend, alpha)
+      draw_surface_stretched_ext(this.asset, floor(x), floor(y), ceil(width), ceil(height), blend, alpha)
     }
 
     return this

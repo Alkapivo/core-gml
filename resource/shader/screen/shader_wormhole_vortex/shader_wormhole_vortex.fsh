@@ -206,7 +206,7 @@ void main() {
 	vec3 color = u_color_in * 0.2 * vec3(ac);
 	color = clamp(color + (u_intensity * em * u_color_out), 0.0, 1.0);
   vec3 pixel = apply_hue(apply_saturation(color, u_sat), u_hue) * u_brightness;
-  float alpha = texture.a == 0.0 ? 0.0 : clamp(get_color_distance(vec3(0.0), pixel) * u_bold, 0.0, 1.0);
+  float alpha = sign(texture.a) * clamp(get_color_distance(vec3(0.0), pixel) * u_bold, 0.0, 1.0);
   pixel = mix(pixel, texture.rgb, 1.0 - v_color.a);
   pixel = mix(pixel, texture.rgb, 1.0 - alpha);
   //fragColor = vec4(color, 1.0);

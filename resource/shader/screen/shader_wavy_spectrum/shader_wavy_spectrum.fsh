@@ -179,7 +179,7 @@ void main() {
   vec4 texture = texture2D(gm_BaseTexture, v_texcoord);
   vec3 color = get_spectrum_color(position, u_color_a, u_color_b, u_color_c);
   vec3 pixel = apply_hue(apply_saturation(color, u_sat), u_hue) * u_brightness;
-  float alpha = texture.a == 0.0 ? 0.0 : clamp(get_color_distance(pixel, u_color_mask), 0.0, 1.0);
+  float alpha = sign(texture.a) * clamp(get_color_distance(pixel, u_color_mask), 0.0, 1.0);
   pixel = mix(pixel, texture.rgb, 1.0 - v_color.a);
   pixel = mix(pixel, texture.rgb, 1.0 - alpha);
   //fragColor = vec4(color, 1.0);

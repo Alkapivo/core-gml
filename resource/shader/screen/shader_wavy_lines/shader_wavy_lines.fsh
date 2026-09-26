@@ -160,7 +160,7 @@ void main() {
 
   float bpm = (u_bpm / 60.0) * u_direction;
   float time = (u_time + u_seed) * (TAU * bpm);
-  vec2 uv = rotated_uv_resolution(v_texcoord, u_resolution, u_offset, u_angle) * (u_zoom == 0.0 ? 0.0 : (1.0 / u_zoom));
+  vec2 uv = rotated_uv_resolution(v_texcoord, u_resolution, u_offset, u_angle) * (sign(u_zoom) / max(abs(u_zoom), 1e-6));
   //float audio_waveform = interpolateArray(u_audio_waveform, v_texcoord.x * float(FFT));
   //float wave = clamp(smoothstep(0.0, 0.25, abs(audio_waveform - uv.y)), 0.0, 1.0);
   //time += wave * TAU;
@@ -190,7 +190,7 @@ void main() {
   //vec4 texture = texture(iChannel0, v_texcoord / iResolution.xy);
   vec4 texture = texture2D(gm_BaseTexture, v_texcoord);
   vec3 pixel = apply_hue(apply_saturation(color.rgb, u_sat), u_hue) * u_brightness;
-  float alpha = texture.a == 0.0 ? 0.0 : clamp(get_color_distance(pixel, vec3(0.0)) * 1.667, 0.0, 1.0);
+  float alpha = sign(texture.a) * clamp(get_color_distance(pixel, vec3(0.0)) * 1.667, 0.0, 1.0);
   pixel = mix(pixel, texture.rgb, 1.0 - v_color.a);
   pixel = mix(pixel, texture.rgb, 1.0 - alpha);
   //fragColor = vec4(pixel, texture.a + (alpha * v_color.a));

@@ -134,7 +134,7 @@ void main() {
   vec4 texture = texture2D(gm_BaseTexture, v_texcoord);
   vec3 color = vec3(sin(uv.x) * 0.5 + 0.5, cos(uv.y) * 0.5 + 0.5, sin(uv.y) * 0.5 + 0.5);
   vec3 pixel = apply_hue(apply_saturation(color, u_sat), u_hue) * u_brightness;
-  float alpha = texture.a == 0.0 ? 0.0 : get_alpha_from_pixel(pixel);
+  float alpha = sign(texture.a) * get_alpha_from_pixel(pixel);
   pixel = mix(pixel, texture.rgb, 1.0 - v_color.a);
   pixel = mix(pixel, texture.rgb, (1.0 - alpha) * (1.0 - u_treshold));
   //fragColor = vec4(color, 1.0);

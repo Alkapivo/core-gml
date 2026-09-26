@@ -67,11 +67,11 @@ function DisplayService(config = null): Service(config) constructor {
 
   ///@private
   ///@type {Number}
-  previousGuiWidth = this.windowWidth * this.scale
+  previousGuiWidth = toInt(this.windowWidth * this.scale)
 
   ///@private
   ///@type {Number}
-  previousGuiHeight = this.windowHeight * this.scale
+  previousGuiHeight = toInt(this.windowHeight * this.scale)
 
   ///@private
   ///@type {Number}
@@ -115,10 +115,10 @@ function DisplayService(config = null): Service(config) constructor {
     var fullscreen = this.getFullscreen()
     window_set_fullscreen(enable)
     if (enable && !fullscreen) { 
-      this.beforeFullscreenWidth = this.previousWidth
-      this.beforeFullscreenHeight = this.previousHeight
-      var width = Math.getEvenCeil(max(this.minWidth, this.getDisplayWidth()) / this.scale)
-      var height = Math.getEvenCeil(max(this.minHeight, this.getDisplayHeight()) / this.scale)
+      this.beforeFullscreenWidth = toInt(this.previousWidth)
+      this.beforeFullscreenHeight = toInt(this.previousHeight)
+      var width = toInt(Math.getEvenCeil(max(this.minWidth, this.getDisplayWidth()) / this.scale))
+      var height = toInt(Math.getEvenCeil(max(this.minHeight, this.getDisplayHeight()) / this.scale))
       this.resize(width, height)
     }
 
@@ -199,11 +199,11 @@ function DisplayService(config = null): Service(config) constructor {
   ///@param {Number} _height
   ///@return {DisplayService}
   resize = function(_width, _height) {
-    var width = Math.getEvenCeil(max(this.minWidth, _width))
-    var height = Math.getEvenCeil(max(this.minHeight, _height))
+    var width = toInt(Math.getEvenCeil(max(this.minWidth, _width)))
+    var height = toInt(Math.getEvenCeil(max(this.minHeight, _height)))
     try {
-      var guiWidth = Math.getEvenCeil(width / this.scale)
-      var guiHeight = Math.getEvenCeil(height / this.scale)
+      var guiWidth = toInt(Math.getEvenCeil(width / this.scale))
+      var guiHeight = toInt(Math.getEvenCeil(height / this.scale))
       Logger.debug("DisplayService", $"Resize window from {this.previousWidth}x{this.previousHeight} to {width}x{height}, scale: {this.scale}")
       display_set_gui_size(guiWidth, guiHeight)
       window_set_size(width, height)

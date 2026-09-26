@@ -516,12 +516,11 @@ function TrackChannel(json, config = null) constructor {
     ? method(this, config.rewind)
     : function(timestamp) {
       var size = this.events.size()
-      this.pointer = null
+      this.pointer = 0
       this.time = timestamp
-      for (var index = 0; index < size; index++) {
+      for (var index = 0; index <= size; index++) {
         this.pointer = index
-        if (this.events.get(index).timestamp >= timestamp) {
-          this.pointer = index == 0 ? null : index - 1
+        if (index == size || this.events.get(index).timestamp >= timestamp) {
           break
         }
       }

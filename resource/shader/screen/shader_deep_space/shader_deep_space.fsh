@@ -189,7 +189,7 @@ void main() {
   vec3 color = mix(vec3(length(v)), v, (u_sat / 10.0)) * 0.01;
   color *= mix(u_tint, vec3(1.0), clamp(get_alpha_from_pixel(color), 0.0, 1.0));
   vec3 pixel = apply_hue(apply_saturation(color, u_sat), u_hue) * u_brightness;
-  float alpha = texture.a == 0.0 ? 0.0 : (clamp(get_alpha_from_pixel(pixel) * (u_opacity * 100.0), 0.0, 1.0));
+  float alpha = sign(texture.a) * (clamp(get_alpha_from_pixel(pixel) * (u_opacity * 100.0), 0.0, 1.0));
   pixel = mix(pixel, texture.rgb, 1.0 - v_color.a);
   pixel = mix(pixel, texture.rgb, 1.0 - alpha);
   gl_FragColor = vec4(pixel, texture.a + (alpha * v_color.a));

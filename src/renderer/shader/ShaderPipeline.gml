@@ -307,14 +307,14 @@ function ShaderPipeline(config = {}) constructor {
   ///@param {Number} _width
   ///@return {ShaderPipeline}
   setWidth = function(_width) {
-    this.width = _width
+    this.width = toInt(_width)
     return this
   }
 
   ///@param {Number} _height
   ///@return {ShaderPipeline}
   setHeight = function(_height) {
-    this.height = _height
+    this.height = toInt(_height)
     return this
   }
 
@@ -328,8 +328,8 @@ function ShaderPipeline(config = {}) constructor {
       var value = property.transformer.get()
       if (property.transformer.overrideValue
           && Core.isType(property.transformer, ResolutionTransformer)) {
-        value.x = context.width
-        value.y = context.height
+        value.x = toInt(context.width)
+        value.y = toInt(context.height)
       }
       property.uniform.set(value)
     }
