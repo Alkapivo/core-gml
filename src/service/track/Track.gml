@@ -605,7 +605,8 @@ function TrackEvent(json, config = null): Event("TrackEvent") constructor {
   data = Struct.getIfType(json, "data", Struct, { })
 
   ///@type {Number}
-  timestamp = abs(Assert.isType(Struct.get(json, "timestamp"), Number))
+  timestamp = abs(Assert.isType(Struct.get(json, "timestamp"), Number,
+    $"TrackEvent.timestamp must be type of timestamp. uid: {uid}"))
 
   ///@type {String}
   callableName = Struct.getIfType(json, "callable", String, "dummy")
@@ -619,7 +620,7 @@ function TrackEvent(json, config = null): Event("TrackEvent") constructor {
   ///@type {Callable}
   parseData = Struct.getIfType(handler, "parse", Callable, Lambda.passthrough)
 
-  ///@type {Struct}
+  ///@type {?Struct}
   parsedData = null
 
   ///@type {Callable}
@@ -630,7 +631,9 @@ function TrackEvent(json, config = null): Event("TrackEvent") constructor {
     return {
       "timestamp": this.timestamp,
       "callable": this.callableName,
-      "data": this.serializeData(this.data),
+      "data": this.serializeData(this.parsedData == null
+        ? this.parseData(this.data)
+        : this.parsedData),
     }
   }))
 }
