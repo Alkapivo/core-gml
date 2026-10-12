@@ -15,6 +15,7 @@ function _ShaderUniformType(): Enum() constructor {
   VECTOR4 = ShaderUniformVector4
   RESOLUTION = ShaderUniformResolution
   AUDIO_WAVEFORM = ShaderUniformAudioWaveform
+  TIME = ShaderUniformTime
 }
 global.__ShaderUniformType = new _ShaderUniformType()
 #macro ShaderUniformType global.__ShaderUniformType
@@ -77,6 +78,24 @@ function ShaderUniformFloat(_asset, _name, _type = ShaderUniformType.FLOAT): Sha
     this.setter(this.asset, value)
   }
 }
+
+
+///@param {GMShader} _asset
+///@param {String} _name
+///@param {ShaderUniformType} _type
+function ShaderUniformTime(_asset, _name, _type = ShaderUniformType.TIME): ShaderUniform(_asset, _name, _type) constructor {
+
+  ///@override
+  ///@type {Callable}
+  setter = shader_set_uniform_f
+
+  ///@override
+  ///@param {Number} value
+  static set = function(value) {
+    this.setter(this.asset, value)
+  }
+}
+
 
 ///@param {GMShader} _asset
 ///@param {String} _name

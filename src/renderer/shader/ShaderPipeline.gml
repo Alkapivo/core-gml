@@ -32,6 +32,7 @@ function _ShaderPipelineTaskTransformerType(): Enum() constructor {
   VECTOR4 = Vector4Transformer
   RESOLUTION = ResolutionTransformer
   AUDIO_WAVEFORM = AudioWaveformTransformer
+  TIME = TimeTransformer
 }
 global.__ShaderPipelineTaskTransformerType = new _ShaderPipelineTaskTransformerType()
 #macro ShaderPipelineTaskTransformerType global.__ShaderPipelineTaskTransformerType
@@ -96,6 +97,7 @@ function ShaderPipelineTaskProperty(_uniform, _transformer) constructor {
       case "Transformer": return $"{this.transformer.value}"
       case "ColorTransformer": return $"{this.transformer.value.toHex()}"
       case "NumberTransformer": return $"{this.transformer.value}"
+      case "TimeTransformer": return $"{this.transformer.value}"
       case "Vector2Transformer": return $"({this.transformer.value.x}, {this.transformer.value.y})"
       case "Vector3Transformer": return $"({this.transformer.value.x}, {this.transformer.value.y}, {this.transformer.value.z})"
       case "Vector4Transformer": return $"({this.transformer.value.x}, {this.transformer.value.y}, {this.transformer.value.z}, {this.transformer.value.a})"

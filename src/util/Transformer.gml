@@ -48,6 +48,35 @@ function Transformer(json = null) constructor {
   }
 }
 
+function TimeTransformer(json = null): Transformer(json) constructor {
+
+  ///@type {Number}
+  step = this.value * FRAME_MS
+
+  ///@override
+  ///@type {Number}
+  value = 0.0
+
+  ///@override
+  ///@type {Number}
+  startValue = 0.0
+
+  ///@override
+  ///@return {Transformer}
+  static update = function() {
+    this.value += this.step * DELTA_TIME
+    return this
+  }
+
+  ///@override
+  ///@return {Struct} 
+  static serialize = function() {
+    return {
+      value: this.step / FRAME_MS,
+    }
+  }
+}
+
 
 ///@param {?Struct} [json]
 function ColorTransformer(json = null) constructor {
