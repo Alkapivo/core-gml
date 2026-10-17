@@ -9,19 +9,14 @@ global.__ShaderDissolve = {
     return {
       type: "GLSL_ES",
       uniforms: {
-        u_time: "FLOAT",
+        u_time: "TIME",
       },
     }
   },
   config: function() {
     return {
       u_time: {
-        store: {
-          value: 0.0,
-          target: 1000.0,
-          duration: 1000.0,
-          ease: "LINEAR",
-        },
+        store: { value: 1.0 },
         components: { }
       },
     }

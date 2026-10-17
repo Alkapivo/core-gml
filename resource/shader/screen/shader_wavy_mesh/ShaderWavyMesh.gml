@@ -26,7 +26,7 @@ global.__ShaderWavyMesh = {
         u_sat: "FLOAT",
         u_shift: "FLOAT",
         u_thickness: "FLOAT",
-        u_time: "FLOAT",
+        u_time: "TIME",
       },
     }
   },
@@ -136,12 +136,7 @@ global.__ShaderWavyMesh = {
         components: { },
       },
       u_time: {
-        store: {
-          value: 0.0,
-          target: 1000.0,
-          duration: 2000.0,
-          ease: "LINEAR",
-        },
+        store: { value: 1.0 },
         components: { }
       },
       u_offset: {

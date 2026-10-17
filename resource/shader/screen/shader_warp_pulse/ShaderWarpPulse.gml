@@ -22,7 +22,7 @@ global.__ShaderWarpPulse = {
         u_sat: "FLOAT",
         u_seed: "CONST_FLOAT",
         u_size: "FLOAT",
-        u_time: "FLOAT",
+        u_time: "TIME",
         u_treshold: "FLOAT",
         u_offset: "VECTOR2",
         u_resolution: "RESOLUTION",
@@ -137,12 +137,7 @@ global.__ShaderWarpPulse = {
         components: { },
       },
       u_time: {
-        store: {
-          value: 0.0,
-          target: 1000.0,
-          duration: 1000.0,
-          ease: "LINEAR",
-        },
+        store: { value: 1.0 },
         components: { }
       },
       u_treshold: {

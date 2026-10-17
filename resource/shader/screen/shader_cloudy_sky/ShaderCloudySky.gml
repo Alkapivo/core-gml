@@ -19,7 +19,7 @@ global.__ShaderCloudySky = {
         u_seed: "CONST_FLOAT",
         u_sky_alpha: "FLOAT",
         u_speed: "CONST_FLOAT",
-        u_time: "FLOAT",
+        u_time: "TIME",
         u_zoom: "FLOAT",
         u_offset: "VECTOR2",
         u_resolution: "RESOLUTION",
@@ -107,12 +107,7 @@ global.__ShaderCloudySky = {
         components: { },
       },
       u_time: {
-        store: {
-          value: 0.0,
-          target: 1000.0,
-          duration: 1000.0,
-          ease: "LINEAR",
-        },
+        store: { value: 1.0 },
         components: { }
       },
       u_zoom: {

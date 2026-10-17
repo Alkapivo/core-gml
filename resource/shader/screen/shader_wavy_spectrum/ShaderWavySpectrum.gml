@@ -24,7 +24,7 @@ global.__ShaderWavySpectrum = {
         u_sat: "FLOAT",
         u_seed: "CONST_FLOAT",
         u_scale: "FLOAT",
-        u_time: "FLOAT",
+        u_time: "TIME",
       },
     }
   },
@@ -155,12 +155,7 @@ global.__ShaderWavySpectrum = {
         components: { },
       },
       u_time: {
-        store: {
-          value: 0.0,
-          target: 999.9,
-          duration: 999.9,
-          ease: "LINEAR",
-        },
+        store: { value: 1.0 },
         components: { }
       },
     }

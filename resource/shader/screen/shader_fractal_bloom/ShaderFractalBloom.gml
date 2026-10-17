@@ -23,7 +23,7 @@ global.__ShaderFractalBloom = {
         u_seed: "CONST_FLOAT",
         u_shift: "FLOAT",
         u_size: "FLOAT",
-        u_time: "FLOAT",
+        u_time: "TIME",
         u_base: "VECTOR2",
         u_offset: "VECTOR2",
         u_resolution: "RESOLUTION",
@@ -146,12 +146,7 @@ global.__ShaderFractalBloom = {
         components: { },
       },
       u_time: {
-        store: {
-          value: 0.0,
-          target: 1000.0,
-          duration: 1000.0,
-          ease: "LINEAR",
-        },
+        store: { value: 1.0 },
         components: { }
       },
       u_base: {

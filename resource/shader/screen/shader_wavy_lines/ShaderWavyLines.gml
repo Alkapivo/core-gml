@@ -23,7 +23,7 @@ global.__ShaderWavyLines = {
         u_shift: "FLOAT",
         u_size: "CONST_FLOAT",
         u_thickness: "FLOAT",
-        u_time: "FLOAT",
+        u_time: "TIME",
         u_zoom: "FLOAT",
         u_offset: "VECTOR2",
         u_resolution: "RESOLUTION",
@@ -131,12 +131,7 @@ global.__ShaderWavyLines = {
         components: { },
       },
       u_time: {
-        store: {
-          value: 0.0,
-          target: 1000.0,
-          duration: 1000.0,
-          ease: "LINEAR",
-        },
+        store: { value: 1.0 },
         components: { }
       },
       u_zoom: {
