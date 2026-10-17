@@ -67,11 +67,11 @@ function DisplayService(config = null): Service(config) constructor {
 
   ///@private
   ///@type {Number}
-  previousGuiWidth = toInt(this.windowWidth * this.scale)
+  previousGuiWidth = toInt(this.windowWidth)
 
   ///@private
   ///@type {Number}
-  previousGuiHeight = toInt(this.windowHeight * this.scale)
+  previousGuiHeight = toInt(this.windowHeight)
 
   ///@private
   ///@type {Number}
@@ -117,8 +117,8 @@ function DisplayService(config = null): Service(config) constructor {
     if (enable && !fullscreen) { 
       this.beforeFullscreenWidth = toInt(this.previousWidth)
       this.beforeFullscreenHeight = toInt(this.previousHeight)
-      var width = toInt(Math.getEvenCeil(max(this.minWidth, this.getDisplayWidth()) / this.scale))
-      var height = toInt(Math.getEvenCeil(max(this.minHeight, this.getDisplayHeight()) / this.scale))
+      var width = toInt(Math.getEvenCeil(max(this.minWidth, this.getDisplayWidth()) / 1.0))//this.scale))
+      var height = toInt(Math.getEvenCeil(max(this.minHeight, this.getDisplayHeight()) / 1.0))//this.scale))
       this.resize(width, height)
     }
 
@@ -204,12 +204,19 @@ function DisplayService(config = null): Service(config) constructor {
     try {
       var guiWidth = toInt(Math.getEvenCeil(width / this.scale))
       var guiHeight = toInt(Math.getEvenCeil(height / this.scale))
-      Logger.debug("DisplayService", $"Resize window from {this.previousWidth}x{this.previousHeight} to {width}x{height}, scale: {this.scale}")
-      display_set_gui_size(guiWidth, guiHeight)
+      var minScale = max(1, max(this.minWidth / guiWidth, this.minHeight / guiHeight))
+      guiWidth = max(toInt(Math.getEvenCeil(guiWidth * minScale)), this.minWidth)
+      guiHeight = max(toInt(Math.getEvenCeil(guiHeight * minScale)), this.minHeight)
+      
+      Logger.debug("DisplayService", $"Resize window from {this.previousWidth}x{this.previousHeight} to {width}x{height}, scale: {this.scale} minScale: {minScale}")
+     
       window_set_size(width, height)
+      display_set_gui_size(guiWidth, guiHeight)
       surface_resize(application_surface, guiWidth, guiHeight)
+      
       this.windowWidth = this.getWidth()
       this.windowHeight = this.getHeight()
+      
       draw_texture_flush()
     } catch (exception) {
       Logger.error(BeanDisplayService, $"resize(): {exception.message}")
