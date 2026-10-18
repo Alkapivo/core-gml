@@ -230,53 +230,79 @@ function ParticleService(config = null): Service() constructor {
       return
     }
 
-    var task = new Task("emmit-particle")
-      .setTimeout(duration)
-      .setTick(interval)
-      .setState({
-        template: template,
-        system: system,
-        beginX: beginX,
-        beginY: beginY,
-        endX: endX,
-        endY: endY,
-        duration: duration,
-        amount: amount,
-        interval: interval,
-        shape: shape,
-        distribution: distribution,
-      })
-      .whenTimeout(function() {
-        this.fullfill()
-      })
-      .whenUpdate(function(executor) {
-        var particle = this.state.template.particle
-        if (particle == null) {
-          Logger.debug("ParticleService", $"Found nullable particle in emmit-particle task, name: {this.state.template.name}")
+    if (duration == 0) {
+      var particle = template.particle
+      if (particle == null) {
+        Logger.debug("ParticleService", $"Found nullable particle in emmit-particle, name: {particleName}")
+        return
+      }
+
+      part_emitter_region(
+        system.asset, 
+        system.emitter,
+        beginX,
+        endX,
+        beginY,
+        endY,
+        shape,
+        distribution
+      )
+
+      part_emitter_burst(
+        system.asset,
+        system.emitter,
+        particle.asset,
+        amount
+      )
+    } else {
+      var task = new Task("emmit-particle")
+        .setTimeout(duration)
+        .setTick(interval)
+        .setState({
+          template: template,
+          system: system,
+          beginX: beginX,
+          beginY: beginY,
+          endX: endX,
+          endY: endY,
+          duration: duration,
+          amount: amount,
+          interval: interval,
+          shape: shape,
+          distribution: distribution,
+        })
+        .whenTimeout(function() {
           this.fullfill()
-          return
-        }
+        })
+        .whenUpdate(function(executor) {
+          var particle = this.state.template.particle
+          if (particle == null) {
+            Logger.debug("ParticleService", $"Found nullable particle in emmit-particle task, name: {this.state.template.name}")
+            this.fullfill()
+            return
+          }
 
-        var system = this.state.system
-        part_emitter_region(
-          system.asset, 
-          system.emitter,
-          this.state.beginX,
-          this.state.endX,
-          this.state.beginY,
-          this.state.endY,
-          this.state.shape,
-          this.state.distribution
-        )
+          var system = this.state.system
+          part_emitter_region(
+            system.asset, 
+            system.emitter,
+            this.state.beginX,
+            this.state.endX,
+            this.state.beginY,
+            this.state.endY,
+            this.state.shape,
+            this.state.distribution
+          )
 
-        part_emitter_burst(
-          system.asset,
-          system.emitter,
-          particle.asset,
-          this.state.amount
-        )
-      })
-    system.executor.add(task)
+          part_emitter_burst(
+            system.asset,
+            system.emitter,
+            particle.asset,
+            this.state.amount
+          )
+        })
+      system.executor.add(task)
+    }
   }
 
   ///@param {Event} event
