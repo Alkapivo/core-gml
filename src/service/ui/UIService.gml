@@ -6,7 +6,7 @@ show_debug_message("init UIService.gml")
 function UIService(config = null): Service(config) constructor {
 
   ///@type {Array<UI>}
-  containers = new Array(UI).enableGC(true)
+  containers = new Array(UI)
 
   ///@private
   ///@param {Event} event
@@ -39,15 +39,14 @@ function UIService(config = null): Service(config) constructor {
   ///@param {String} name
   removeContainers = function(name) {
     var size = this.containers.size()
-    for (var idx = 0; idx < size; idx++) {
+    for (var idx = size - 1; idx >= 0; idx--) {
       var container = this.containers.get(idx)
       if (container.name == name) {
-        containers.addToGC(idx)
         container.free()
         delete container
+        this.containers.remove(idx)
       }
     }
-    this.containers.runGC()
   }
 
   ///@private
@@ -120,7 +119,6 @@ function UIService(config = null): Service(config) constructor {
 
     this.containers.forEach(updateContainer)
     this.dispatcher.update()
-    this.containers.runGC()
     return this
   }
 
@@ -144,7 +142,7 @@ function UIService(config = null): Service(config) constructor {
 
   if (Struct.contains(config, "containers")) {
     GMArray.forEach(Struct.get(config, "containers"), function(json, index, service) {
-      service.send(new Event("AddContainer", new UI(json)))
+      service.send(new Event("add", new UI(json)))
     }, this)
   }
 }

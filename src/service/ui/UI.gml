@@ -1015,7 +1015,11 @@ function _UIUtil() constructor {
       return Core.getProperty("core.ui-service.use-surface-optimalization", false)
         ? function() {
           if (this.surface == null) {
-            this.surface = new Surface(this.area.getWidth(), this.area.getHeight())
+            this.surface = new Surface({
+              name: $"{this.name}Surface",
+              width: this.area.getWidth(),
+              height: this.area.getHeight(),
+            })
           }
 
           this.surface.update(this.area.getWidth(), this.area.getHeight())
@@ -1077,8 +1081,12 @@ function _UIUtil() constructor {
     },
     "renderDefaultScrollable": function() {
        return function() {
-        if (!Optional.is(this.surface)) {
-          this.surface = new Surface()
+        if (this.surface == null) {
+          this.surface = new Surface({
+            name: $"{this.name}Surface",
+            width: this.area.getWidth(),
+            height: this.area.getHeight(),
+          })
         }
 
         this.surface.update(this.area.getWidth(), this.area.getHeight())
@@ -1104,8 +1112,12 @@ function _UIUtil() constructor {
     },
     "renderDefaultScrollableAlpha": function() {
        return function() {
-        if (!Optional.is(this.surface)) {
-          this.surface = new Surface()
+        if (this.surface == null) {
+          this.surface = new Surface({
+            name: $"{this.name}Surface",
+            width: this.area.getWidth(),
+            height: this.area.getHeight(),
+          })
         }
 
         var alpha = this.state.getIfType("surface-alpha", Number, 1.0)
@@ -1132,8 +1144,12 @@ function _UIUtil() constructor {
     },
     "renderDefaultScrollableBlend": function() {
       return function() {
-        if (!Optional.is(this.surface)) {
-          this.surface = new Surface()
+        if (this.surface == null) {
+          this.surface = new Surface({
+            name: $"{this.name}Surface",
+            width: this.area.getWidth(),
+            height: this.area.getHeight(),
+          })
         }
 
         this.surface.update(this.area.getWidth(), this.area.getHeight())

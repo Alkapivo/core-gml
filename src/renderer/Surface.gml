@@ -28,6 +28,9 @@ global.__SurfaceFormat = new _SurfaceFormat()
 ///_width, _height, _format = SurfaceFormat.RGBA8UNORM, _asset = null
 function Surface(config = null) constructor {
 
+  ///@type {Name}
+  name = Struct.getDefault(config, "name", "AnnonymousSurface")
+
   ///@type {Number}
   width = ceil(Assert.isType(clamp(Struct
     .getDefault(config, "width", 1), 1, SURFACE_MAX_WIDTH), Number))
@@ -72,11 +75,11 @@ function Surface(config = null) constructor {
       //SURFACE_COUNTER.surfaceCreate(this, this.width, this.height, this.format)
       this.asset = surface_create(this.width, this.height, this.format)
       this.updated = true
-      Logger.debug("Surface", $"New surface: {asset}, width: {this.width}, height: {this.height}, format: {this.format}, depth: {this.depth}")
+      Logger.debug("Surface", $"New surface. asset: {this.asset}, name: {this.name}, width: {this.width}, height: {this.height}, format: {this.format}, depth: {this.depth}")
     } else {
       if (this.depth && !surface_has_depth(this.asset)) {
         //SURFACE_COUNTER.surfaceFree(this)
-        Logger.debug("Surface", $"Free surface: {asset}, width: {this.width}, height: {this.height}, format: {this.format}, depth: {this.depth}")
+        Logger.debug("Surface", $"Free surface. asset: {this.asset}, name: {this.name}, width: {this.width}, height: {this.height}, format: {this.format}, depth: {this.depth}")
         surface_free(this.asset)
         this.asset = null
         
@@ -84,7 +87,7 @@ function Surface(config = null) constructor {
         //SURFACE_COUNTER.surfaceCreate(this, this.width, this.height, this.format)
         this.asset = surface_create(this.width, this.height, this.format)
         this.updated = true
-        Logger.debug("Surface", $"New surface: {asset}, width: {this.width}, height: {this.height}, format: {this.format}, depth: {this.depth}")
+        Logger.debug("Surface", $"New surface. asset: {this.asset}, name: {this.name}, width: {this.width}, height: {this.height}, format: {this.format}, depth: {this.depth}")
       }
     }
 
@@ -92,14 +95,14 @@ function Surface(config = null) constructor {
       surface_depth_disable(!this.depth)
       //SURFACE_COUNTER.surfaceCreate(this, this.width, this.height, this.format)
       this.asset = surface_create(this.width, this.height, this.format)
-      Logger.debug("Surface", $"New surface: {asset}, width: {this.width}, height: {this.height}, format: {this.format}, depth: {this.depth}")
+      Logger.debug("Surface", $"New surface. asset: {this.asset}, name: {this.name}, width: {this.width}, height: {this.height}, format: {this.format}, depth: {this.depth}")
       this.updated = true
     }
 
     if (surface_get_width(this.asset) != this.width
       || surface_get_height(this.asset) != this.height) {
 
-      Logger.debug("Surface", $"Resize surface: {asset}, width: {this.width}, height: {this.height}, format: {this.format}, depth: {this.depth}")
+      Logger.debug("Surface", $"Resize surface. asset: {this.asset}, name: {this.name}, width: {this.width}, height: {this.height}, format: {this.format}, depth: {this.depth}")
       surface_resize(this.asset, this.width, this.height);
       this.updated = true
     }
@@ -112,7 +115,7 @@ function Surface(config = null) constructor {
   ///@return {Surface}
   renderOn = function(callback, data = null, gpuSetSurface = true) {
     if (!Core.isType(this.asset, GMSurface)) {
-      Logger.error("Surface", "renderOn fatal error")
+      Logger.error("Surface", $"renderOn fatal error. name: {this.name}")
       return this
     }
 
@@ -130,7 +133,7 @@ function Surface(config = null) constructor {
   ///@return {Surface}
   render = function(x = 0, y = 0, alpha = 1.0) {
     if (!Core.isType(this.asset, GMSurface)) {
-      Logger.error("Surface", "render fatal error")
+      Logger.error("Surface", $"render fatal error. name: {this.name}")
       return this
     }
 
@@ -148,7 +151,7 @@ function Surface(config = null) constructor {
   ///@return {Surface}
   renderStretched = function(width, height, x = 0, y = 0, alpha = 1.0, blend = c_white, blendConfig = null) {
     if (!Core.isType(this.asset, GMSurface)) {
-      Logger.error("Surface", "render fatal error")
+      Logger.error("Surface", $"render fatal error. name: {this.name}")
       return this
     }
 
@@ -210,7 +213,7 @@ function Surface(config = null) constructor {
     }
 
     if (!Core.isType(this.asset, GMSurface)) {
-      Logger.error("Surface", "scaleToFill fatal error")
+      Logger.error("Surface", $"scaleToFill fatal error. name: {this.name}")
       return this
     }
     
@@ -226,7 +229,7 @@ function Surface(config = null) constructor {
 
     this.width = _width
     this.height = _height
-    Logger.debug("Surface", $"Resize surface: {asset}, width: {this.width}, height: {this.height}, format: {this.format}, depth: {this.depth}")
+    Logger.debug("Surface", $"Resize surface. asset: {asset}, name: {this.name}, width: {this.width}, height: {this.height}, format: {this.format}, depth: {this.depth}")
     surface_resize(this.asset, this.width, this.height)
     return this
   }
@@ -234,7 +237,7 @@ function Surface(config = null) constructor {
   free = function() {
     if (Core.isType(this.asset, GMSurface)) {
       //SURFACE_COUNTER.surfaceFree(this)
-      Logger.debug("Surface", $"Free surface: {asset}, width: {this.width}, height: {this.height}, format: {this.format}, depth: {this.depth}")
+      Logger.debug("Surface", $"Free surface. asset: {asset}, name: {this.name}, width: {this.width}, height: {this.height}, format: {this.format}, depth: {this.depth}")
       surface_free(this.asset)
     }
   }
