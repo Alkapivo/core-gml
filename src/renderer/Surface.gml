@@ -71,6 +71,18 @@ function Surface(config = null) constructor {
     }
 
     if (!Core.isType(this.asset, GMSurface)) {
+      if (this.asset != null) {
+        //SURFACE_COUNTER.surfaceFree(this)
+        Logger.debug("Surface", $"Free surface. asset: {this.asset}, name: {this.name}, width: {this.width}, height: {this.height}, format: {this.format}, depth: {this.depth}")
+        try {
+          surface_free(this.asset)
+        } catch (exception) {
+          Logger.error("Surface", exception.message)
+          Core.printStackTrace().printException(exception)
+        }
+        this.asset = null
+      }
+
       surface_depth_disable(!this.depth)
       //SURFACE_COUNTER.surfaceCreate(this, this.width, this.height, this.format)
       this.asset = surface_create(this.width, this.height, this.format)
@@ -92,6 +104,11 @@ function Surface(config = null) constructor {
     }
 
     if (surface_get_format(this.asset) != this.format) {
+      //SURFACE_COUNTER.surfaceFree(this)
+      Logger.debug("Surface", $"Free surface. asset: {this.asset}, name: {this.name}, width: {this.width}, height: {this.height}, format: {this.format}, depth: {this.depth}")
+      surface_free(this.asset)
+      this.asset = null
+
       surface_depth_disable(!this.depth)
       //SURFACE_COUNTER.surfaceCreate(this, this.width, this.height, this.format)
       this.asset = surface_create(this.width, this.height, this.format)
